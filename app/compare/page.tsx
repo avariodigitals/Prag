@@ -1,0 +1,44 @@
+import TopBar from '@/components/TopBar';
+import NavBar from '@/components/NavBar';
+import Footer from '@/components/Footer';
+import CompareView from '@/components/CompareView';
+import { getProductsForCompare, getCategories } from '@/lib/woocommerce';
+import Link from 'next/link';
+
+export const metadata = { title: 'Product Comparison – Prag' };
+
+interface Props {
+  searchParams: Promise<{ p1?: string; p2?: string }>;
+}
+
+export default async function ComparePage({ searchParams }: Props) {
+  const { p1, p2 } = await searchParams;
+  const slugs = [p1, p2].filter((s): s is string => Boolean(s));
+
+  const [products, categories] = await Promise.all([
+    getProductsForCompare(slugs),
+    getCategories(),
+  ]);
+
+  return (
+    <main className="w-full bg-white flex flex-col">
+      <TopBar />
+      <NavBar />
+
+      <div className="w-full px-20 py-10 bg-stone-50 flex flex-col gap-6">
+        <div className="flex items-center gap-1">
+          <Link href="/" className="text-sky-700 text-2xl font-medium font-['Onest'] hover:underline">Home</Link>
+          <span className="text-zinc-500 text-base font-medium font-['Onest'] mx-1">/</span>
+          <span className="text-zinc-500 text-base font-medium font-['Onest']">Product Comparison</span>
+        </div>
+        <h1 className="text-black text-4xl font-medium font-['Onest']">Product Comparison</h1>
+      </div>
+
+      <div className="w-full px-20 py-10 flex justify-center">
+        <CompareView initialProducts={products} categories={categories} />
+      </div>
+
+      <Footer />
+    </main>
+  );
+}

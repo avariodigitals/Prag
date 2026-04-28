@@ -1,16 +1,16 @@
 import type { Product, Category, Tag, Store } from './types';
 
-const BASE_URL = process.env.NEXT_PUBLIC_WP_API_URL!;
-const KEY = process.env.WC_CONSUMER_KEY!;
-const SECRET = process.env.WC_CONSUMER_SECRET!;
-
 function authParams() {
-  return `consumer_key=${KEY}&consumer_secret=${SECRET}`;
+  return `consumer_key=${process.env.WC_CONSUMER_KEY}&consumer_secret=${process.env.WC_CONSUMER_SECRET}`;
+}
+
+function baseUrl() {
+  return process.env.NEXT_PUBLIC_WP_API_URL ?? '';
 }
 
 async function wcFetch<T>(path: string, fallback: T): Promise<T> {
   try {
-    const res = await fetch(`${BASE_URL}${path}${path.includes('?') ? '&' : '?'}${authParams()}`, {
+    const res = await fetch(`${baseUrl()}${path}${path.includes('?') ? '&' : '?'}${authParams()}`, {
       next: { revalidate: 60 },
     });
     if (!res.ok) return fallback;
@@ -73,7 +73,7 @@ export async function getProducts({
   });
   try {
     const res = await fetch(
-      `${BASE_URL}/products?${qs}&${authParams()}`,
+      `${baseUrl()}/products?${qs}&${authParams()}`,
       { next: { revalidate: 60 } }
     );
     if (!res.ok) return { products: [], total: 0 };
@@ -105,7 +105,7 @@ export async function searchProducts(query: string, orderby?: string, page = 1, 
   });
   try {
     const res = await fetch(
-      `${BASE_URL}/products?${qs}&${authParams()}`,
+      `${baseUrl()}/products?${qs}&${authParams()}`,
       { next: { revalidate: 0 } }
     );
     if (!res.ok) return { products: [], total: 0 };
@@ -125,11 +125,13 @@ export async function getSubcategories(parentSlug: string): Promise<Category[]> 
 }
 
 // WordPress REST API base (without /wc/v3)
-const WP_BASE = BASE_URL.replace('/wp-json/wc/v3', '/wp-json/wp/v2');
+function wpBase() {
+  return baseUrl().replace('/wp-json/wc/v3', '/wp-json/wp/v2');
+}
 
 async function wpFetch<T>(path: string, fallback: T): Promise<T> {
   try {
-    const res = await fetch(`${WP_BASE}${path}`, { next: { revalidate: 60 } });
+    const res = await fetch(`${wpBase()}${path}`, { next: { revalidate: 60 } });
     if (!res.ok) return fallback;
     const text = await res.text();
     if (!text.startsWith('{') && !text.startsWith('[')) return fallback;
@@ -176,7 +178,8 @@ export interface ContactFormData {
 export async function submitContactForm(data: ContactFormData): Promise<{ success: boolean }> {
   try {
     const res = await fetch(
-      `${BASE_URL.replace('/wp-json/wc/v3', '/wp-json/contact-form-7/v1/contact-forms/1/feedback')}`,
+      `${baseUrl().replace('/wp-json/wc/v3', '/wp-json/contact-form-7/v1/contact-forms/1/feedback')}`,
+
       {
         method: 'POST',
         body: new URLSearchParams({
@@ -229,7 +232,7 @@ export async function getPosts({
     ...(category && { categories: category }),
   });
   try {
-    const res = await fetch(`${WP_BASE}/posts?${qs}`, { next: { revalidate: 60 } });
+    const res = await fetch(`${wpBase()}/posts?${qs}`, { next: { revalidate: 60 } });
     if (!res.ok) return { posts: [], total: 0 };
     const text = await res.text();
     if (!text.startsWith('[')) return { posts: [], total: 0 };

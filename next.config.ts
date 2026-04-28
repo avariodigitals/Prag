@@ -3,7 +3,7 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
-      { protocol: 'https', hostname: 'central.xyz.com' },
+      { protocol: 'https', hostname: 'central.prag.global' },
       { protocol: 'https', hostname: 'placehold.co' },
     ],
   },

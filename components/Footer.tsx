@@ -36,7 +36,7 @@ export default function Footer() {
       <div className="w-full max-w-[1228px] flex justify-between items-start">
         {/* Brand column */}
         <div className="w-96 flex flex-col gap-4">
-          <Image src="/Prag Logo.png" alt="Prag" width={150} height={34} />
+          <Image src="/Prag Logo.png" alt="Prag" width={150} height={34} style={{ height: 'auto' }} />
           <p className="text-white/70 text-lg font-normal font-['Space_Grotesk']">
             Nigeria&apos;s leading power engineering company. We design, supply and install power solutions for homes, businesses and industrial facilities across the country.
           </p>

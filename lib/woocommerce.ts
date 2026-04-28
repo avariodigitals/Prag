@@ -5,7 +5,9 @@ function authParams() {
 }
 
 function baseUrl() {
-  return process.env.NEXT_PUBLIC_WP_API_URL ?? '';
+  const url = process.env.NEXT_PUBLIC_WP_API_URL ?? '';
+  // Ensure we use the /wc/v3 namespace for WooCommerce REST API
+  return url.replace('/wp-json', '/wp-json/wc/v3');
 }
 
 async function wcFetch<T>(path: string, fallback: T): Promise<T> {

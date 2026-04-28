@@ -1,8 +1,7 @@
 'use client';
 
-import Image from 'next/image';
 import { useState } from 'react';
-import { Pencil } from 'lucide-react';
+import { Pencil, User } from 'lucide-react';
 
 const NIGERIAN_STATES = [
   'Abia','Adamawa','Akwa Ibom','Anambra','Bauchi','Bayelsa','Benue','Borno',
@@ -30,8 +29,8 @@ export default function PersonalInfoPage() {
 
       {/* Avatar */}
       <div className="relative inline-flex items-center gap-5">
-        <div className="relative w-24 h-24">
-          <Image src="/placeholder-avatar.png" alt="Profile" width={96} height={96} className="rounded-full outline outline-4 outline-white object-cover" />
+        <div className="relative w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center outline outline-1 outline-slate-200">
+          <User className="w-12 h-12 text-slate-400" />
           <button className="absolute bottom-0 right-0 w-7 h-7 p-1.5 bg-white rounded-full shadow flex items-center justify-center">
             <Pencil className="w-4 h-4 text-sky-700" />
           </button>

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import TopBar from '@/components/TopBar';
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
@@ -12,7 +14,7 @@ interface Props {
 
 export default async function KnowledgeCenterPage({ searchParams }: Props) {
   const sp = await searchParams;
-  const [{ posts, total }, categories] = await Promise.all([
+  const [{ posts }, categories] = await Promise.all([
     getPosts({ category: sp.category, page: sp.page ? Number(sp.page) : 1 }),
     getPostCategories(),
   ]);
@@ -32,7 +34,7 @@ export default async function KnowledgeCenterPage({ searchParams }: Props) {
           Practical guides, honest comparisons, and expert insights from Prag&apos;s engineering team — written for Nigerian conditions.
         </p>
       </div>
-      <BlogGrid featured={featured} posts={rest} categories={categories} total={total} activeCategory={sp.category} />
+      <BlogGrid featured={featured} posts={rest} categories={categories} activeCategory={sp.category} />
       <Footer />
     </main>
   );

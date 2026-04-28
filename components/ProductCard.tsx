@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Heart } from 'lucide-react';
@@ -10,12 +13,14 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, bg = 'bg-stone-50' }: ProductCardProps) {
+  const [isNew, setIsNew] = useState(false);
   const image = product.images[0];
-  const isNew = (() => {
+
+  useEffect(() => {
     const created = new Date(product.date_created);
     const diffDays = (Date.now() - created.getTime()) / (1000 * 60 * 60 * 24);
-    return diffDays <= 30;
-  })();
+    setIsNew(diffDays <= 30);
+  }, [product.date_created]);
 
   return (
     <div className="flex-1 relative inline-flex flex-col gap-4">

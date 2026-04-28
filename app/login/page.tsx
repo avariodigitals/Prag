@@ -1,12 +1,48 @@
+'use client';
+
 import AuthPanel from '@/components/AuthPanel';
 import Link from 'next/link';
-import Image from 'next/image';
-
-export const metadata = { title: 'Login – Prag' };
-
-const SHOP_URL = process.env.NEXT_PUBLIC_SHOP_URL ?? 'https://shop.xyz.com';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const SHOP_URL = process.env.NEXT_PUBLIC_SHOP_URL ?? 'https://shop.xyz.com';
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    const formData = new FormData(e.currentTarget);
+    const username = formData.get('username');
+    const password = formData.get('password');
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        router.push('/');
+        router.refresh();
+      } else {
+        setError(data.message || 'Login failed');
+      }
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <main className="w-full h-screen bg-white flex overflow-hidden">
       <AuthPanel
@@ -25,8 +61,13 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* WooCommerce handles actual auth — form posts to shop subdomain */}
-          <form action={`${SHOP_URL}/my-account`} method="POST" className="flex flex-col gap-4">
+          {error && (
+            <div className="p-4 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1">
               <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk'] leading-5">Email Address</label>
               <input name="username" type="email" placeholder="you@company.com" required
@@ -39,9 +80,11 @@ export default function LoginPage() {
             </div>
 
             <div className="flex flex-col items-center gap-6 mt-2">
-              <button type="submit"
-                className="w-full h-16 px-6 py-4 bg-sky-700 rounded-[30px] text-white text-lg font-medium font-['Space_Grotesk'] leading-7 hover:bg-sky-800 transition-colors">
-                Log in
+              <button 
+                type="submit"
+                disabled={loading}
+                className="w-full h-16 px-6 py-4 bg-sky-700 rounded-[30px] text-white text-lg font-medium font-['Space_Grotesk'] leading-7 hover:bg-sky-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                {loading ? 'Logging in...' : 'Log in'}
               </button>
               <div className="flex items-center gap-1">
                 <span className="text-neutral-700 text-sm font-normal font-['Space_Grotesk'] leading-5">Forgot Password?</span>
@@ -61,7 +104,7 @@ export default function LoginPage() {
           {/* Google SSO — handled by WooCommerce plugin */}
           <a href={`${SHOP_URL}/my-account?google_login=1`}
             className="w-full p-4 bg-white rounded-3xl outline outline-[1.5px] outline-neutral-700 flex justify-center items-center gap-4 hover:bg-gray-50 transition-colors">
-            <Image src="/google-icon.svg" alt="Google" width={20} height={20} />
+            <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-[10px] text-white font-bold">G</div>
             <span className="text-neutral-700 text-base font-medium font-['Space_Grotesk'] leading-6">Continue with Google</span>
           </a>
         </div>

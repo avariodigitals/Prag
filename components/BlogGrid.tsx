@@ -10,7 +10,6 @@ interface Props {
   featured: WPPost | null;
   posts: WPPost[];
   categories: WPCategory[];
-  total: number;
   activeCategory?: string;
 }
 
@@ -26,7 +25,7 @@ function stripHtml(html: string) {
   return html.replace(/<[^>]+>/g, '').trim();
 }
 
-export default function BlogGrid({ featured, posts, categories, total, activeCategory }: Props) {
+export default function BlogGrid({ featured, posts, categories, activeCategory }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -56,7 +55,7 @@ export default function BlogGrid({ featured, posts, categories, total, activeCat
               <div className="flex items-center gap-4">
                 <span className="px-2 py-1 bg-sky-700 rounded-3xl text-white text-sm font-medium font-['Space_Grotesk']">Power Guide</span>
                 <span className="text-neutral-700 text-sm font-normal font-['Onest']">8min read</span>
-                <span className="text-sky-700 text-base font-normal font-['Onest']">{postDate(featured)}</span>
+                <span className="text-sky-700 text-base font-normal font-['Onest']" suppressHydrationWarning>{postDate(featured)}</span>
               </div>
               <h2 className="text-zinc-900 text-4xl font-medium font-['Onest']" dangerouslySetInnerHTML={{ __html: featured.title.rendered }} />
               <p className="text-neutral-700 text-xl font-normal font-['Onest']">{stripHtml(featured.excerpt.rendered)}</p>
@@ -109,7 +108,7 @@ export default function BlogGrid({ featured, posts, categories, total, activeCat
                       <Link href={`/knowledge-center/${post.slug}`} className="flex items-center gap-2.5 text-sky-700 text-base font-normal font-['Onest'] hover:underline">
                         Read full Article <ArrowRight className="w-5 h-5" />
                       </Link>
-                      <span className="text-zinc-500 text-base font-normal font-['Onest']">{postDate(post)}</span>
+                      <span className="text-zinc-500 text-base font-normal font-['Onest']" suppressHydrationWarning>{postDate(post)}</span>
                     </div>
                   </div>
                 </div>

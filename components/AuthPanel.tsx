@@ -20,7 +20,7 @@ export default function AuthPanel({ headline, subtext }: Props) {
           style={{ left, top }}
         />
       ))}
-      <Image src="/Prag Logo.png" alt="Prag" width={150} height={34} className="absolute left-[60px] top-[70px]" />
+      <Image src="/Prag Logo.png" alt="Prag" width={150} height={34} className="absolute left-[60px] top-[70px]" style={{ height: 'auto' }} />
       <div className="absolute left-[60px] top-[288px] w-[539px] flex flex-col gap-6">
         <h1 className="text-white text-5xl font-bold font-['Onest']">{headline}</h1>
         <p className="text-white text-lg font-normal font-['Space_Grotesk']">{subtext}</p>

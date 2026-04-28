@@ -1,9 +1,8 @@
-import Image from 'next/image';
 import Link from 'next/link';
 
 export default function HeroBanner() {
   return (
-    <div className="w-full px-20 py-8 bg-black/20 flex flex-col gap-2.5 overflow-hidden" style={{ backgroundImage: 'url(/hero-bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+    <div className="w-full px-20 py-8 bg-sky-900/20 flex flex-col gap-2.5 overflow-hidden" style={{ backgroundSize: 'cover', backgroundPosition: 'center' }}>
       <div className="flex justify-start items-center gap-28">
         <div className="w-[724px] flex flex-col gap-10">
           <div className="flex flex-col gap-6">
@@ -32,14 +31,9 @@ export default function HeroBanner() {
           </div>
         </div>
 
-        <Image
-          src="/hero-product.png"
-          alt="Featured Inverter"
-          width={349}
-          height={436}
-          className="w-80 h-96 object-contain"
-          priority
-        />
+        <div className="w-80 h-96 bg-sky-700/10 rounded-2xl flex items-center justify-center border border-white/20">
+          <span className="text-white/50 text-sm font-['Space_Grotesk']">Hero Product Image</span>
+        </div>
       </div>
     </div>
   );

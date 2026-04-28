@@ -2,9 +2,9 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Search, Phone, ShoppingCart, User } from 'lucide-react';
+import { Search, Phone, ShoppingCart, User, LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { useCart } from '@/lib/CartContext';
 
@@ -12,15 +12,38 @@ export default function TopBar() {
   const router = useRouter();
   const [query, setQuery] = useState('');
   const { count } = useCart();
+  const [user, setUser] = useState<{ user_display_name: string } | null>(null);
+
+  useEffect(() => {
+    const userInfo = document.cookie
+      .split('; ')
+      .find((row) => row.startsWith('user_info='))
+      ?.split('=')[1];
+
+    if (userInfo) {
+      try {
+        setUser(JSON.parse(decodeURIComponent(userInfo)));
+      } catch (e) {
+        console.error('Failed to parse user info', e);
+      }
+    }
+  }, []);
+
+  async function handleLogout() {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    setUser(null);
+    router.refresh();
+  }
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
     if (query.trim()) router.push(`/search?q=${encodeURIComponent(query.trim())}`);
   }
+
   return (
     <div className="w-full px-20 py-5 bg-white flex justify-between items-center">
       <Link href="/">
-        <Image src="/Prag Logo.png" alt="Prag" width={110} height={33} priority />
+        <Image src="/Prag Logo.png" alt="Prag" width={110} height={33} priority style={{ height: 'auto' }} />
       </Link>
 
       <form onSubmit={handleSearch} className="w-[566px] h-12 px-3 py-2 bg-white rounded-md border border-gray-300 flex items-center gap-3">
@@ -54,15 +77,36 @@ export default function TopBar() {
           )}
         </Link>
 
-        <Link
-          href={`${process.env.NEXT_PUBLIC_SHOP_URL}/my-account`}
-          className="flex items-center gap-2 p-2.5"
-        >
-          <User className="w-7 h-7 text-neutral-700/70" />
-          <span className="text-neutral-700/70 text-base font-medium font-['Space_Grotesk'] leading-4">
-            Login or Register
-          </span>
-        </Link>
+        {user ? (
+          <div className="flex items-center gap-4">
+            <Link
+              href="/account"
+              className="flex items-center gap-2 p-2.5"
+            >
+              <User className="w-7 h-7 text-neutral-700/70" />
+              <span className="text-neutral-700/70 text-base font-medium font-['Space_Grotesk'] leading-4">
+                Hi, {user.user_display_name}
+              </span>
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="p-2.5 text-neutral-700/70 hover:text-red-600 transition-colors"
+              title="Logout"
+            >
+              <LogOut className="w-6 h-6" />
+            </button>
+          </div>
+        ) : (
+          <Link
+            href="/login"
+            className="flex items-center gap-2 p-2.5"
+          >
+            <User className="w-7 h-7 text-neutral-700/70" />
+            <span className="text-neutral-700/70 text-base font-medium font-['Space_Grotesk'] leading-4">
+              Login or Register
+            </span>
+          </Link>
+        )}
       </div>
     </div>
   );

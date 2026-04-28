@@ -1,11 +1,12 @@
-import Image from 'next/image';
 import Link from 'next/link';
 
 export default function BrandBanner() {
   return (
     <section className="w-full p-20 flex flex-col items-center gap-10 overflow-hidden">
       <div className="w-full max-w-[1229px] p-10 bg-slate-100 rounded-3xl flex items-center gap-24">
-        <Image src="/brand-banner.png" alt="PRAG Power Solutions" width={280} height={330} className="w-72 h-80 object-contain" />
+        <div className="w-72 h-80 bg-sky-700/5 rounded-2xl flex items-center justify-center border border-sky-700/10 shrink-0">
+          <span className="text-sky-700/30 text-sm font-['Space_Grotesk']">Brand Banner Image</span>
+        </div>
         <div className="flex-1 flex flex-col gap-6">
           <h2 className="text-black text-6xl font-bold font-['Onest'] leading-[65px]">
             No Hype. Just Inverters That Deliver.

@@ -1,7 +1,6 @@
 import TopBar from '@/components/TopBar';
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
-import Image from 'next/image';
 
 export const metadata = { title: 'About Us – Prag' };
 
@@ -61,8 +60,8 @@ export default function AboutPage() {
               ))}
             </div>
 
-            <div className="relative w-full h-[499px] rounded-3xl overflow-hidden">
-              <Image src="/about-team.jpg" alt="Prag team" fill className="object-cover" />
+            <div className="relative w-full h-[499px] rounded-3xl overflow-hidden bg-slate-100 flex items-center justify-center border border-slate-200">
+              <span className="text-slate-400 text-lg font-['Space_Grotesk']">About Team Image</span>
             </div>
           </div>
         </div>
@@ -80,8 +79,8 @@ export default function AboutPage() {
           </h2>
         </div>
         <div className="flex items-center gap-10">
-          <div className="relative w-[539px] h-[499px] rounded-3xl overflow-hidden shrink-0">
-            <Image src="/about-story.jpg" alt="Prag story" fill className="object-cover" />
+          <div className="relative w-[539px] h-[499px] rounded-3xl overflow-hidden shrink-0 bg-slate-100 flex items-center justify-center border border-slate-200">
+            <span className="text-slate-400 text-lg font-['Space_Grotesk']">Our Story Image</span>
           </div>
           <div className="flex-1 flex flex-col gap-6">
             {[

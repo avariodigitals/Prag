@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { useState } from 'react';
 import { Minus, Plus, Phone } from 'lucide-react';
 import type { Product } from '@/lib/types';
@@ -37,7 +36,7 @@ export default function ProductDetailView({ product, relatedProducts }: Props) {
           <div className="flex flex-col gap-6">
             <h1 className="text-black text-4xl font-medium font-['Onest']">{product.name}</h1>
             <p className="text-sky-700 text-3xl font-medium font-['Onest']">{formatPrice(product.price)}</p>
-            <p className="text-neutral-500 text-xl font-normal font-['Onest']"
+            <div className="text-neutral-500 text-xl font-normal font-['Onest']"
               dangerouslySetInnerHTML={{ __html: product.short_description }} />
           </div>
 

@@ -4,7 +4,7 @@ import { useEffect, useState, startTransition } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Heart, ChevronDown } from 'lucide-react';
-import { formatPrice } from '@/lib/woocommerce';
+import { formatPrice, shopUrl } from '@/lib/woocommerce';
 
 export interface WishlistItem {
   id: number;

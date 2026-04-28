@@ -11,6 +11,7 @@ function formatPrice(n: number) {
 }
 
 export default function CartView() {
+  const SHOP_URL = process.env.NEXT_PUBLIC_SHOP_URL ?? 'https://shop.xyz.com';
   const { items, remove, update, total } = useCart();
   const [coupon, setCoupon] = useState('');
   const [discount, setDiscount] = useState(0);

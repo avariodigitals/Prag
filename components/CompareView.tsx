@@ -3,12 +3,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronDown } from 'lucide-react';
-import type { Product, Category } from '@/lib/types';
+import type { Product } from '@/lib/types';
 import { formatPrice, shopUrl } from '@/lib/woocommerce';
 
 interface Props {
   initialProducts: Product[];
-  categories: Category[];
 }
 
 // Spec rows to display — maps WooCommerce attribute names to display labels
@@ -53,7 +52,7 @@ function TagList({ values }: { values: string[] }) {
   );
 }
 
-export default function CompareView({ initialProducts }: Omit<Props, 'categories'>) {
+export default function CompareView({ initialProducts }: Props) {
   const router = useRouter();
   const [products, setProducts] = useState<(Product | null)[]>([
     initialProducts[0] ?? null,

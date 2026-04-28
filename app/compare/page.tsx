@@ -2,7 +2,7 @@ import TopBar from '@/components/TopBar';
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 import CompareView from '@/components/CompareView';
-import { getProductsForCompare, getCategories } from '@/lib/woocommerce';
+import { getProductsForCompare } from '@/lib/woocommerce';
 import Link from 'next/link';
 
 export const metadata = { title: 'Product Comparison – Prag' };
@@ -15,10 +15,7 @@ export default async function ComparePage({ searchParams }: Props) {
   const { p1, p2 } = await searchParams;
   const slugs = [p1, p2].filter((s): s is string => Boolean(s));
 
-  const [products, categories] = await Promise.all([
-    getProductsForCompare(slugs),
-    getCategories(),
-  ]);
+  const products = await getProductsForCompare(slugs);
 
   return (
     <main className="w-full bg-white flex flex-col">
@@ -35,7 +32,7 @@ export default async function ComparePage({ searchParams }: Props) {
       </div>
 
       <div className="w-full px-20 py-10 flex justify-center">
-        <CompareView initialProducts={products} categories={categories} />
+        <CompareView initialProducts={products} />
       </div>
 
       <Footer />

@@ -21,25 +21,25 @@ export default function CategoryGrid({ categories }: CategoryGridProps) {
   const displayCategories = categories.slice(0, 4);
 
   return (
-    <section className="w-full px-20 py-10 flex flex-col items-center gap-10">
+    <section className="w-full px-4 md:px-20 py-10 flex flex-col items-center gap-10">
       <div className="w-full max-w-[1280px] flex flex-col gap-10">
         {/* Header */}
-        <div className="flex justify-between items-end">
-          <div className="flex flex-col gap-7">
+        <div className="flex justify-between items-end gap-10">
+          <div className="flex-1 flex flex-col gap-3 md:gap-7">
             <div className="flex items-center gap-1.5">
               <div className="w-4 h-4 bg-sky-700" />
-              <span className="text-black text-base font-normal font-['Space_Grotesk'] uppercase">PRODUCT CATEGORIES</span>
+              <span className="text-black text-xs md:text-base font-normal font-['Space_Grotesk'] uppercase">PRODUCT CATEGORIES</span>
             </div>
-            <h2 className="text-black text-5xl font-bold font-['Onest']">Shop by Categories</h2>
+            <h2 className="text-black text-lg md:text-5xl font-bold font-['Onest']">Shop by Categories</h2>
           </div>
-          <Link href="/products" className="flex items-center gap-2.5 text-sky-700 text-base font-normal font-['Onest'] hover:underline">
+          <Link href="/products" className="flex items-center gap-2.5 text-sky-700 text-xs md:text-base font-normal font-['Onest'] hover:underline">
             View all Products
-            <ArrowRight className="w-5 h-5" />
+            <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
           </Link>
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-4">
           {displayCategories.map((cat, idx) => {
             const displayImage = CATEGORY_IMAGES[idx] || cat.image?.src;
             

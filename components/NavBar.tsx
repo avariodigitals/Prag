@@ -10,7 +10,7 @@ const NAV_CATEGORIES = [
 
 export default function NavBar() {
   return (
-    <div className="w-full px-20 py-2 bg-sky-700 flex justify-between items-center">
+    <div className="hidden md:flex w-full px-20 py-2 bg-sky-700 justify-between items-center">
       <nav className="flex items-start gap-6">
         {NAV_CATEGORIES.map((cat) => (
           <Link

@@ -3,6 +3,7 @@ import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 import CheckoutView from '@/components/CheckoutView';
 
+export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Checkout – Prag' };
 
 export default function CheckoutPage() {

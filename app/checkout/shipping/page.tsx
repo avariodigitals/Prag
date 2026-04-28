@@ -3,6 +3,7 @@ import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 import ShippingView from '@/components/ShippingView';
 
+export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Shipping – Checkout – Prag' };
 
 export default function ShippingPage() {

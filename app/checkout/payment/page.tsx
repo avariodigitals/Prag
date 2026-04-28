@@ -3,6 +3,7 @@ import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 import PaymentView from '@/components/PaymentView';
 
+export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Payment – Checkout – Prag' };
 
 export default function PaymentPage() {

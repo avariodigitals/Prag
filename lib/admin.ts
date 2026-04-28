@@ -1,5 +1,3 @@
-import { getSession } from './auth';
-
 export interface SiteSettings {
   hero_title: string;
   hero_subtitle: string;
@@ -20,28 +18,5 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
   } catch (error) {
     console.error('Failed to fetch settings:', error);
     return null;
-  }
-}
-
-export async function updateSiteSettings(settings: SiteSettings) {
-  const session = await getSession();
-  if (!session) throw new Error('Unauthorized');
-
-  try {
-    const res = await fetch(`${WP_API_URL}/prag-core/v1/settings`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session.token}`,
-      },
-      body: JSON.stringify(settings),
-    });
-
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message || 'Update failed');
-    return data;
-  } catch (error) {
-    console.error('Failed to update settings:', error);
-    throw error;
   }
 }

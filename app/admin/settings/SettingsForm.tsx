@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { updateSiteSettings, type SiteSettings } from '@/lib/admin';
+import { type SiteSettings } from '@/lib/admin';
+import { updateSiteSettingsAction } from '@/app/actions/admin';
 import { Save, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export default function SettingsForm({ initialSettings }: { initialSettings: SiteSettings | null }) {
@@ -23,7 +24,7 @@ export default function SettingsForm({ initialSettings }: { initialSettings: Sit
     setMessage({ type: '', text: '' });
 
     try {
-      await updateSiteSettings(formData);
+      await updateSiteSettingsAction(formData);
       setMessage({ type: 'success', text: 'Settings updated successfully!' });
       router.refresh();
     } catch (err: unknown) {

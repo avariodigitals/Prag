@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { getSiteSettings } from '@/lib/admin';
 import SettingsForm from '@/app/admin/settings/SettingsForm';
 

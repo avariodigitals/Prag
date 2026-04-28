@@ -12,9 +12,14 @@ function baseUrl() {
 
 async function wcFetch<T>(path: string, fallback: T): Promise<T> {
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
     const res = await fetch(`${baseUrl()}${path}${path.includes('?') ? '&' : '?'}${authParams()}`, {
       next: { revalidate: 60 },
+      signal: controller.signal,
     });
+    clearTimeout(timeout);
     if (!res.ok) return fallback;
     const text = await res.text();
     if (!text.startsWith('{') && !text.startsWith('[')) return fallback;
@@ -133,7 +138,14 @@ function wpBase() {
 
 async function wpFetch<T>(path: string, fallback: T): Promise<T> {
   try {
-    const res = await fetch(`${wpBase()}${path}`, { next: { revalidate: 60 } });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
+    const res = await fetch(`${wpBase()}${path}`, { 
+      next: { revalidate: 60 },
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
     if (!res.ok) return fallback;
     const text = await res.text();
     if (!text.startsWith('{') && !text.startsWith('[')) return fallback;

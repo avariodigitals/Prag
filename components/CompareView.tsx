@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { ChevronDown } from 'lucide-react';
 import type { Product, Category } from '@/lib/types';
 import { formatPrice, shopUrl } from '@/lib/woocommerce';
@@ -53,9 +53,8 @@ function TagList({ values }: { values: string[] }) {
   );
 }
 
-export default function CompareView({ initialProducts, categories }: Props) {
+export default function CompareView({ initialProducts }: Omit<Props, 'categories'>) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [products, setProducts] = useState<(Product | null)[]>([
     initialProducts[0] ?? null,
     initialProducts[1] ?? null,

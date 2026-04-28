@@ -6,9 +6,6 @@ import { Minus, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useCart } from '@/lib/CartContext';
 
-const VAT_RATE = 0.075;
-const SHOP_URL = process.env.NEXT_PUBLIC_SHOP_URL ?? 'https://shop.xyz.com';
-
 function formatPrice(n: number) {
   return `₦${n.toLocaleString('en-NG', { minimumFractionDigits: 0 })}`;
 }

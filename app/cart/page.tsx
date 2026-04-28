@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import TopBar from '@/components/TopBar';
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
@@ -14,9 +15,9 @@ export default function CartPage() {
       {/* Breadcrumb + title */}
       <div className="w-full px-20 py-10 bg-stone-50 flex flex-col gap-6">
         <div className="flex items-center gap-1">
-          <a href="/products" className="text-sky-700 text-2xl font-medium font-['Onest'] hover:underline">
+          <Link href="/products" className="text-sky-700 text-2xl font-medium font-['Onest'] hover:underline">
             Product Catalog
-          </a>
+          </Link>
           <span className="text-zinc-500 text-base font-medium font-['Onest'] mx-1">/</span>
           <span className="text-zinc-500 text-base font-medium font-['Onest']">Cart</span>
         </div>

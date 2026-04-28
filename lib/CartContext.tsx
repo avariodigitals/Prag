@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, startTransition } from 'react';
 import type { CartItem } from './cart';
 
 interface CartContextValue {
@@ -21,7 +21,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       const stored = localStorage.getItem('prag_cart');
-      if (stored) setItems(JSON.parse(stored));
+      if (stored) {
+        startTransition(() => {
+          setItems(JSON.parse(stored));
+        });
+      }
     } catch {}
   }, []);
 

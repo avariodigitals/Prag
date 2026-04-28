@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, MoveUpRight } from 'lucide-react';
 import type { Category } from '@/lib/types';
 
 interface CategoryGridProps {
@@ -10,48 +10,68 @@ interface CategoryGridProps {
 export default function CategoryGrid({ categories }: CategoryGridProps) {
   if (!categories.length) return null;
 
-  return (
-    <section className="w-full px-20 py-10 flex flex-col gap-10">
-      {/* Header */}
-      <div className="flex justify-between items-end">
-        <div className="flex flex-col gap-7">
-          <div className="flex items-center gap-1.5">
-            <div className="w-4 h-4 bg-sky-700" />
-            <span className="text-black text-base font-normal font-['Space_Grotesk']">PRODUCT CATEGORIES</span>
-          </div>
-          <h2 className="w-[631px] text-black text-5xl font-bold font-['Onest']">Shop by Categories</h2>
-        </div>
-        <Link href="/products" className="flex items-center gap-2.5 text-sky-700 text-base font-normal font-['Onest'] hover:underline">
-          View all Products
-          <ArrowRight className="w-5 h-5" />
-        </Link>
-      </div>
+  // Take the first 4 main categories for the home page layout
+  const displayCategories = categories.slice(0, 4);
 
-      {/* Grid */}
-      <div className="flex gap-4">
-        {categories.map((cat) => (
-          <Link
-            key={cat.id}
-            href={`/products/${cat.slug}`}
-            className="flex-1 h-96 relative bg-gradient-to-b from-stone-500/10 to-sky-700 rounded-3xl overflow-hidden group"
-          >
-            {cat.image && (
-              <Image
-                src={cat.image.src}
-                alt={cat.image.alt || cat.name}
-                width={172}
-                height={208}
-                className="absolute left-[68px] top-[99px] object-contain"
-              />
-            )}
-            <span className="absolute left-[23px] bottom-[24px] text-white text-2xl font-semibold font-['Onest']">
-              {cat.name}
-            </span>
-            <div className="absolute right-[20px] top-[35px] p-3 bg-sky-700 rounded-full group-hover:bg-sky-800 transition-colors">
-              <ArrowRight className="w-6 h-6 text-white -rotate-45" />
+  return (
+    <section className="w-full px-20 py-10 flex flex-col items-center gap-10">
+      <div className="w-full max-w-[1280px] flex flex-col gap-10">
+        {/* Header */}
+        <div className="flex justify-between items-end">
+          <div className="flex flex-col gap-7">
+            <div className="flex items-center gap-1.5">
+              <div className="w-4 h-4 bg-sky-700" />
+              <span className="text-black text-base font-normal font-['Space_Grotesk'] uppercase">PRODUCT CATEGORIES</span>
             </div>
+            <h2 className="text-black text-5xl font-bold font-['Onest']">Shop by Categories</h2>
+          </div>
+          <Link href="/products" className="flex items-center gap-2.5 text-sky-700 text-base font-normal font-['Onest'] hover:underline">
+            View all Products
+            <ArrowRight className="w-5 h-5" />
           </Link>
-        ))}
+        </div>
+
+        {/* Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {displayCategories.map((cat) => (
+            <Link
+              key={cat.id}
+              href={`/products/${cat.slug}`}
+              className="h-96 relative bg-gradient-to-b from-stone-500/10 to-sky-700 rounded-3xl overflow-hidden group"
+            >
+              {cat.image ? (
+                <Image
+                  src={cat.image.src}
+                  alt={cat.image.alt || cat.name}
+                  width={220}
+                  height={220}
+                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 object-contain group-hover:scale-105 transition-transform duration-300"
+                />
+              ) : (
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-44 h-44 bg-sky-600/20 rounded-full flex items-center justify-center">
+                  <span className="text-white/30 text-xs text-center px-4">{cat.name} Image</span>
+                </div>
+              )}
+              
+              <div className="absolute left-[23px] bottom-[24px]">
+                <span className="text-white text-2xl font-semibold font-['Onest']">
+                  {cat.name}
+                </span>
+              </div>
+              
+              <div className="absolute right-[20px] top-[30px] p-3 bg-sky-700 rounded-full group-hover:bg-sky-800 transition-colors shadow-lg">
+                <MoveUpRight className="w-6 h-6 text-white" />
+              </div>
+
+              {/* Decorative small circles as seen in design */}
+              <div className="absolute left-[251px] top-[31px] p-2 bg-sky-700 rounded-full hidden lg:block">
+                <div className="w-3 h-3 relative overflow-hidden">
+                   <MoveUpRight className="w-full h-full text-white scale-75" />
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
     </section>
   );

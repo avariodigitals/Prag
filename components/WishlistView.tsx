@@ -1,11 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, startTransition } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Heart, ChevronDown } from 'lucide-react';
-import { formatPrice, shopUrl } from '@/lib/woocommerce';
-import type { Product } from '@/lib/types';
+import { formatPrice } from '@/lib/woocommerce';
 
 export interface WishlistItem {
   id: number;
@@ -24,7 +23,11 @@ export default function WishlistView() {
   useEffect(() => {
     try {
       const stored = localStorage.getItem('prag_wishlist');
-      if (stored) setItems(JSON.parse(stored));
+      if (stored) {
+        startTransition(() => {
+          setItems(JSON.parse(stored));
+        });
+      }
     } catch {}
   }, []);
 

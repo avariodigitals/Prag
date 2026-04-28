@@ -22,7 +22,7 @@ const SHIPPING_COST = 0;
 
 export default function PaymentView() {
   const searchParams = useSearchParams();
-  const { items, total, clear } = useCart();
+  const { items, clear } = useCart();
   const [selected, setSelected] = useState('card');
 
   function proceed() {

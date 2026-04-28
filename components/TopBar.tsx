@@ -2,9 +2,9 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Search, Phone, ShoppingCart, User, LogOut } from 'lucide-react';
+import { Search, Phone, ShoppingCart, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, startTransition } from 'react';
 
 import { useCart } from '@/lib/CartContext';
 
@@ -22,7 +22,10 @@ export default function TopBar() {
 
     if (userInfo) {
       try {
-        setUser(JSON.parse(decodeURIComponent(userInfo)));
+        const data = JSON.parse(decodeURIComponent(userInfo));
+        startTransition(() => {
+          setUser(data);
+        });
       } catch (e) {
         console.error('Failed to parse user info', e);
       }
@@ -61,52 +64,48 @@ export default function TopBar() {
 
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-1 py-2.5">
-          <Phone className="w-7 h-7 text-neutral-700/70" />
+          <Phone className="w-9 h-9 text-neutral-700/70" />
           <div className="flex flex-col">
             <span className="text-neutral-700/70 text-sm font-bold font-['Space_Grotesk']">Hotline</span>
             <span className="text-neutral-700/70 text-sm font-medium font-['Space_Grotesk']">+2348032170129</span>
           </div>
         </div>
 
-        <Link href="/cart" aria-label="Cart" className="relative">
-          <ShoppingCart className="w-7 h-7 text-neutral-700/70" />
-          {count > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-sky-700 rounded-full text-white text-[10px] font-bold flex items-center justify-center">
-              {count}
-            </span>
-          )}
-        </Link>
-
-        {user ? (
-          <div className="flex items-center gap-4">
-            <Link
-              href="/account"
-              className="flex items-center gap-2 p-2.5"
-            >
-              <User className="w-7 h-7 text-neutral-700/70" />
-              <span className="text-neutral-700/70 text-base font-medium font-['Space_Grotesk'] leading-4">
-                Hi, {user.user_display_name}
-              </span>
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="p-2.5 text-neutral-700/70 hover:text-red-600 transition-colors"
-              title="Logout"
-            >
-              <LogOut className="w-6 h-6" />
-            </button>
-          </div>
-        ) : (
-          <Link
-            href="/login"
-            className="flex items-center gap-2 p-2.5"
-          >
-            <User className="w-7 h-7 text-neutral-700/70" />
-            <span className="text-neutral-700/70 text-base font-medium font-['Space_Grotesk'] leading-4">
-              Login or Register
-            </span>
+        <div className="flex items-center gap-4">
+          <Link href="/wishlist" aria-label="Wishlist" className="p-2 hover:bg-stone-50 rounded-full transition-colors">
+            <div className="w-7 h-7 bg-neutral-700/70 mask-heart" /> {/* Placeholder for heart icon if lucide doesn't match perfectly */}
           </Link>
-        )}
+          
+          <Link href="/cart" aria-label="Cart" className="relative p-2 hover:bg-stone-50 rounded-full transition-colors">
+            <ShoppingCart className="w-7 h-7 text-neutral-700/70" />
+            {count > 0 && (
+              <span className="absolute -top-1 -right-1 bg-sky-700 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                {count}
+              </span>
+            )}
+          </Link>
+
+          <div className="flex items-center gap-2.5 ml-2">
+            {user ? (
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-zinc-300 rounded-full flex items-center justify-center text-xs font-bold text-neutral-700">
+                  {user.user_display_name[0]}
+                </div>
+                <button 
+                  onClick={handleLogout}
+                  className="text-neutral-700/70 text-base font-medium font-['Space_Grotesk'] hover:text-sky-700 transition-colors"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link href="/login" className="flex items-center gap-2.5">
+                <User className="w-7 h-7 text-neutral-700/70" />
+                <span className="text-neutral-700/70 text-base font-medium font-['Space_Grotesk'] leading-4">Login or Register</span>
+              </Link>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

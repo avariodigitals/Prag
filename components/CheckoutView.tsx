@@ -5,8 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useCart } from '@/lib/CartContext';
 import CheckoutStepper from './CheckoutStepper';
 
-const SHOP_URL = process.env.NEXT_PUBLIC_SHOP_URL ?? 'https://shop.xyz.com';
-
 const NIGERIAN_STATES = [
   'Abia','Adamawa','Akwa Ibom','Anambra','Bauchi','Bayelsa','Benue','Borno',
   'Cross River','Delta','Ebonyi','Edo','Ekiti','Enugu','FCT','Gombe','Imo',

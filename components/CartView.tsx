@@ -45,9 +45,9 @@ export default function CartView() {
   }
 
   return (
-    <div className="flex items-start gap-10">
+    <div className="flex flex-col md:flex-row items-start gap-6 md:gap-10">
       {/* Items list */}
-      <div className="flex-1 p-8 bg-white rounded-[10px] outline outline-1 outline-gray-200 flex flex-col gap-4">
+      <div className="w-full md:flex-1 p-3 md:p-8 bg-white rounded-[10px] outline outline-1 outline-gray-200 flex flex-col gap-4">
         {items.map((item, idx) => (
           <div key={item.id}>
             <div className="flex justify-between items-center">
@@ -57,13 +57,28 @@ export default function CartView() {
                   <Image src={item.image || '/placeholder-product.png'} alt={item.name} fill className="object-contain p-2" />
                 </div>
                 <div className="flex flex-col gap-3">
-                  <p className="w-72 text-gray-900 text-xl font-bold font-['Space_Grotesk'] leading-6">{item.name}</p>
-                  <p className="text-sky-700 text-lg font-medium font-['Onest']">{formatPrice(item.price)}</p>
+                  <p className="w-full md:w-72 text-gray-900 text-sm md:text-xl font-bold font-['Space_Grotesk'] leading-4 md:leading-6">{item.name}</p>
+                  <p className="text-sky-700 text-xs md:text-lg font-medium font-['Onest']">{formatPrice(item.price)}</p>
+                  {/* Qty + remove — mobile inline */}
+                  <div className="flex md:hidden items-center gap-3">
+                    <div className="p-2 bg-stone-50 rounded-3xl outline outline-1 outline-zinc-500/40 flex items-center gap-7">
+                      <button onClick={() => update(item.id, item.quantity - 1)} aria-label="Decrease quantity">
+                        <Minus className="w-3 h-3 text-zinc-500" />
+                      </button>
+                      <span className="text-sky-700 text-xs font-medium font-['Inter'] leading-4 min-w-[10px] text-center">{item.quantity}</span>
+                      <button onClick={() => update(item.id, item.quantity + 1)} aria-label="Increase quantity">
+                        <Plus className="w-3 h-3 text-sky-700" />
+                      </button>
+                    </div>
+                    <button onClick={() => remove(item.id)} aria-label="Remove item">
+                      <Trash2 className="w-4 h-4 text-zinc-500 hover:text-red-500 transition-colors" />
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              {/* Qty + remove */}
-              <div className="flex items-center gap-7">
+              {/* Qty + remove — desktop only */}
+              <div className="hidden md:flex items-center gap-7">
                 <div className="p-3 bg-stone-50 rounded-3xl outline outline-1 outline-zinc-500/40 flex items-center gap-7">
                   <button onClick={() => update(item.id, item.quantity - 1)} aria-label="Decrease quantity">
                     <Minus className="w-3.5 h-3.5 text-zinc-500" />
@@ -87,7 +102,7 @@ export default function CartView() {
       </div>
 
       {/* Summary */}
-      <div className="px-6 py-8 bg-white rounded-[10px] outline outline-1 outline-gray-200 flex flex-col gap-6 w-[400px] shrink-0">
+      <div className="w-full md:w-[400px] md:shrink-0 px-4 md:px-6 py-6 md:py-8 bg-white rounded-[10px] outline outline-1 outline-gray-200 flex flex-col gap-6">
         <h2 className="text-gray-900 text-2xl font-bold font-['Space_Grotesk'] leading-7">Summary</h2>
 
         <div className="flex flex-col gap-6">

@@ -32,7 +32,7 @@ export default async function PrivacyPage() {
           <h1 className="text-black text-4xl font-medium font-['Onest']" dangerouslySetInnerHTML={{ __html: wpPage.title.rendered }} />
         </div>
         <div className="w-full px-20 py-10 flex justify-center">
-          <div className="w-[997px] p-8 bg-white rounded-2xl outline outline-1 outline-zinc-100 prose prose-sky max-w-none font-['Space_Grotesk']"
+          <div className="w-[997px] p-8 bg-white rounded-2xl outline outline-1 outline-zinc-100 wp-content"
             dangerouslySetInnerHTML={{ __html: wpPage.content.rendered }} />
         </div>
       </main>

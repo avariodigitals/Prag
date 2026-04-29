@@ -64,18 +64,17 @@ export default function FeaturedProducts({ products }: FeaturedProductsProps) {
                     <Image
                       src={image.src}
                       alt={image.alt || product.name}
-                      width={250}
-                      height={250}
-                      className="object-contain h-[80%] w-auto group-hover:scale-105 transition-transform duration-300"
-                      style={{ width: 'auto' }}
+                      fill
+                      sizes="250px"
+                      className="object-contain group-hover:scale-105 transition-transform duration-300 p-4"
                     />
                   ) : (
                     <Image 
-                      className={imgSizes[idx]} 
-                      src={`https://placehold.co/${idx === 1 ? '202x219' : idx === 4 ? '250x245' : '250x250'}`} 
+                      src={`https://placehold.co/${idx === 1 ? '202x219' : idx === 4 ? '250x245' : '250x250'}`}
                       alt="placeholder"
-                      width={250}
-                      height={250}
+                      fill
+                      sizes="250px"
+                      className="object-contain"
                       unoptimized
                     />
                   )}

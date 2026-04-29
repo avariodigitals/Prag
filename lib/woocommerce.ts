@@ -121,13 +121,17 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
   return cats[0] ?? null;
 }
 
-export async function searchProducts(query: string, orderby?: string, page = 1, per_page = 9): Promise<ProductsResult> {
+export async function searchProducts(query: string, sort?: string, page = 1, per_page = 9): Promise<ProductsResult> {
+  const orderby = sort === 'price' || sort === 'price-desc' ? 'price' : sort || undefined;
+  const order = sort === 'price-desc' ? 'desc' : sort ? 'asc' : undefined;
   const qs = new URLSearchParams({
     search: query,
     status: 'publish',
     per_page: String(per_page),
     page: String(page),
+    _fields: PRODUCT_LIST_FIELDS,
     ...(orderby && { orderby }),
+    ...(order && { order }),
   });
   try {
     const res = await fetch(

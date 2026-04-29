@@ -53,10 +53,9 @@ export default function CategoryGrid({ categories }: CategoryGridProps) {
                   <Image
                     src={displayImage}
                     alt={cat.image?.alt || cat.name}
-                    width={220}
-                    height={220}
-                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 object-contain group-hover:scale-105 transition-transform duration-300"
-                    style={{ width: 'auto', height: 'auto', maxWidth: 220, maxHeight: 220 }}
+                    fill
+                    sizes="220px"
+                    className="object-contain group-hover:scale-105 transition-transform duration-300 p-6"
                   />
                 ) : (
                   <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-44 h-44 bg-sky-600/20 rounded-full flex items-center justify-center">

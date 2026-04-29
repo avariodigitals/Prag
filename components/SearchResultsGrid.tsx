@@ -44,7 +44,7 @@ export default function SearchResultsGrid({ products, total, query }: Props) {
     <div className="flex-1 flex flex-col gap-6">
       {/* Toolbar */}
       <div className="flex justify-between items-center">
-        <p className="text-2xl font-medium font-['Space_Grotesk']">
+        <p className="text-sm md:text-2xl font-medium font-['Space_Grotesk']">
           <span className="text-zinc-500">Found</span>
           <span className="text-black"> {total} </span>
           <span className="text-zinc-500">results for</span>
@@ -73,18 +73,10 @@ export default function SearchResultsGrid({ products, total, query }: Props) {
           </p>
         </div>
       ) : (
-        <div className="flex flex-col gap-10">
-          {[0, 3, 6].map((start) => {
-            const row = products.slice(start, start + 3);
-            if (!row.length) return null;
-            return (
-              <div key={start} className="flex gap-6">
-                {row.map((product) => (
-                  <ProductCard key={product.id} product={product} bg="bg-white" />
-                ))}
-              </div>
-            );
-          })}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {products.map((product) => (
+            <ProductCard key={product.id} product={product} bg="bg-white" />
+          ))}
         </div>
       )}
 

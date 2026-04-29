@@ -53,6 +53,7 @@ export interface ProductsResult {
 
 export async function getProducts({
   category,
+  category_id,
   min_price,
   max_price,
   tag,
@@ -62,6 +63,7 @@ export async function getProducts({
   per_page = 9,
 }: {
   category?: string;
+  category_id?: number | string;
   min_price?: string;
   max_price?: string;
   tag?: string;
@@ -71,8 +73,8 @@ export async function getProducts({
   per_page?: number;
 }): Promise<ProductsResult> {
   // Resolve category slug to ID for accurate WooCommerce filtering
-  let categoryId: string | undefined;
-  if (category) {
+  let categoryId: string | undefined = category_id ? String(category_id) : undefined;
+  if (!categoryId && category) {
     const cats = await wcFetch<{ id: number }[]>(`/products/categories?slug=${category}`, []);
     categoryId = cats[0]?.id ? String(cats[0].id) : category;
   }
@@ -89,10 +91,13 @@ export async function getProducts({
     ...(order && { order }),
   });
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
     const res = await fetch(
       `${baseUrl()}/products?${qs}&${authParams()}`,
-      { next: { revalidate: 60 } }
+      { next: { revalidate: 60 }, signal: controller.signal }
     );
+    clearTimeout(timeout);
     if (!res.ok) return { products: [], total: 0 };
     const text = await res.text();
     if (!text.startsWith('[')) return { products: [], total: 0 };
@@ -139,6 +144,10 @@ export async function getSubcategories(parentSlug: string): Promise<Category[]> 
   const parent = await getCategoryBySlug(parentSlug);
   if (!parent) return [];
   return wcFetch<Category[]>(`/products/categories?parent=${parent.id}&per_page=20`, []);
+}
+
+export async function getSubcategoriesByParentId(parentId: number): Promise<Category[]> {
+  return wcFetch<Category[]>(`/products/categories?parent=${parentId}&per_page=20`, []);
 }
 
 // WordPress REST API base (without /wc/v3)
@@ -294,6 +303,11 @@ export async function getTechDocuments(productId?: number): Promise<TechDocument
 
 export function shopUrl(slug: string) {
   return `${process.env.NEXT_PUBLIC_SHOP_URL}/product/${slug}`;
+}
+
+export function productUrl(product: Pick<Product, 'slug' | 'categories'>) {
+  const categorySlug = product.categories[0]?.slug ?? 'products';
+  return `/products/${categorySlug}/${product.slug}`;
 }
 
 export function formatPrice(price: string) {

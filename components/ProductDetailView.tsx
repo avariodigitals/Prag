@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useState } from 'react';
 import { Minus, Plus, Phone } from 'lucide-react';
 import type { Product } from '@/lib/types';
@@ -57,11 +58,11 @@ export default function ProductDetailView({ product, relatedProducts }: Props) {
               className="flex-1 p-4 bg-sky-700 rounded-3xl flex justify-center items-center gap-2.5 hover:bg-sky-800 transition-colors">
               <span className="text-white text-base font-medium font-['Space_Grotesk']">Buy &gt;</span>
             </a>
-            <a href="/contact"
+            <Link href="/contact"
               className="flex-1 p-4 rounded-3xl outline outline-1 outline-sky-700 flex justify-center items-center gap-2.5 hover:bg-sky-50 transition-colors">
               <Phone className="w-5 h-5 text-sky-700" />
               <span className="text-sky-700 text-base font-medium font-['Space_Grotesk']">Contact sales</span>
-            </a>
+            </Link>
           </div>
         </div>
       </div>

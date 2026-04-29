@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import type { Category, Tag } from '@/lib/types';
@@ -11,10 +10,10 @@ interface Props {
 }
 
 const FALLBACK_CATEGORIES = [
-  { id: 1, name: 'Inverters', slug: 'inverter', count: 20, image: null, description: '' },
+  { id: 1, name: 'Inverters', slug: 'inverters', count: 20, image: null, description: '' },
   { id: 2, name: 'Solar', slug: 'solar', count: 10, image: null, description: '' },
   { id: 3, name: 'Batteries', slug: 'batteries', count: 8, image: null, description: '' },
-  { id: 4, name: 'Stabilizers', slug: 'stabilizer', count: 16, image: null, description: '' },
+  { id: 4, name: 'Stabilizers', slug: 'all-prag-stabilizers', count: 16, image: null, description: '' },
 ];
 
 export default function ProductsSidebar({ categories, tags }: Props) {

@@ -37,10 +37,10 @@ export default function Footer() {
           <div className="flex flex-col justify-start items-start gap-6"> 
             <div className="text-white text-xl md:text-2xl font-bold font-['Space_Grotesk']">Products</div> 
             <div className="flex flex-col justify-start items-start gap-2"> 
-              <Link href="/products?category=batteries" className="text-white/70 text-lg md:text-xl font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Batteries</Link> 
-              <Link href="/products?category=stabilizer" className="text-white/70 text-lg md:text-xl font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Stabilizers</Link> 
-              <Link href="/products?category=inverter" className="text-white/70 text-lg md:text-xl font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Inverter</Link> 
-              <Link href="/products?category=solar" className="text-white/70 text-lg md:text-xl font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Solar</Link> 
+              <Link href="/products/batteries" className="text-white/70 text-lg md:text-xl font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Batteries</Link> 
+              <Link href="/products/all-prag-stabilizers" className="text-white/70 text-lg md:text-xl font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Stabilizers</Link> 
+              <Link href="/products/inverters" className="text-white/70 text-lg md:text-xl font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Inverter</Link> 
+              <Link href="/products/solar" className="text-white/70 text-lg md:text-xl font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Solar</Link> 
             </div> 
           </div> 
           <div className="flex flex-col justify-start items-start gap-6"> 

@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect, useRef, startTransition } from 'react';
 import { useCart } from '@/lib/CartContext';
 import type { Product } from '@/lib/types';
+import { productUrl } from '@/lib/woocommerce';
 
 function useDebounce(value: string, delay: number) {
   const [debounced, setDebounced] = useState(value);
@@ -66,7 +67,7 @@ function SearchBox({ mobile = false }: { mobile?: boolean }) {
   function handleSelect(product: Product) {
     setOpen(false);
     setQuery('');
-    router.push(`/products/${product.categories?.[0]?.slug ?? 'all'}/${product.slug}`);
+    router.push(productUrl(product));
   }
 
   function clear() {

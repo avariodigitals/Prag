@@ -4,7 +4,7 @@ import { useState, useEffect, startTransition } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Heart } from 'lucide-react';
-import { formatPrice, shopUrl } from '@/lib/woocommerce';
+import { formatPrice, productUrl, shopUrl } from '@/lib/woocommerce';
 import type { Product } from '@/lib/types';
 
 interface ProductCardProps {
@@ -83,7 +83,7 @@ export default function ProductCard({ product, bg = 'bg-stone-50' }: ProductCard
 
         <div className="flex items-center gap-3.5 w-full justify-center">
           <Link
-            href={`/products/${product.slug}`}
+            href={productUrl(product)}
             className="flex-1 max-w-[130px] p-3 bg-sky-700 rounded-full flex justify-center items-center gap-2.5 hover:bg-sky-800 transition-all hover:shadow-md"
           >
             <span className="text-stone-50 text-sm font-medium font-['Space_Grotesk']">Learn more</span>

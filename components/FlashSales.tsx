@@ -4,7 +4,7 @@ import { useState, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight, Heart } from 'lucide-react';
-import { formatPrice, shopUrl } from '@/lib/woocommerce';
+import { formatPrice, productUrl, shopUrl } from '@/lib/woocommerce';
 import type { Product } from '@/lib/types';
 
 interface FlashSalesProps {
@@ -132,7 +132,7 @@ export default function FlashSales({ products }: FlashSalesProps) {
 
                     <div className="flex items-center gap-3.5">
                       <Link
-                        href={product ? `/products/${product.slug}` : '#'}
+                        href={product ? productUrl(product) : '#'}
                         className="w-32 p-3 bg-sky-700 rounded-[30px] flex justify-center items-center hover:bg-sky-800 transition-colors"
                       >
                         <span className="text-stone-50 text-sm font-medium font-['Space_Grotesk']">Learn more</span>

@@ -1,11 +1,9 @@
-export const dynamic = 'force-dynamic';
-
 import TopBar from '@/components/TopBar';
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 import CategoryProductsGrid from '@/components/CategoryProductsGrid';
-import { getProducts, getSubcategories, getCategoryBySlug } from '@/lib/woocommerce';
-import { notFound } from 'next/navigation';
+import { getProductBySlug, getProducts, getSubcategoriesByParentId, getCategoryBySlug, productUrl } from '@/lib/woocommerce';
+import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
 
 interface Props {
@@ -30,17 +28,29 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const orderby = sort === 'price' || sort === 'price-desc' ? 'price' : sort || undefined;
   const order = sort === 'price-desc' ? 'desc' : sort ? 'asc' : undefined;
 
-  const [cat, subcategories] = await Promise.all([
+  const [cat, activeCategory] = await Promise.all([
     getCategoryBySlug(category),
-    getSubcategories(category),
+    sp.sub ? getCategoryBySlug(sp.sub) : Promise.resolve(null),
   ]);
 
-  const { products, total } = await getProducts({
-    category: sp.sub ?? category,
-    orderby,
-    order,
-    page: sp.page ? Number(sp.page) : 1,
-  });
+  if (!cat) {
+    const product = await getProductBySlug(category);
+    if (product) redirect(productUrl(product));
+  }
+
+  const productCategoryId = activeCategory?.id ?? cat?.id;
+  const productCategorySlug = sp.sub ?? category;
+
+  const [subcategories, { products, total }] = await Promise.all([
+    cat ? getSubcategoriesByParentId(cat.id) : Promise.resolve([]),
+    getProducts({
+      category: productCategoryId ? undefined : productCategorySlug,
+      category_id: productCategoryId,
+      orderby,
+      order,
+      page: sp.page ? Number(sp.page) : 1,
+    }),
+  ]);
 
   if (!cat && products.length === 0) notFound();
 

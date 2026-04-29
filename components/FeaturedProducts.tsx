@@ -3,7 +3,7 @@
 import { useState, useEffect, startTransition } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { formatPrice, shopUrl } from '@/lib/woocommerce';
+import { formatPrice, productUrl, shopUrl } from '@/lib/woocommerce';
 import type { Product } from '@/lib/types';
 
 interface FeaturedProductsProps {
@@ -117,17 +117,17 @@ export default function FeaturedProducts({ products }: FeaturedProductsProps) {
 
                   <div className="flex justify-center items-center gap-3.5">
                     <Link
-                      href={product ? `/products/${product.slug}` : '#'}
+                      href={product ? productUrl(product) : '#'}
                       className="w-32 p-3 bg-sky-700 rounded-[30px] outline outline-1 outline-offset-[-1px] flex justify-center items-center gap-2.5 hover:bg-sky-800 transition-colors"
                     >
                       <div className="text-stone-50 text-base font-medium font-['Space_Grotesk']">Learn more</div>
                     </Link>
-                    <Link
+                    <a
                       href={product ? shopUrl(product.slug) : '#'}
                       className="py-3 rounded-3xl flex justify-center items-center gap-2.5 hover:text-sky-800 transition-colors"
                     >
                       <div className="text-sky-700 text-base font-medium font-['Space_Grotesk'] group-hover:underline">Buy &gt;</div>
-                    </Link>
+                    </a>
                   </div>
                 </div>
               </div>

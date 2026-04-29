@@ -9,6 +9,30 @@ const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-space
 export const metadata: Metadata = {
   title: 'Prag – Nigeria\'s Leading Power Engineering Company',
   description: 'Shop inverters, stabilizers, solar panels and batteries. Engineered for real-world loads.',
+  icons: {
+    icon: 'https://central.prag.global/wp-content/uploads/2026/04/Prag-Logo.png',
+  },
+  openGraph: {
+    title: 'Prag – Nigeria\'s Leading Power Engineering Company',
+    description: 'Shop inverters, stabilizers, solar panels and batteries. Engineered for real-world loads.',
+    url: 'https://prag.global',
+    siteName: 'Prag',
+    images: [
+      {
+        url: 'https://central.prag.global/wp-content/uploads/2026/04/Prag-Logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'Prag – Nigeria\'s Leading Power Engineering Company',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Prag – Nigeria\'s Leading Power Engineering Company',
+    description: 'Shop inverters, stabilizers, solar panels and batteries. Engineered for real-world loads.',
+    images: ['https://central.prag.global/wp-content/uploads/2026/04/Prag-Logo.png'],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -57,6 +57,7 @@ export async function getProducts({
   max_price,
   tag,
   orderby,
+  order,
   page = 1,
   per_page = 9,
 }: {
@@ -65,6 +66,7 @@ export async function getProducts({
   max_price?: string;
   tag?: string;
   orderby?: string;
+  order?: string;
   page?: number;
   per_page?: number;
 }): Promise<ProductsResult> {
@@ -77,6 +79,7 @@ export async function getProducts({
     ...(max_price && { max_price }),
     ...(tag && { tag }),
     ...(orderby && { orderby }),
+    ...(order && { order }),
   });
   try {
     const res = await fetch(

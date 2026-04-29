@@ -23,6 +23,10 @@ export default async function ProductsPage({
 }) {
   const params = await searchParams;
 
+  const sort = params.sort ?? '';
+  const orderby = sort === 'price' || sort === 'price-desc' ? 'price' : sort || undefined;
+  const order = sort === 'price-desc' ? 'desc' : sort ? 'asc' : undefined;
+
   const [categories, tags, { products, total }] = await Promise.all([
     getCategories(),
     getProductTags(),
@@ -31,7 +35,8 @@ export default async function ProductsPage({
       min_price: params.min_price,
       max_price: params.max_price,
       tag: params.tag,
-      orderby: params.sort,
+      orderby,
+      order,
       page: params.page ? Number(params.page) : 1,
     }),
   ]);

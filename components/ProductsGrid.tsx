@@ -48,7 +48,7 @@ export default function ProductsGrid({ products, total }: Props) {
         </span>
         <div className="relative">
           <select
-            defaultValue={searchParams.get('sort') ?? ''}
+            value={searchParams.get('sort') ?? ''}
             onChange={(e) => setSort(e.target.value)}
             className="appearance-none p-2.5 pr-8 bg-white rounded-lg outline outline-[0.3px] outline-neutral-500 text-neutral-500 text-base font-medium font-['Space_Grotesk'] cursor-pointer"
           >

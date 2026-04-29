@@ -74,11 +74,11 @@ export default function Footer() {
       </div> 
       <div className="w-full max-w-[1228px] flex flex-col justify-start items-start gap-4"> 
         <div className="w-full h-[0.30px] bg-stone-50/40" /> 
-        <div className="w-full flex flex-col md:flex-row justify-between items-center gap-4"> 
-          <div className="text-white/70 text-xs md:text-sm font-normal font-['Space_Grotesk'] leading-5 text-center md:text-left">The products, prices and promotions on this website are applicable to our customers only and are subject to change anytime.</div> 
+        <div className="w-full flex flex-col justify-center items-center gap-4"> 
+          <div className="text-white/70 text-xs md:text-sm font-normal font-['Space_Grotesk'] leading-5 text-center">The products, prices and promotions on this website are applicable to our customers only and are subject to change anytime.</div> 
         </div> 
         <div className="w-full flex flex-col justify-center items-center gap-3"> 
-          <div className="text-white/70 text-xs md:text-sm font-normal font-['Space_Grotesk'] leading-5">© Copyright 2026 PRAG. All rights reserved.</div> 
+          <div className="text-white/70 text-xs md:text-sm font-normal font-['Space_Grotesk'] leading-5 text-center">© Copyright 2026 PRAG. All rights reserved.</div> 
           <div className="flex justify-center items-center gap-2.5"> 
             <Link href="/privacy" className="text-white/70 text-xs md:text-sm font-normal font-['Space_Grotesk'] leading-5 hover:text-white transition-colors">Privacy</Link> 
             <div className="text-white/70 text-xs md:text-sm font-normal font-['Space_Grotesk'] leading-5">|</div> 

@@ -23,6 +23,7 @@ export default function HeroBanner() {
               src="https://central.prag.global/wp-content/uploads/2026/04/eebd514c0d3e75e4f32cb8fd691c7b3613fd99d5.png"
               alt="Heavy Duty Inverter"
               fill
+              sizes="192px"
               className="object-contain"
               priority
             />
@@ -69,6 +70,7 @@ export default function HeroBanner() {
               src="https://central.prag.global/wp-content/uploads/2026/04/eebd514c0d3e75e4f32cb8fd691c7b3613fd99d5.png"
               alt="Heavy Duty Inverter"
               fill
+              sizes="(max-width: 1024px) 320px, 450px"
               className="object-contain"
               priority
             />

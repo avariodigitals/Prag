@@ -47,7 +47,7 @@ export default function TopBar() {
     <>
       <div className="w-full px-4 md:px-20 py-5 bg-white flex justify-between items-center">
         <Link href="/">
-          <Image src="/Prag Logo.png" alt="Prag" width={110} height={33} priority className="w-20 h-6 md:w-[110px] md:h-[33px]" />
+          <Image src="/Prag Logo.png" alt="Prag" width={110} height={33} priority className="w-20 md:w-[110px]" style={{ height: 'auto' }} />
         </Link>
   
         <form onSubmit={handleSearch} className="hidden md:flex w-[566px] h-12 px-3 py-2 bg-white rounded-md border border-gray-300 items-center gap-3">

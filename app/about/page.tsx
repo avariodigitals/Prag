@@ -1,12 +1,13 @@
 import Image from 'next/image';
+import CountUp from '@/components/CountUp';
 
 export const metadata = { title: 'About Us – Prag' };
 
 const STATS = [
-  { value: '50K+', label: 'Systems Installed' },
-  { value: '20+', label: 'Years Active' },
-  { value: '500+', label: 'Happy Clients' },
-  { value: '36', label: 'States Covered' },
+  { value: 50000, display: 50, suffix: 'K+', label: 'Systems Installed' },
+  { value: 20, display: 20, suffix: '+', label: 'Years Active' },
+  { value: 500, display: 500, suffix: '+', label: 'Happy Clients' },
+  { value: 36, display: 36, suffix: '', label: 'States Covered' },
 ];
 
 const VALUES = [
@@ -49,7 +50,7 @@ export default function AboutPage() {
               <h2 className="text-zinc-900 text-3xl md:text-5xl font-medium font-['Space_Grotesk']">
                 Built on Engineering, Driven by Real Power Challenges
               </h2>
-              <p className="text-zinc-500 text-base md:text-xl font-normal font-['Space_Grotesk']">
+          <p className="text-zinc-500 text-sm md:text-xl font-normal font-['Space_Grotesk']">
                 PRAG was founded to address one core problem, unreliable electricity. Instead of simply supplying equipment, we set out to design complete power solutions that ensure stability, efficiency, and long-term performance.
                 <br /><br />
                 Today, we work with homeowners, businesses, and industrial clients to deliver systems tailored to their specific needs, backed by technical expertise and real-world experience.
@@ -57,11 +58,13 @@ export default function AboutPage() {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 md:flex md:justify-between items-center gap-6 md:gap-0">
+            <div className="flex flex-col md:flex-row md:justify-between items-center gap-10 md:gap-0">
               {STATS.map((stat) => (
-                <div key={stat.label} className="flex flex-col items-center gap-0.5">
-                  <span className="text-sky-700 text-4xl md:text-5xl font-light font-['Onest']">{stat.value}</span>
-                  <span className="text-sky-700 text-xl md:text-3xl font-normal font-['Onest'] text-center">{stat.label}</span>
+                <div key={stat.label} className="flex flex-col items-center gap-0.5 w-full">
+                  <span className="text-sky-700 text-5xl font-light font-['Onest'] text-center">
+                    <CountUp value={stat.display} suffix={stat.suffix} />
+                  </span>
+                  <span className="text-sky-700 text-3xl font-normal font-['Onest'] text-center">{stat.label}</span>
                 </div>
               ))}
             </div>
@@ -91,8 +94,9 @@ export default function AboutPage() {
             Nigeria&apos;s Leading Provider of Voltage Regulation, Power Backup, Storage, and Renewable Energy Solutions.
           </h2>
         </div>
-        <div className="flex flex-col md:flex-row items-center gap-8 md:gap-10">
-          <div className="relative w-full md:w-[539px] h-64 md:h-[499px] rounded-3xl overflow-hidden shrink-0">
+        {/* Story: text first, image below on mobile; side-by-side on desktop */}
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-8 md:gap-10">
+          <div className="relative w-full md:w-[539px] h-64 md:h-[499px] rounded-3xl overflow-hidden shrink-0 order-2 md:order-1">
             <Image
               src="https://central.prag.global/wp-content/uploads/2026/04/51105cfa2d7e118079c6acdb18a81c8b54dc18e6-1.png"
               alt="Our Story"
@@ -101,9 +105,9 @@ export default function AboutPage() {
               className="object-cover"
             />
           </div>
-          <div className="flex-1 flex flex-col gap-6">
+          <div className="flex-1 flex flex-col gap-6 order-1 md:order-2">
             {STORY_PARAS.map((para, i) => (
-              <p key={i} className="text-zinc-500 text-base md:text-xl font-normal font-['Space_Grotesk']">{para}</p>
+              <p key={i} className="text-zinc-500 text-sm md:text-xl font-normal font-['Space_Grotesk']">{para}</p>
             ))}
           </div>
         </div>
@@ -119,7 +123,7 @@ export default function AboutPage() {
           <h2 className="max-w-[631px] text-center text-zinc-900 text-3xl md:text-5xl font-bold font-['Onest']">
             Built on Principles That Deliver Reliable Results
           </h2>
-          <p className="text-center text-neutral-700 text-base md:text-xl font-normal font-['Onest']">
+          <p className="text-center text-neutral-700 text-sm md:text-base md:text-xl font-normal font-['Onest']">
             Our work is guided by a commitment to quality, precision, and long-term performance.
           </p>
         </div>

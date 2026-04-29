@@ -15,7 +15,7 @@ interface Props {
 }
 
 const SORT_OPTIONS = [
-  { label: 'Default', value: '' },
+  { label: 'Sort by', value: '' },
   { label: 'Price: Low to High', value: 'price' },
   { label: 'Price: High to Low', value: 'price-desc' },
   { label: 'Newest', value: 'date' },
@@ -52,28 +52,30 @@ export default function CategoryProductsGrid({
     router.push(`/products/${categorySlug}?${params.toString()}`);
   }
 
-  // Build tab list: "All {category}" + subcategories
   const allLabel = `All ${categorySlug.charAt(0).toUpperCase() + categorySlug.slice(1)}s`;
   const tabs = [
-    { label: allLabel, slug: undefined },
-    ...subcategories.map((s) => ({ label: s.name, slug: s.slug })),
+    { key: 'all', label: allLabel, slug: undefined },
+    ...subcategories.map((s) => ({ key: String(s.id), label: s.name, slug: s.slug })),
   ];
 
   return (
     <div className="flex flex-col gap-10">
-      {/* Toolbar: tabs + sort */}
+
+      {/* Toolbar */}
       <div className="flex justify-between items-center">
         {/* Subcategory tabs */}
-        <div className="flex border-b border-gray-200">
+        <div className="flex border-b border-gray-200 overflow-x-auto">
           {tabs.map((tab) => {
             const isActive = tab.slug ? activeSub === tab.slug : !activeSub;
             return (
               <button
-                key={tab.label}
+                key={tab.key}
                 onClick={() => navigate({ sub: tab.slug })}
-                className="inline-flex flex-col items-center"
+                className="inline-flex flex-col items-center shrink-0"
               >
-                <span className={`px-4 pt-4 pb-3.5 text-sm font-medium font-['Space_Grotesk'] ${isActive ? 'text-sky-700' : 'text-zinc-500 hover:text-zinc-700'}`}>
+                <span className={`px-4 pt-4 pb-3.5 text-sm font-medium font-['Space_Grotesk'] whitespace-nowrap ${
+                  isActive ? 'text-sky-700' : 'text-zinc-500 hover:text-zinc-700'
+                }`}>
                   {tab.label}
                 </span>
                 <div className={`h-px w-full ${isActive ? 'bg-sky-700' : 'bg-transparent'}`} />
@@ -83,9 +85,9 @@ export default function CategoryProductsGrid({
         </div>
 
         {/* Sort */}
-        <div className="relative">
+        <div className="relative shrink-0 ml-4">
           <select
-            defaultValue={activeSort ?? ''}
+            value={activeSort ?? ''}
             onChange={(e) => navigate({ sort: e.target.value || undefined })}
             className="appearance-none p-2.5 pr-8 bg-white rounded-lg outline outline-[0.3px] outline-neutral-500 text-neutral-500 text-base font-medium font-['Space_Grotesk'] cursor-pointer"
           >
@@ -103,37 +105,63 @@ export default function CategoryProductsGrid({
           <p className="text-gray-400 text-lg font-['Space_Grotesk']">No products found.</p>
         </div>
       ) : (
-        <div className="flex flex-col gap-10">
-          {[0, 3, 6].map((start) => {
-            const row = products.slice(start, start + 3);
-            if (!row.length) return null;
-            return (
-              <div key={start} className="flex gap-6">
-                {row.map((product) => (
-                  <ProductCard key={product.id} product={product} bg="bg-white" />
-                ))}
-              </div>
-            );
-          })}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {products.map((product) => (
+            <ProductCard key={product.id} product={product} bg="bg-white" />
+          ))}
         </div>
       )}
 
-      {/* Pagination */}
+      {/* Smart Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-2 pt-4">
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <button
-              key={page}
-              onClick={() => setPage(page)}
-              className={`w-9 h-9 rounded-full text-sm font-medium font-['Space_Grotesk'] transition-colors ${
-                page === currentPage
-                  ? 'bg-sky-700 text-white'
-                  : 'bg-white text-neutral-500 outline outline-1 outline-neutral-300 hover:outline-sky-700 hover:text-sky-700'
-              }`}
-            >
-              {page}
-            </button>
-          ))}
+          <button
+            onClick={() => setPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-3 py-2 rounded-lg text-sm font-medium font-['Space_Grotesk'] outline outline-1 outline-neutral-300 text-neutral-500 hover:outline-sky-700 hover:text-sky-700 disabled:opacity-30 transition-colors"
+          >
+            ← Prev
+          </button>
+
+          {(() => {
+            const pages: (number | '...')[] = [];
+            if (totalPages <= 7) {
+              for (let i = 1; i <= totalPages; i++) pages.push(i);
+            } else {
+              pages.push(1);
+              if (currentPage > 3) pages.push('...');
+              for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+                pages.push(i);
+              }
+              if (currentPage < totalPages - 2) pages.push('...');
+              pages.push(totalPages);
+            }
+            return pages.map((p, i) =>
+              p === '...' ? (
+                <span key={`e-${i}`} className="w-9 text-center text-neutral-400 text-sm">…</span>
+              ) : (
+                <button
+                  key={p}
+                  onClick={() => setPage(p as number)}
+                  className={`w-9 h-9 rounded-full text-sm font-medium font-['Space_Grotesk'] transition-colors ${
+                    p === currentPage
+                      ? 'bg-sky-700 text-white'
+                      : 'bg-white text-neutral-500 outline outline-1 outline-neutral-300 hover:outline-sky-700 hover:text-sky-700'
+                  }`}
+                >
+                  {p}
+                </button>
+              )
+            );
+          })()}
+
+          <button
+            onClick={() => setPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="px-3 py-2 rounded-lg text-sm font-medium font-['Space_Grotesk'] outline outline-1 outline-neutral-300 text-neutral-500 hover:outline-sky-700 hover:text-sky-700 disabled:opacity-30 transition-colors"
+          >
+            Next →
+          </button>
         </div>
       )}
     </div>

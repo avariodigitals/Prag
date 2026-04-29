@@ -6,6 +6,7 @@ import Footer from '@/components/Footer';
 import CategoryProductsGrid from '@/components/CategoryProductsGrid';
 import { getProducts, getSubcategories, getCategoryBySlug } from '@/lib/woocommerce';
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 
 interface Props {
   params: Promise<{ category: string }>;
@@ -25,15 +26,21 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const { category } = await params;
   const sp = await searchParams;
 
-  const [cat, subcategories, { products, total }] = await Promise.all([
+  const sort = sp.sort ?? '';
+  const orderby = sort === 'price' || sort === 'price-desc' ? 'price' : sort || undefined;
+  const order = sort === 'price-desc' ? 'desc' : sort ? 'asc' : undefined;
+
+  const [cat, subcategories] = await Promise.all([
     getCategoryBySlug(category),
     getSubcategories(category),
-    getProducts({
-      category: sp.sub ?? category,
-      orderby: sp.sort,
-      page: sp.page ? Number(sp.page) : 1,
-    }),
   ]);
+
+  const { products, total } = await getProducts({
+    category: sp.sub ?? category,
+    orderby,
+    order,
+    page: sp.page ? Number(sp.page) : 1,
+  });
 
   if (!cat && products.length === 0) notFound();
 
@@ -45,18 +52,31 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       <TopBar />
       <NavBar />
 
-      {/* Category hero */}
-      <div className="w-full pt-20 pb-10 bg-stone-50 flex flex-col items-center gap-6">
-        <h1 className="text-sky-700 text-5xl font-bold font-['Onest'] text-center">{displayName}</h1>
-        {description && (
-          <p className="w-[531px] text-center text-sky-700 text-lg font-normal font-['Space_Grotesk']">
-            {description}
-          </p>
-        )}
+      {/* Hero */}
+      <div className="w-full pt-16 md:pt-20 pb-8 md:pb-10 bg-stone-50 flex flex-col items-center gap-4 md:gap-6 px-4">
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-1 text-sm font-['Space_Grotesk']">
+          <Link href="/" className="text-sky-700 hover:underline">Home</Link>
+          <span className="text-zinc-400 mx-1">/</span>
+          <Link href="/products" className="text-zinc-500 hover:text-sky-700">Products</Link>
+          <span className="text-zinc-400 mx-1">/</span>
+          <span className="text-zinc-500">{displayName}</span>
+        </div>
+
+        <div className="flex flex-col items-center gap-3">
+          <h1 className="text-sky-700 text-3xl md:text-5xl font-bold font-['Onest'] text-center">
+            {displayName}
+          </h1>
+          {description && (
+            <p className="max-w-[531px] text-center text-sky-700 text-base md:text-lg font-normal font-['Space_Grotesk']"
+              dangerouslySetInnerHTML={{ __html: description }}
+            />
+          )}
+        </div>
       </div>
 
-      {/* Products with subcategory tabs */}
-      <div className="w-full px-20 py-10 bg-white flex flex-col gap-36">
+      {/* Products */}
+      <div className="w-full px-4 md:px-20 py-10 bg-white flex flex-col gap-10">
         <CategoryProductsGrid
           products={products}
           total={total}

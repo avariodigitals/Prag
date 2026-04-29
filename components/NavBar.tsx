@@ -2,8 +2,8 @@ import Link from 'next/link';
 import { ShieldCheck, Truck, RefreshCw } from 'lucide-react';
 
 const NAV_CATEGORIES = [
-  { label: 'Stabilizer', slug: 'stabilizer' },
-  { label: 'Inverter', slug: 'inverter' },
+  { label: 'Stabilizer', slug: 'all-prag-stabilizers' },
+  { label: 'Inverter', slug: 'inverters' },
   { label: 'Solar', slug: 'solar' },
   { label: 'Batteries', slug: 'batteries' },
 ];

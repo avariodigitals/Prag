@@ -184,7 +184,7 @@ export default function TopBar() {
     <>
       <div className="w-full px-4 md:px-20 py-5 bg-white flex justify-between items-center">
         <Link href="/">
-          <Image src="/Prag Logo.png" alt="Prag" width={110} height={33} priority className="w-20 md:w-[110px]" style={{ height: 'auto' }} />
+          <Image src="/Prag Logo.png" alt="Prag" width={110} height={33} priority className="w-20 md:w-[110px]" style={{ height: 'auto', width: 'auto' }} />
         </Link>
 
         <SearchBox />

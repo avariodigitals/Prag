@@ -70,11 +70,18 @@ export async function getProducts({
   page?: number;
   per_page?: number;
 }): Promise<ProductsResult> {
+  // Resolve category slug to ID for accurate WooCommerce filtering
+  let categoryId: string | undefined;
+  if (category) {
+    const cats = await wcFetch<{ id: number }[]>(`/products/categories?slug=${category}`, []);
+    categoryId = cats[0]?.id ? String(cats[0].id) : category;
+  }
+
   const qs = new URLSearchParams({
     status: 'publish',
     per_page: String(per_page),
     page: String(page),
-    ...(category && { category }),
+    ...(categoryId && { category: categoryId }),
     ...(min_price && { min_price }),
     ...(max_price && { max_price }),
     ...(tag && { tag }),

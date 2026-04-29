@@ -12,6 +12,11 @@ const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-space
 export const metadata: Metadata = {
   title: 'Prag – Nigeria\'s Leading Power Engineering Company',
   description: 'Shop inverters, stabilizers, solar panels and batteries. Engineered for real-world loads.',
+  icons: {
+    icon: '/favicon.png',
+    shortcut: '/favicon.png',
+    apple: '/favicon.png',
+  },
   openGraph: {
     title: 'Prag – Nigeria\'s Leading Power Engineering Company',
     description: 'Shop inverters, stabilizers, solar panels and batteries. Engineered for real-world loads.',

@@ -44,6 +44,9 @@ export interface Product {
   featured: boolean;
   date_created: string;
   description?: string;
+  attributes?: { id: number; name: string; options: string[] }[];
+  dimensions?: { length: string; width: string; height: string };
+  weight?: string;
 }
 
 export interface Category {

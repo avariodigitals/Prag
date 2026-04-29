@@ -45,7 +45,7 @@ export async function getCategories(): Promise<Category[]> {
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
-  const products = await wcFetch<Product[]>(`/products?slug=${slug}`, []);
+  const products = await wcFetch<Product[]>(`/products?slug=${slug}&_fields=id,name,slug,price,regular_price,sale_price,on_sale,status,stock_status,short_description,description,images,categories,tags,featured,date_created,attributes,dimensions,weight`, []);
   return products[0] ?? null;
 }
 
@@ -110,6 +110,19 @@ export async function getProducts({
   } catch {
     return { products: [], total: 0 };
   }
+}
+
+export interface ProductReview {
+  id: number;
+  reviewer: string;
+  review: string;
+  rating: number;
+  date_created: string;
+  verified: boolean;
+}
+
+export async function getProductReviews(productId: number): Promise<ProductReview[]> {
+  return wcFetch<ProductReview[]>(`/products/reviews?product=${productId}&per_page=10&status=approved`, []);
 }
 
 export async function getProductTags(): Promise<Tag[]> {

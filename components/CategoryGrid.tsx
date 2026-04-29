@@ -73,13 +73,6 @@ export default function CategoryGrid({ categories }: CategoryGridProps) {
                 <div className="absolute right-[20px] top-[30px] p-3 bg-sky-700 rounded-full group-hover:bg-sky-800 transition-colors shadow-lg">
                   <MoveUpRight className="w-6 h-6 text-white" />
                 </div>
-
-                {/* Decorative small circles as seen in design */}
-                <div className="absolute left-[251px] top-[31px] p-2 bg-sky-700 rounded-full hidden lg:block">
-                  <div className="w-3 h-3 relative overflow-hidden">
-                     <MoveUpRight className="w-full h-full text-white scale-75" />
-                  </div>
-                </div>
               </Link>
             );
           })}

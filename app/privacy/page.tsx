@@ -2,9 +2,6 @@ export const dynamic = 'force-dynamic';
 
 import { getPage } from '@/lib/woocommerce';
 import PolicyPageLayout from '@/components/PolicyPageLayout';
-import TopBar from '@/components/TopBar';
-import NavBar from '@/components/NavBar';
-import Footer from '@/components/Footer';
 import Link from 'next/link';
 
 export const metadata = { title: 'Privacy Policy – Prag' };
@@ -26,7 +23,6 @@ export default async function PrivacyPage() {
   if (wpPage) {
     return (
       <main className="w-full bg-white flex flex-col">
-        <TopBar /><NavBar />
         <div className="w-full px-20 py-10 bg-stone-50 flex flex-col gap-6">
           <div className="flex items-center gap-1">
             <Link href="/" className="text-sky-700 text-2xl font-medium font-['Onest'] hover:underline">Home</Link>
@@ -39,7 +35,6 @@ export default async function PrivacyPage() {
           <div className="w-[997px] p-8 bg-white rounded-2xl outline outline-1 outline-zinc-100 prose prose-sky max-w-none font-['Space_Grotesk']"
             dangerouslySetInnerHTML={{ __html: wpPage.content.rendered }} />
         </div>
-        <Footer />
       </main>
     );
   }

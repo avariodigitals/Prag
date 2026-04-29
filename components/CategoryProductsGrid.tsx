@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useTransition } from 'react';
 import ProductCard from './ProductCard';
 import type { Product, Category } from '@/lib/types';
 import { ChevronDown } from 'lucide-react';
@@ -33,6 +34,7 @@ export default function CategoryProductsGrid({
 }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
   const currentPage = Number(searchParams.get('page') ?? 1);
   const totalPages = Math.ceil(total / PER_PAGE);
 
@@ -43,13 +45,13 @@ export default function CategoryProductsGrid({
       else params.delete(k);
     });
     params.delete('page');
-    router.push(`/products/${categorySlug}?${params.toString()}`);
+    startTransition(() => router.push(`/products/${categorySlug}?${params.toString()}`));
   }
 
   function setPage(page: number) {
     const params = new URLSearchParams(searchParams.toString());
     params.set('page', String(page));
-    router.push(`/products/${categorySlug}?${params.toString()}`);
+    startTransition(() => router.push(`/products/${categorySlug}?${params.toString()}`));
   }
 
   const allLabel = `All ${categorySlug.charAt(0).toUpperCase() + categorySlug.slice(1)}s`;
@@ -59,7 +61,16 @@ export default function CategoryProductsGrid({
   ];
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-10 relative">
+      {/* Client-nav loading overlay */}
+      {isPending && (
+        <div className="absolute inset-0 z-10 bg-white/70 flex items-center justify-center rounded-xl">
+          <svg className="w-10 h-10 text-sky-700 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+            <path className="opacity-80" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+          </svg>
+        </div>
+      )}
 
       {/* Toolbar */}
       <div className="flex justify-between items-center">

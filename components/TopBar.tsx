@@ -2,7 +2,8 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Search, ShoppingCart, X } from 'lucide-react';
+import { Search, ShoppingCart, X, Menu } from 'lucide-react';
+import MobileMenu from './MobileMenu';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, useRef, startTransition } from 'react';
 import { useCart } from '@/lib/CartContext';
@@ -161,6 +162,7 @@ export default function TopBar() {
   const router = useRouter();
   const { count } = useCart();
   const [user, setUser] = useState<{ user_display_name: string } | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const userInfo = document.cookie
@@ -185,7 +187,7 @@ export default function TopBar() {
     <>
       <div className="w-full px-4 md:px-20 py-5 bg-white flex justify-between items-center">
         <Link href="/">
-          <Image src="/Prag Logo.png" alt="Prag" width={110} height={33} priority className="w-20 md:w-[110px]" style={{ height: 'auto', width: 'auto' }} />
+          <Image src="/Prag Logo.png" alt="Prag" width={160} height={48} priority className="w-32 md:w-[160px]" style={{ height: 'auto', width: 'auto' }} />
         </Link>
 
         <SearchBox />
@@ -265,9 +267,13 @@ export default function TopBar() {
 
       {/* Mobile Search Bar */}
       <div className="md:hidden self-stretch p-4 bg-sky-700 flex justify-start items-center gap-4">
-        <div className="w-4 h-3 bg-white" />
+        <button onClick={() => setMenuOpen(true)} aria-label="Open menu" className="shrink-0">
+          <Menu className="w-5 h-5 text-white" />
+        </button>
         <SearchBox mobile />
       </div>
+
+      <MobileMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
     </>
   );
 }

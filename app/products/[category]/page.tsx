@@ -1,6 +1,3 @@
-import TopBar from '@/components/TopBar';
-import NavBar from '@/components/NavBar';
-import Footer from '@/components/Footer';
 import CategoryProductsGrid from '@/components/CategoryProductsGrid';
 import { getProductBySlug, getProducts, getSubcategoriesByParentId, getCategoryBySlug, productUrl } from '@/lib/woocommerce';
 import { notFound, redirect } from 'next/navigation';
@@ -59,9 +56,6 @@ export default async function CategoryPage({ params, searchParams }: Props) {
 
   return (
     <main className="w-full bg-white flex flex-col">
-      <TopBar />
-      <NavBar />
-
       {/* Hero */}
       <div className="w-full pt-16 md:pt-20 pb-8 md:pb-10 bg-stone-50 flex flex-col items-center gap-4 md:gap-6 px-4">
         {/* Breadcrumb */}
@@ -96,8 +90,6 @@ export default async function CategoryPage({ params, searchParams }: Props) {
           activeSort={sp.sort}
         />
       </div>
-
-      <Footer />
     </main>
   );
 }

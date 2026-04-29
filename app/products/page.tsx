@@ -1,8 +1,5 @@
 export const dynamic = 'force-dynamic';
 
-import TopBar from '@/components/TopBar';
-import NavBar from '@/components/NavBar';
-import Footer from '@/components/Footer';
 import ProductsSidebar from '@/components/ProductsSidebar';
 import ProductsGrid from '@/components/ProductsGrid';
 import { getCategories, getProductTags, getProducts } from '@/lib/woocommerce';
@@ -43,9 +40,6 @@ export default async function ProductsPage({
 
   return (
     <main className="w-full bg-white flex flex-col">
-      <TopBar />
-      <NavBar />
-
       {/* Page title */}
       <div className="w-full px-4 md:px-14 pt-8 md:pt-11 pb-6 md:pb-7 bg-stone-50 flex flex-col items-center gap-6">
         <h1 className="text-sky-700 text-3xl md:text-5xl font-bold font-['Onest'] text-center">Power Equipment Catalog</h1>
@@ -59,8 +53,6 @@ export default async function ProductsPage({
         </div>
         <ProductsGrid products={products} total={total} categories={categories} tags={tags} />
       </div>
-
-      <Footer />
     </main>
   );
 }

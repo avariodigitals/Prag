@@ -1,7 +1,4 @@
 import Link from 'next/link';
-import TopBar from '@/components/TopBar';
-import NavBar from '@/components/NavBar';
-import Footer from '@/components/Footer';
 
 export const metadata = { title: 'Sitemap - Prag' };
 
@@ -57,9 +54,6 @@ const SECTIONS = [
 export default function SitemapPage() {
   return (
     <main className="w-full bg-white flex flex-col">
-      <TopBar />
-      <NavBar />
-
       <section className="w-full px-4 md:px-20 py-16 bg-stone-50 flex flex-col items-center gap-4">
         <h1 className="text-sky-700 text-3xl md:text-5xl font-bold font-['Onest'] text-center">Sitemap</h1>
         <p className="max-w-xl text-center text-sky-700 text-base md:text-lg font-normal font-['Space_Grotesk']">
@@ -87,8 +81,6 @@ export default function SitemapPage() {
           ))}
         </div>
       </section>
-
-      <Footer />
     </main>
   );
 }

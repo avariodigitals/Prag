@@ -1,6 +1,3 @@
-import TopBar from '@/components/TopBar';
-import NavBar from '@/components/NavBar';
-import Footer from '@/components/Footer';
 import DistributorForm from '@/components/DistributorForm';
 
 export const metadata = { title: 'Become a Distributor – Prag' };
@@ -23,9 +20,6 @@ const TIERS = [
 export default function DistributorPage() {
   return (
     <main className="w-full bg-white flex flex-col">
-      <TopBar />
-      <NavBar />
-
       <div className="w-full pt-20 pb-10 bg-stone-50 flex flex-col items-center gap-6">
         <h1 className="text-sky-700 text-5xl font-bold font-['Onest'] text-center">Sell the Solutions Nigeria Needs.</h1>
         <p className="w-[531px] text-center text-sky-700 text-lg font-normal font-['Space_Grotesk']">
@@ -99,8 +93,6 @@ export default function DistributorPage() {
         </div>
         <DistributorForm />
       </section>
-
-      <Footer />
     </main>
   );
 }

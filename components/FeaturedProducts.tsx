@@ -66,7 +66,8 @@ export default function FeaturedProducts({ products }: FeaturedProductsProps) {
                       alt={image.alt || product.name}
                       width={250}
                       height={250}
-                      className={`${imgSizes[idx]} object-contain group-hover:scale-105 transition-transform duration-300`}
+                      className="object-contain h-[80%] w-auto group-hover:scale-105 transition-transform duration-300"
+                      style={{ width: 'auto' }}
                     />
                   ) : (
                     <Image 

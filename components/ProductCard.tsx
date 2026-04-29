@@ -36,6 +36,7 @@ export default function ProductCard({ product, bg = 'bg-stone-50' }: ProductCard
             width={220}
             height={275}
             className="object-contain h-[80%] w-auto group-hover:scale-105 transition-transform duration-300"
+            style={{ width: 'auto' }}
           />
         ) : (
           <div className="w-44 h-44 bg-zinc-200 rounded-full flex items-center justify-center">

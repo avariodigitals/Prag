@@ -1,8 +1,5 @@
 export const dynamic = 'force-dynamic';
 
-import TopBar from '@/components/TopBar';
-import NavBar from '@/components/NavBar';
-import Footer from '@/components/Footer';
 import ProductDetailView from '@/components/ProductDetailView';
 import { getProductBySlug, getProducts } from '@/lib/woocommerce';
 import { notFound } from 'next/navigation';
@@ -31,8 +28,6 @@ export default async function ProductDetailPage({ params }: Props) {
 
   return (
     <main className="w-full bg-white flex flex-col">
-      <TopBar />
-      <NavBar />
       <div className="w-full px-20 py-10 bg-stone-50 flex flex-col gap-6">
         <div className="flex items-center gap-1 flex-wrap">
           <Link href="/products" className="text-sky-700 text-2xl font-medium font-['Onest'] hover:underline">Product Catalog</Link>
@@ -43,7 +38,6 @@ export default async function ProductDetailPage({ params }: Props) {
         </div>
       </div>
       <ProductDetailView product={product} relatedProducts={relatedFiltered} />
-      <Footer />
     </main>
   );
 }

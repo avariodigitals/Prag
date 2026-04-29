@@ -29,16 +29,19 @@ async function wcFetch<T>(path: string, fallback: T): Promise<T> {
   }
 }
 
+const PRODUCT_LIST_FIELDS = 'id,name,slug,price,regular_price,sale_price,images,categories,on_sale,stock_status';
+const CATEGORY_FIELDS = 'id,name,slug,description,count,parent';
+
 export async function getFeaturedProducts(): Promise<Product[]> {
-  return wcFetch<Product[]>('/products?featured=true&per_page=6&status=publish', []);
+  return wcFetch<Product[]>(`/products?featured=true&per_page=6&status=publish&_fields=${PRODUCT_LIST_FIELDS}`, []);
 }
 
 export async function getFlashSaleProducts(): Promise<Product[]> {
-  return wcFetch<Product[]>('/products?on_sale=true&per_page=4&status=publish', []);
+  return wcFetch<Product[]>(`/products?on_sale=true&per_page=4&status=publish&_fields=${PRODUCT_LIST_FIELDS}`, []);
 }
 
 export async function getCategories(): Promise<Category[]> {
-  return wcFetch<Category[]>('/products/categories?per_page=10&hide_empty=true', []);
+  return wcFetch<Category[]>(`/products/categories?per_page=10&hide_empty=true&_fields=${CATEGORY_FIELDS}`, []);
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
@@ -83,6 +86,7 @@ export async function getProducts({
     status: 'publish',
     per_page: String(per_page),
     page: String(page),
+    _fields: PRODUCT_LIST_FIELDS,
     ...(categoryId && { category: categoryId }),
     ...(min_price && { min_price }),
     ...(max_price && { max_price }),
@@ -113,7 +117,7 @@ export async function getProductTags(): Promise<Tag[]> {
 }
 
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
-  const cats = await wcFetch<Category[]>(`/products/categories?slug=${slug}`, []);
+  const cats = await wcFetch<Category[]>(`/products/categories?slug=${slug}&_fields=${CATEGORY_FIELDS}`, []);
   return cats[0] ?? null;
 }
 
@@ -147,7 +151,7 @@ export async function getSubcategories(parentSlug: string): Promise<Category[]> 
 }
 
 export async function getSubcategoriesByParentId(parentId: number): Promise<Category[]> {
-  return wcFetch<Category[]>(`/products/categories?parent=${parentId}&per_page=20`, []);
+  return wcFetch<Category[]>(`/products/categories?parent=${parentId}&per_page=20&_fields=${CATEGORY_FIELDS}`, []);
 }
 
 // WordPress REST API base (without /wc/v3)

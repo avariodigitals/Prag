@@ -1,8 +1,5 @@
 export const dynamic = 'force-dynamic';
 
-import TopBar from '@/components/TopBar';
-import NavBar from '@/components/NavBar';
-import Footer from '@/components/Footer';
 import ContactForm from '@/components/ContactForm';
 import StoresGrid from '@/components/StoresGrid';
 import { getStores } from '@/lib/woocommerce';
@@ -26,9 +23,6 @@ export default async function ContactPage() {
 
   return (
     <main className="w-full bg-white flex flex-col">
-      <TopBar />
-      <NavBar />
-
       {/* Breadcrumb + title */}
       <div className="w-full px-20 py-10 bg-stone-50 flex flex-col gap-6">
         <div className="flex items-center gap-1">
@@ -120,8 +114,6 @@ export default async function ContactPage() {
 
       {/* Stores sections */}
       <StoresGrid pragStores={pragStores} onlineStores={onlineStores} chainStores={chainStores} />
-
-      <Footer />
     </main>
   );
 }

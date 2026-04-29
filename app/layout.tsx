@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import { Onest, Space_Grotesk } from 'next/font/google';
 import { CartProvider } from '@/lib/CartContext';
+import TopBar from '@/components/TopBar';
+import NavBar from '@/components/NavBar';
+import Footer from '@/components/Footer';
 import './globals.css';
 
 const onest = Onest({ subsets: ['latin'], variable: '--font-onest' });
@@ -36,7 +39,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={`${onest.variable} ${spaceGrotesk.variable} antialiased`} suppressHydrationWarning>
-        <CartProvider>{children}</CartProvider>
+        <CartProvider>
+          <TopBar />
+          <NavBar />
+          {children}
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   );

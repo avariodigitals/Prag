@@ -4,6 +4,8 @@ import { CartProvider } from '@/lib/CartContext';
 import TopBar from '@/components/TopBar';
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
+import ScrollToTop from '@/components/ScrollToTop';
+import NavigationScrollReset from '@/components/NavigationScrollReset';
 import './globals.css';
 
 const onest = Onest({ subsets: ['latin'], variable: '--font-onest' });
@@ -45,10 +47,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className={`${onest.variable} ${spaceGrotesk.variable} antialiased`} suppressHydrationWarning>
         <CartProvider>
+          <NavigationScrollReset />
           <TopBar />
           <NavBar />
           {children}
           <Footer />
+          <ScrollToTop />
         </CartProvider>
       </body>
     </html>

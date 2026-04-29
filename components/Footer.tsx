@@ -33,7 +33,7 @@ export default function Footer() {
             </div> 
           </div> 
         </div> 
-        <div className="w-full lg:w-[724px] grid grid-cols-2 md:grid-cols-4 gap-10 lg:flex lg:justify-between lg:items-start"> 
+        <div className="w-full lg:w-[724px] grid grid-cols-2 md:grid-cols-4 gap-8 lg:flex lg:justify-between lg:items-start"> 
           <div className="flex flex-col justify-start items-start gap-6"> 
             <div className="text-white text-xl md:text-2xl font-bold font-['Space_Grotesk']">Products</div> 
             <div className="flex flex-col justify-start items-start gap-2"> 

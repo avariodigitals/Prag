@@ -47,14 +47,17 @@ export default async function ProductsPage({
       <NavBar />
 
       {/* Page title */}
-      <div className="w-full px-14 pt-11 pb-7 bg-stone-50 flex flex-col items-center gap-6">
-        <h1 className="text-sky-700 text-5xl font-bold font-['Onest']">Power Equipment Catalog</h1>
+      <div className="w-full px-4 md:px-14 pt-8 md:pt-11 pb-6 md:pb-7 bg-stone-50 flex flex-col items-center gap-6">
+        <h1 className="text-sky-700 text-3xl md:text-5xl font-bold font-['Onest'] text-center">Power Equipment Catalog</h1>
       </div>
 
       {/* Content */}
-      <div className="w-full px-20 py-10 flex justify-center items-start gap-6">
-        <ProductsSidebar categories={categories} tags={tags} />
-        <ProductsGrid products={products} total={total} />
+      <div className="w-full px-4 md:px-20 py-10 flex justify-center items-start gap-6">
+        {/* Sidebar — desktop only */}
+        <div className="hidden md:block">
+          <ProductsSidebar categories={categories} tags={tags} />
+        </div>
+        <ProductsGrid products={products} total={total} categories={categories} tags={tags} />
       </div>
 
       <Footer />

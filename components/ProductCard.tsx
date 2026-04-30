@@ -13,9 +13,10 @@ interface ProductCardProps {
   product: Product;
   bg?: string;
   isNew?: boolean;
+  priority?: boolean;
 }
 
-export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false }: ProductCardProps) {
+export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false, priority = false }: ProductCardProps) {
   const { isWishlisted, toggle, authed } = useWishlist();
   const [saving, setSaving] = useState(false);
   const router = useRouter();
@@ -53,6 +54,8 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
             alt={image.alt || product.name}
             width={220}
             height={275}
+            priority={priority}
+            loading={priority ? 'eager' : 'lazy'}
             className="object-contain h-[80%] w-auto group-hover:scale-105 transition-transform duration-300"
             style={{ width: 'auto' }}
           />

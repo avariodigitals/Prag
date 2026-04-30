@@ -19,11 +19,11 @@ export default function FeaturedProducts({ products }: FeaturedProductsProps) {
         </h2>
 
         <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-6">
-          {products.slice(0, 6).map((product) => {
+          {products.slice(0, 6).map((product, idx) => {
             const isNew = product.date_created
               ? new Date(product.date_created).getTime() > thirtyDaysAgo
               : false;
-            return <ProductCard key={product.id} product={product} isNew={isNew} />;
+            return <ProductCard key={product.id} product={product} isNew={isNew} priority={idx === 0} />;
           })}
         </div>
       </div>

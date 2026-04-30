@@ -52,7 +52,7 @@ export async function POST(request: Request) {
       }
     });
   } catch (error) {
-    console.error('API login error:', error);
+    console.error('API login error:', String(error).replace(/[\r\n]/g, ' '));
     return NextResponse.json(
       { message: 'An error occurred during login' },
       { status: 500 }

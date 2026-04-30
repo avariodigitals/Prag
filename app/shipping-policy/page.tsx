@@ -29,6 +29,14 @@ const STATIC_SECTIONS = [
   },
 ];
 
+function sanitizeHtml(html: string): string {
+  // Strip script tags and event handlers from WP content
+  return html
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/\son\w+\s*=\s*(["'])[^"']*\1/gi, '')
+    .replace(/javascript:/gi, '');
+}
+
 export default async function ShippingPolicyPage() {
   const wpPage = await getPage('shipping-policy');
 
@@ -36,20 +44,20 @@ export default async function ShippingPolicyPage() {
   if (wpPage) {
     return (
       <main className="w-full bg-white flex flex-col">
-        <div className="w-full px-20 py-10 bg-stone-50 flex flex-col gap-6">
+        <div className="w-full px-4 md:px-20 py-6 md:py-10 bg-stone-50 flex flex-col gap-4 md:gap-6">
           <div className="flex items-center gap-1">
             <Link href="/" className="text-sky-700 text-2xl font-medium font-['Onest'] hover:underline">Home</Link>
             <span className="text-zinc-500 text-base font-medium font-['Onest'] mx-1">/</span>
             <span className="text-zinc-500 text-base font-medium font-['Onest']">Shipping Policy</span>
           </div>
           <h1 className="text-black text-4xl font-medium font-['Onest']"
-            dangerouslySetInnerHTML={{ __html: wpPage.title.rendered }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(wpPage.title.rendered) }}
           />
         </div>
-        <div className="w-full px-20 py-10 flex justify-center">
+        <div className="w-full px-4 md:px-20 py-6 md:py-10 flex justify-center">
           <div
             className="w-[997px] p-8 bg-white rounded-2xl outline outline-1 outline-zinc-100 wp-content"
-            dangerouslySetInnerHTML={{ __html: wpPage.content.rendered }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(wpPage.content.rendered) }}
           />
         </div>
       </main>

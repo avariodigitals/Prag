@@ -12,9 +12,10 @@ import ProductCard from './ProductCard';
 
 function cleanWpContent(html: string): string {
   return html
-    // Remove any <img> tags (WhatsApp buttons, promo images, etc.)
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/\son\w+\s*=\s*(["'])[^"']*\1/gi, '')
+    .replace(/javascript:/gi, '')
     .replace(/<img[^>]*>/gi, '')
-    // Remove empty <p> tags left behind
     .replace(/<p>\s*<\/p>/gi, '')
     .trim();
 }

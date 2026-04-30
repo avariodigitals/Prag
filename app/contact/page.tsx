@@ -24,17 +24,16 @@ export default async function ContactPage() {
   return (
     <main className="w-full bg-white flex flex-col">
       {/* Breadcrumb + title */}
-      <div className="w-full px-20 py-10 bg-stone-50 flex flex-col gap-6">
+      <div className="w-full px-4 md:px-20 py-6 md:py-10 bg-stone-50 flex flex-col gap-4 md:gap-6">
         <div className="flex items-center gap-1">
-          <Link href="/" className="text-sky-700 text-2xl font-medium font-['Onest'] hover:underline">Home</Link>
-          <span className="text-zinc-500 text-base font-medium font-['Onest'] mx-1">/</span>
-          <span className="text-zinc-500 text-base font-medium font-['Onest']">Customer Support</span>
+          <Link href="/" className="text-sky-700 text-sm md:text-2xl font-medium font-['Onest'] hover:underline">Home</Link>
+          <span className="text-zinc-500 text-xs md:text-base font-medium font-['Onest'] mx-1">/</span>
+          <span className="text-zinc-500 text-xs md:text-base font-medium font-['Onest']">Customer Support</span>
         </div>
-        <h1 className="text-black text-4xl font-medium font-['Onest']">Customer Support</h1>
+        <h1 className="text-black text-2xl md:text-4xl font-medium font-['Onest']">Customer Support</h1>
       </div>
 
-      {/* Contact info + form */}
-      <div className="w-full px-20 py-10 flex justify-center items-start gap-8">
+      <div className="w-full px-4 md:px-20 py-6 md:py-10 flex flex-col md:flex-row justify-center items-start gap-8">
         {/* Left: contact info cards */}
         <div className="flex-1 flex flex-col gap-6">
           {/* Email */}

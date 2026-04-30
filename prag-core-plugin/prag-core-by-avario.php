@@ -36,6 +36,28 @@ class Prag_Core_Bridge {
                 return is_user_logged_in();
             },
         ]);
+
+        register_meta('user', 'prag_avatar', [
+            'type'          => 'string',
+            'description'   => 'PRAG storefront custom avatar URL',
+            'single'        => true,
+            'default'       => '',
+            'show_in_rest'  => true,
+            'auth_callback' => function() {
+                return is_user_logged_in();
+            },
+        ]);
+
+        register_meta('user', 'prag_phone', [
+            'type'          => 'string',
+            'description'   => 'PRAG storefront phone number',
+            'single'        => true,
+            'default'       => '',
+            'show_in_rest'  => true,
+            'auth_callback' => function() {
+                return is_user_logged_in();
+            },
+        ]);
     }
 
     public function register_routes() {

@@ -13,12 +13,12 @@ interface Order {
 }
 
 const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
-  completed:  { label: 'Completed',   cls: 'bg-emerald-100 text-emerald-800' },
-  processing: { label: 'Processing',  cls: 'bg-blue-100 text-blue-800' },
-  'on-hold':  { label: 'In Transit',  cls: 'bg-amber-100 text-amber-800' },
-  pending:    { label: 'Pending',     cls: 'bg-yellow-100 text-yellow-800' },
-  cancelled:  { label: 'Cancelled',   cls: 'bg-red-100 text-red-700' },
-  refunded:   { label: 'Refunded',    cls: 'bg-gray-100 text-gray-600' },
+  completed:  { label: 'Completed',  cls: 'bg-emerald-100 text-emerald-800' },
+  processing: { label: 'Processing', cls: 'bg-blue-100 text-blue-800' },
+  'on-hold':  { label: 'In Transit', cls: 'bg-amber-100 text-amber-800' },
+  pending:    { label: 'Pending',    cls: 'bg-yellow-100 text-yellow-800' },
+  cancelled:  { label: 'Cancelled',  cls: 'bg-red-100 text-red-700' },
+  refunded:   { label: 'Refunded',   cls: 'bg-gray-100 text-gray-600' },
 };
 
 function formatDate(d: string) {

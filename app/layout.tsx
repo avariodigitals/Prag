@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Onest, Space_Grotesk } from 'next/font/google';
 import { CartProvider } from '@/lib/CartContext';
+import { WishlistProvider } from '@/lib/WishlistContext';
 import TopBar from '@/components/TopBar';
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
@@ -47,12 +48,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className={`${onest.variable} ${spaceGrotesk.variable} antialiased`} suppressHydrationWarning>
         <CartProvider>
-          <NavigationScrollReset />
-          <TopBar />
-          <NavBar />
-          {children}
-          <Footer />
-          <ScrollToTop />
+          <WishlistProvider>
+            <NavigationScrollReset />
+            <TopBar />
+            <NavBar />
+            {children}
+            <Footer />
+            <ScrollToTop />
+          </WishlistProvider>
         </CartProvider>
       </body>
     </html>

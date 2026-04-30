@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Heart } from 'lucide-react';
 import { formatPrice, productUrl, shopUrl } from '@/lib/woocommerce';
+import { useWishlist } from '@/lib/WishlistContext';
 import type { Product } from '@/lib/types';
-import type { WishlistItem } from './WishlistView';
 
 interface ProductCardProps {
   product: Product;
@@ -16,60 +16,36 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false }: ProductCardProps) {
-  const [wishlisted, setWishlisted] = useState(false);
+  const { isWishlisted, toggle, authed } = useWishlist();
   const [saving, setSaving] = useState(false);
   const router = useRouter();
   const image = product.images[0];
 
-  useEffect(() => {
-    fetch('/api/wishlist')
-      .then((r) => r.json())
-      .then((data) => {
-        const items: WishlistItem[] = data.items ?? [];
-        setWishlisted(items.some((i) => i.id === product.id));
-      })
-      .catch(() => {});
-  }, [product.id]);
-
-  async function toggleWishlist() {
-    // Check auth first
-    const res = await fetch('/api/wishlist');
-    if (res.status === 401) {
+  async function handleWishlist() {
+    if (authed === null) return; // still loading auth state, do nothing
+    if (!authed) {
       router.push('/login?redirect=/wishlist');
       return;
     }
-    const data = await res.json();
-    const current: WishlistItem[] = data.items ?? [];
-    let updated: WishlistItem[];
-    if (wishlisted) {
-      updated = current.filter((i) => i.id !== product.id);
-    } else {
-      const newItem: WishlistItem = {
-        id: product.id,
-        name: product.name,
-        slug: product.slug,
-        price: product.price,
-        regular_price: product.regular_price,
-        sale_price: product.sale_price,
-        on_sale: product.on_sale,
-        image: image?.src ?? '',
-        categories: product.categories,
-      };
-      updated = [...current, newItem];
-    }
     setSaving(true);
-    await fetch('/api/wishlist', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: updated }),
+    await toggle({
+      id: product.id,
+      name: product.name,
+      slug: product.slug,
+      price: product.price,
+      regular_price: product.regular_price,
+      sale_price: product.sale_price,
+      on_sale: product.on_sale,
+      image: image?.src ?? '',
+      categories: product.categories,
     });
-    setWishlisted(!wishlisted);
     setSaving(false);
   }
 
+  const wishlisted = isWishlisted(product.id);
+
   return (
     <div className="flex-1 min-w-[300px] relative inline-flex flex-col gap-4 group">
-      {/* Image area */}
       <div className={`w-full h-80 px-7 ${bg} relative flex justify-center items-center overflow-hidden rounded-2xl`}>
         {image ? (
           <Image
@@ -99,7 +75,7 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
         )}
 
         <button
-          onClick={toggleWishlist}
+          onClick={handleWishlist}
           disabled={saving}
           aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
           className="absolute top-6 right-6 p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-colors"
@@ -108,7 +84,6 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
         </button>
       </div>
 
-      {/* Info area */}
       <div className="flex flex-col items-center gap-6 px-2">
         <div className="w-full flex flex-col gap-2">
           <p className="text-center text-zinc-900 text-lg font-medium font-['Onest'] line-clamp-1 group-hover:text-sky-700 transition-colors">

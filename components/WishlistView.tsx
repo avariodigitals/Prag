@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Heart, ChevronDown } from 'lucide-react';
 import { formatPrice, productUrl, shopUrl } from '@/lib/woocommerce';
+import { useWishlist } from '@/lib/WishlistContext';
 
 export interface WishlistItem {
   id: number;
@@ -19,26 +20,33 @@ export interface WishlistItem {
 }
 
 export default function WishlistView() {
-  const [items, setItems] = useState<WishlistItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { items, remove, loading } = useWishlist();
   const [sort, setSort] = useState('');
 
-  useEffect(() => {
-    fetch('/api/wishlist')
-      .then((r) => r.json())
-      .then((data) => setItems(data.items ?? []))
-      .catch(() => setItems([]))
-      .finally(() => setLoading(false));
-  }, []);
-
-  async function remove(id: number) {
-    const updated = items.filter((i) => i.id !== id);
-    setItems(updated);
-    await fetch('/api/wishlist', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: updated }),
-    });
+  if (loading) {
+    return (
+      <div className="w-full px-4 md:px-20 py-6 md:py-10 bg-white flex flex-col gap-10">
+        <div className="flex justify-between items-center">
+          <div className="h-7 w-40 bg-stone-100 rounded-lg animate-pulse" />
+          <div className="h-10 w-32 bg-stone-100 rounded-lg animate-pulse" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="flex flex-col gap-4">
+              <div className="w-full h-72 bg-stone-100 rounded-2xl animate-pulse" />
+              <div className="flex flex-col items-center gap-3">
+                <div className="h-5 w-3/4 bg-stone-100 rounded animate-pulse" />
+                <div className="h-4 w-1/3 bg-stone-100 rounded animate-pulse" />
+                <div className="flex gap-3 mt-2">
+                  <div className="h-10 w-28 bg-stone-100 rounded-full animate-pulse" />
+                  <div className="h-10 w-20 bg-stone-100 rounded-full animate-pulse" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   const sorted = [...items].sort((a, b) => {
@@ -46,17 +54,6 @@ export default function WishlistView() {
     if (sort === 'price-desc') return Number(b.price) - Number(a.price);
     return 0;
   });
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center py-24">
-        <svg className="w-10 h-10 text-sky-700 animate-spin" fill="none" viewBox="0 0 24 24">
-          <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
-          <path className="opacity-80" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-        </svg>
-      </div>
-    );
-  }
 
   return (
     <div className="w-full px-4 md:px-20 py-6 md:py-10 bg-white flex flex-col gap-10">

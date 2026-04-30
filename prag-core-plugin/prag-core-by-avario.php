@@ -70,6 +70,20 @@ class Prag_Core_Bridge {
             'permission_callback' => '__return_true',
         ]);
 
+        // OTP: send code to email
+        register_rest_route($namespace, '/otp/send', [
+            'methods' => 'POST',
+            'callback' => [$this, 'send_otp'],
+            'permission_callback' => '__return_true',
+        ]);
+
+        // OTP: verify code
+        register_rest_route($namespace, '/otp/verify', [
+            'methods' => 'POST',
+            'callback' => [$this, 'verify_otp'],
+            'permission_callback' => '__return_true',
+        ]);
+
         // Settings endpoint (GET/POST)
         register_rest_route($namespace, '/settings', [
             [
@@ -95,21 +109,107 @@ class Prag_Core_Bridge {
             return new WP_Error('missing_fields', 'Username, email, and password are required', ['status' => 400]);
         }
 
+        if (email_exists($params['email'])) {
+            return new WP_Error('email_exists', 'An account with this email already exists.', ['status' => 409]);
+        }
+
         $user_id = wp_create_user($params['username'], $params['password'], $params['email']);
 
         if (is_wp_error($user_id)) {
             return $user_id;
         }
 
-        // Optional: Set user role to customer for WooCommerce compatibility
         $user = new WP_User($user_id);
         $user->set_role('customer');
+
+        if (!empty($params['first_name'])) update_user_meta($user_id, 'first_name', sanitize_text_field($params['first_name']));
+        if (!empty($params['last_name']))  update_user_meta($user_id, 'last_name',  sanitize_text_field($params['last_name']));
+        if (!empty($params['phone']))      update_user_meta($user_id, 'prag_phone', sanitize_text_field($params['phone']));
 
         return [
             'success' => true,
             'user_id' => $user_id,
             'message' => 'User registered successfully'
         ];
+    }
+
+    public function send_otp($request) {
+        $params = $request->get_json_params();
+        $email  = sanitize_email($params['email'] ?? '');
+
+        if (!$email) {
+            return new WP_Error('missing_email', 'Email is required', ['status' => 400]);
+        }
+
+        $user = get_user_by('email', $email);
+        if (!$user) {
+            return new WP_Error('user_not_found', 'No account found with that email.', ['status' => 404]);
+        }
+
+        $code    = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $expires = time() + 600; // 10 minutes
+
+        update_user_meta($user->ID, 'prag_otp_code',    $code);
+        update_user_meta($user->ID, 'prag_otp_expires', $expires);
+
+        $site_name = get_bloginfo('name');
+        $from_email = 'noreply@' . parse_url(get_site_url(), PHP_URL_HOST);
+
+        $subject = 'Your PRAG verification code: ' . $code;
+
+        $message = "Hi " . esc_html($user->display_name) . ",\r\n\r\n";
+        $message .= "Your PRAG email verification code is:\r\n\r\n";
+        $message .= "    " . $code . "\r\n\r\n";
+        $message .= "This code expires in 10 minutes.\r\n";
+        $message .= "If you did not request this, you can safely ignore this email.\r\n\r\n";
+        $message .= "-- \r\n";
+        $message .= $site_name . "\r\n";
+        $message .= get_site_url() . "\r\n";
+
+        $headers = [
+            'Content-Type: text/plain; charset=UTF-8',
+            'From: ' . $site_name . ' <' . $from_email . '>',
+        ];
+
+        $sent = wp_mail($email, $subject, $message, $headers);
+
+        if (!$sent) {
+            return new WP_Error('mail_failed', 'Failed to send OTP email.', ['status' => 500]);
+        }
+
+        return ['success' => true, 'message' => 'OTP sent'];
+    }
+
+    public function verify_otp($request) {
+        $params = $request->get_json_params();
+        $email  = sanitize_email($params['email'] ?? '');
+        $code   = sanitize_text_field($params['code'] ?? '');
+
+        if (!$email || !$code) {
+            return new WP_Error('missing_fields', 'Email and code are required', ['status' => 400]);
+        }
+
+        $user = get_user_by('email', $email);
+        if (!$user) {
+            return new WP_Error('user_not_found', 'No account found.', ['status' => 404]);
+        }
+
+        $stored_code    = get_user_meta($user->ID, 'prag_otp_code',    true);
+        $stored_expires = get_user_meta($user->ID, 'prag_otp_expires', true);
+
+        if (!$stored_code || $code !== $stored_code) {
+            return new WP_Error('invalid_code', 'Invalid verification code.', ['status' => 400]);
+        }
+
+        if (time() > (int) $stored_expires) {
+            return new WP_Error('code_expired', 'Verification code has expired.', ['status' => 400]);
+        }
+
+        // Clear OTP
+        delete_user_meta($user->ID, 'prag_otp_code');
+        delete_user_meta($user->ID, 'prag_otp_expires');
+
+        return ['success' => true, 'user_id' => $user->ID, 'message' => 'Email verified'];
     }
 
     /**

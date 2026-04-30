@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, startTransition } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -12,20 +12,14 @@ import type { WishlistItem } from './WishlistView';
 interface ProductCardProps {
   product: Product;
   bg?: string;
+  isNew?: boolean;
 }
 
-export default function ProductCard({ product, bg = 'bg-stone-50' }: ProductCardProps) {
-  const [isNew, setIsNew] = useState(false);
+export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false }: ProductCardProps) {
   const [wishlisted, setWishlisted] = useState(false);
   const [saving, setSaving] = useState(false);
   const router = useRouter();
   const image = product.images[0];
-
-  useEffect(() => {
-    const created = new Date(product.date_created);
-    const diffDays = (Date.now() - created.getTime()) / (1000 * 60 * 60 * 24);
-    startTransition(() => setIsNew(diffDays <= 30));
-  }, [product.date_created]);
 
   useEffect(() => {
     fetch('/api/wishlist')

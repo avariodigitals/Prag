@@ -255,7 +255,7 @@ export default function TopBar() {
               </span>
             )}
           </Link>
-          <Link href="/account" aria-label="Account" className="w-5 h-5 flex items-center justify-center">
+          <Link href={user ? '/account' : '/login'} aria-label="Account" className="w-5 h-5 flex items-center justify-center">
             <svg className="w-4 h-4 text-neutral-700/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10" />
               <circle cx="12" cy="8" r="3" />

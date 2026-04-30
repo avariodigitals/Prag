@@ -29,7 +29,7 @@ async function wcFetch<T>(path: string, fallback: T): Promise<T> {
   }
 }
 
-const PRODUCT_LIST_FIELDS = 'id,name,slug,price,regular_price,sale_price,images,categories,on_sale,stock_status';
+const PRODUCT_LIST_FIELDS = 'id,name,slug,price,regular_price,sale_price,images,categories,on_sale,stock_status,date_created';
 const CATEGORY_FIELDS = 'id,name,slug,description,count,parent';
 
 export async function getFeaturedProducts(): Promise<Product[]> {

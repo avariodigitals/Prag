@@ -21,16 +21,16 @@ export default async function TermsPage() {
   if (wpPage) {
     return (
       <main className="w-full bg-white flex flex-col">
-        <div className="w-full px-20 py-10 bg-stone-50 flex flex-col gap-6">
+        <div className="w-full px-4 md:px-20 py-6 md:py-10 bg-stone-50 flex flex-col gap-4 md:gap-6">
           <div className="flex items-center gap-1">
-            <Link href="/" className="text-sky-700 text-2xl font-medium font-['Onest'] hover:underline">Home</Link>
-            <span className="text-zinc-500 text-base font-medium font-['Onest'] mx-1">/</span>
-            <span className="text-zinc-500 text-base font-medium font-['Onest']">Terms of use</span>
+            <Link href="/" className="text-sky-700 text-sm md:text-2xl font-medium font-['Onest'] hover:underline">Home</Link>
+            <span className="text-zinc-500 text-xs md:text-base font-medium font-['Onest'] mx-1">/</span>
+            <span className="text-zinc-500 text-xs md:text-base font-medium font-['Onest']">Terms of use</span>
           </div>
-          <h1 className="text-black text-4xl font-medium font-['Onest']" dangerouslySetInnerHTML={{ __html: wpPage.title.rendered }} />
+          <h1 className="text-black text-2xl md:text-4xl font-medium font-['Onest']" dangerouslySetInnerHTML={{ __html: wpPage.title.rendered }} />
         </div>
-        <div className="w-full px-20 py-10 flex justify-center">
-          <div className="w-[997px] p-8 bg-white rounded-2xl outline outline-1 outline-zinc-100 wp-content"
+        <div className="w-full px-4 md:px-20 py-6 md:py-10 flex justify-center">
+          <div className="w-full max-w-[997px] p-4 md:p-8 bg-white rounded-2xl outline outline-1 outline-zinc-100 wp-content"
             dangerouslySetInnerHTML={{ __html: wpPage.content.rendered }} />
         </div>
       </main>

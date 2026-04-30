@@ -30,8 +30,8 @@ export default function DistributorForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="w-[884px] p-8 bg-white rounded-xl outline outline-1 outline-zinc-100 flex flex-col gap-5">
-      <div className="flex gap-5">
+    <form onSubmit={handleSubmit} className="w-full max-w-[884px] p-4 md:p-8 bg-white rounded-xl outline outline-1 outline-zinc-100 flex flex-col gap-5">
+      <div className="flex flex-col md:flex-row gap-5">
         <div className="flex-1 flex flex-col gap-2">
           <label className="text-zinc-900 text-sm font-normal font-['Space_Grotesk'] leading-5">Full Name *</label>
           <input required type="text" value={form.name} onChange={set('name')} className={inputCls} />
@@ -41,7 +41,7 @@ export default function DistributorForm() {
           <input required type="text" value={form.business} onChange={set('business')} className={inputCls} />
         </div>
       </div>
-      <div className="flex gap-5">
+      <div className="flex flex-col md:flex-row gap-5">
         <div className="flex-1 flex flex-col gap-1.5">
           <label className="text-zinc-900 text-sm font-medium font-['Space_Grotesk'] leading-5">Phone Number</label>
           <input type="tel" value={form.phone} onChange={set('phone')} className={inputCls} />
@@ -51,7 +51,7 @@ export default function DistributorForm() {
           <input required type="email" value={form.email} onChange={set('email')} className={inputCls} />
         </div>
       </div>
-      <div className="flex gap-4">
+      <div className="flex flex-col md:flex-row gap-5">
         <div className="flex-1 flex flex-col gap-1.5">
           <label className="text-zinc-900 text-sm font-medium font-['Space_Grotesk'] leading-5">City</label>
           <input type="text" value={form.city} onChange={set('city')} className={inputCls} />

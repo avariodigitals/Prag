@@ -18,6 +18,24 @@ class Prag_Core_Bridge {
     public function __construct() {
         // Register REST API routes
         add_action('rest_api_init', [$this, 'register_routes']);
+        // Register prag_wishlist user meta for REST API access
+        add_action('init', [$this, 'register_user_meta']);
+    }
+
+    /**
+     * Register prag_wishlist user meta so it's accessible via /wp/v2/users/me
+     */
+    public function register_user_meta() {
+        register_meta('user', 'prag_wishlist', [
+            'type'              => 'string',
+            'description'       => 'PRAG storefront wishlist (JSON array of product items)',
+            'single'            => true,
+            'default'           => '[]',
+            'show_in_rest'      => true,
+            'auth_callback'     => function() {
+                return is_user_logged_in();
+            },
+        ]);
     }
 
     public function register_routes() {

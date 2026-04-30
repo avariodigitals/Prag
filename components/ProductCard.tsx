@@ -3,9 +3,11 @@
 import { useState, useEffect, startTransition } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Heart } from 'lucide-react';
 import { formatPrice, productUrl, shopUrl } from '@/lib/woocommerce';
 import type { Product } from '@/lib/types';
+import type { WishlistItem } from './WishlistView';
 
 interface ProductCardProps {
   product: Product;
@@ -14,16 +16,62 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, bg = 'bg-stone-50' }: ProductCardProps) {
   const [isNew, setIsNew] = useState(false);
+  const [wishlisted, setWishlisted] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const router = useRouter();
   const image = product.images[0];
 
   useEffect(() => {
     const created = new Date(product.date_created);
     const diffDays = (Date.now() - created.getTime()) / (1000 * 60 * 60 * 24);
-    const isNewNow = diffDays <= 30;
-    startTransition(() => {
-      setIsNew(isNewNow);
-    });
+    startTransition(() => setIsNew(diffDays <= 30));
   }, [product.date_created]);
+
+  useEffect(() => {
+    fetch('/api/wishlist')
+      .then((r) => r.json())
+      .then((data) => {
+        const items: WishlistItem[] = data.items ?? [];
+        setWishlisted(items.some((i) => i.id === product.id));
+      })
+      .catch(() => {});
+  }, [product.id]);
+
+  async function toggleWishlist() {
+    // Check auth first
+    const res = await fetch('/api/wishlist');
+    if (res.status === 401) {
+      router.push('/login?redirect=/wishlist');
+      return;
+    }
+    const data = await res.json();
+    const current: WishlistItem[] = data.items ?? [];
+    let updated: WishlistItem[];
+    if (wishlisted) {
+      updated = current.filter((i) => i.id !== product.id);
+    } else {
+      const newItem: WishlistItem = {
+        id: product.id,
+        name: product.name,
+        slug: product.slug,
+        price: product.price,
+        regular_price: product.regular_price,
+        sale_price: product.sale_price,
+        on_sale: product.on_sale,
+        image: image?.src ?? '',
+        categories: product.categories,
+      };
+      updated = [...current, newItem];
+    }
+    setSaving(true);
+    await fetch('/api/wishlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items: updated }),
+    });
+    setWishlisted(!wishlisted);
+    setSaving(false);
+  }
 
   return (
     <div className="flex-1 min-w-[300px] relative inline-flex flex-col gap-4 group">
@@ -56,11 +104,13 @@ export default function ProductCard({ product, bg = 'bg-stone-50' }: ProductCard
           </div>
         )}
 
-        <button 
-          aria-label="Add to wishlist" 
+        <button
+          onClick={toggleWishlist}
+          disabled={saving}
+          aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
           className="absolute top-6 right-6 p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-colors"
         >
-          <Heart className="w-5 h-5 text-zinc-500 hover:text-red-500" />
+          <Heart className={`w-5 h-5 transition-colors ${wishlisted ? 'text-sky-700 fill-sky-700' : 'text-zinc-500'}`} />
         </button>
       </div>
 

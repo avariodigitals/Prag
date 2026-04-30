@@ -4,17 +4,18 @@ import Link from 'next/link';
 export default function AccountLayout({ children }: { children: React.ReactNode }) {
   return (
     <main className="w-full bg-white flex flex-col">
-      <div className="w-full px-20 py-10 bg-stone-50 flex flex-col gap-6">
+      <div className="w-full px-4 md:px-20 py-6 md:py-10 bg-stone-50 flex flex-col gap-4 md:gap-6">
         <div className="flex items-center gap-1">
-          <Link href="/" className="text-sky-700 text-2xl font-medium font-['Onest'] hover:underline">Home</Link>
-          <span className="text-zinc-500 text-base font-medium font-['Onest'] mx-1">/</span>
-          <span className="text-zinc-500 text-base font-medium font-['Onest']">My Account</span>
+          <Link href="/" className="text-sky-700 text-sm md:text-2xl font-medium font-['Onest'] hover:underline">Home</Link>
+          <span className="text-zinc-500 text-xs md:text-base font-medium font-['Onest'] mx-1">/</span>
+          <span className="text-zinc-500 text-xs md:text-base font-medium font-['Onest']">My Account</span>
         </div>
+        <h1 className="text-black text-2xl md:text-4xl font-medium font-['Onest']">My Account</h1>
       </div>
 
-      <div className="w-full px-20 py-24 flex items-start gap-10">
+      <div className="w-full px-4 md:px-20 py-10 md:py-24 flex flex-col md:flex-row items-start gap-6 md:gap-10">
         <AccountSidebar />
-        <div className="flex-1">{children}</div>
+        <div className="flex-1 w-full">{children}</div>
       </div>
     </main>
   );

@@ -6,28 +6,26 @@ export default function Footer() {
     <footer className="w-full px-4 md:px-20 py-10 bg-slate-950 flex flex-col justify-center items-center gap-10 overflow-hidden"> 
       <div className="w-full max-w-[1228px] flex flex-col lg:flex-row justify-between items-start gap-10"> 
         <div className="w-full lg:w-96 flex flex-col justify-start items-start gap-4"> 
-          <Image 
-            className="w-36 h-8" 
-            src="/Prag Logo.png" 
-            alt="Prag"
-            width={150}
-            height={34}
-          /> 
+          <Link href="/"> 
+            <Image 
+              src="https://central.prag.global/wp-content/uploads/2026/04/prag-inverter-stabilizer-white-logo.png" 
+              alt="Prag"
+              width={150}
+              height={34}
+              style={{ height: 'auto', width: 'auto' }}
+            /> 
+          </Link> 
           <div className="w-full text-white/70 text-base md:text-lg font-normal font-['Space_Grotesk']">
             Nigeria&apos;s leading power engineering company. We design, supply and install power solutions for homes, businesses and industrial facilities across the country.
           </div> 
           <div className="w-full max-w-52 flex flex-col justify-start items-start gap-2"> 
             <div className="w-full flex justify-start items-center gap-4"> 
-              <div className="w-6 h-6 relative overflow-hidden"> 
-                <div className="w-5 h-5 left-[2px] top-[2px] absolute bg-white/70 rounded-full" /> 
-              </div> 
-              <div className="text-white/70 text-base md:text-lg font-normal font-['Space_Grotesk']">+2348032170129</div> 
+              <svg className="w-5 h-5 text-white/70 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+              <a href="tel:+2348032170129" className="text-white/70 text-base md:text-lg font-normal font-['Space_Grotesk'] hover:text-white transition-colors">+2348032170129</a> 
             </div> 
             <div className="flex justify-start items-center gap-4"> 
-              <div className="w-6 h-6 relative overflow-hidden"> 
-                <div className="w-5 h-4 left-[2px] top-[4px] absolute bg-white/70" /> 
-              </div> 
-              <a href="mailto:sales@prag.global" className="text-white/70 text-base md:text-lg font-normal font-['Space_Grotesk'] underline">
+              <svg className="w-5 h-4 text-white/70 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+              <a href="mailto:sales@prag.global" className="text-white/70 text-base md:text-lg font-normal font-['Space_Grotesk'] underline hover:text-white transition-colors">
                 sales@prag.global
               </a> 
             </div> 
@@ -65,9 +63,9 @@ export default function Footer() {
           <div className="flex flex-col justify-start items-start gap-6"> 
             <div className="text-white text-xl md:text-2xl font-bold font-['Space_Grotesk']">Socials</div> 
             <div className="flex flex-col justify-start items-start gap-2"> 
-              <a href="https://facebook.com" className="text-white/70 text-lg md:text-xl font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Facebook</a> 
-              <a href="https://linkedin.com" className="text-white/70 text-lg md:text-xl font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Linkedin</a> 
-              <a href="https://instagram.com" className="text-white/70 text-lg md:text-xl font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Instagram</a> 
+              <a href="https://www.facebook.com/pragpowersolutions" target="_blank" rel="noopener noreferrer" className="text-white/70 text-lg md:text-xl font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Facebook</a> 
+              <a href="https://x.com/PRAG_Ng" target="_blank" rel="noopener noreferrer" className="text-white/70 text-lg md:text-xl font-normal font-['Space_Grotesk'] hover:text-white transition-colors">X (Twitter)</a> 
+              <a href="https://www.instagram.com/prag_ng/" target="_blank" rel="noopener noreferrer" className="text-white/70 text-lg md:text-xl font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Instagram</a> 
             </div> 
           </div> 
         </div> 

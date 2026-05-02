@@ -36,7 +36,6 @@ export default function CheckoutView() {
   const searchParams = useSearchParams();
   const [step] = useState(0);
 
-  // Buy Now mode — product passed via query params, bypasses cart
   const buyNowId = searchParams.get('id');
   const buyNowItem = buyNowId ? {
     id: Number(buyNowId),
@@ -48,7 +47,7 @@ export default function CheckoutView() {
   } : null;
 
   const orderItems = buyNowItem ? [buyNowItem] : items;
-  const orderTotal = buyNowItem ? buyNowItem.price : total;
+  const orderTotal = buyNowItem ? buyNowItem.price * (buyNowItem.quantity) : total;
 
   const [form, setForm] = useState({
     email: '', firstName: '', lastName: '', company: '',
@@ -69,57 +68,56 @@ export default function CheckoutView() {
   }
 
   return (
-    <div className="w-full p-20 flex flex-col items-center gap-10">
-      {/* Step indicator */}
+    <div className="w-full px-4 md:px-20 py-6 md:py-10 flex flex-col items-center gap-6 md:gap-10">
       <CheckoutStepper activeStep={step} />
 
-      {/* Form + Summary */}
-      <div className="w-full flex items-start gap-10">
+      {/* Mobile: summary on top, form below. Desktop: form left, summary right */}
+      <div className="w-full flex flex-col-reverse md:flex-row items-start gap-6 md:gap-10">
+
         {/* Contact form */}
-        <form onSubmit={proceedToShipping} className="flex-1 p-8 bg-white rounded-2xl outline outline-[1.31px] outline-gray-200 flex flex-col gap-6">
-          <h2 className="text-zinc-900 text-xl font-bold font-['Space_Grotesk'] leading-8">Contact Details</h2>
+        <form onSubmit={proceedToShipping} id="checkout-form" className="w-full md:flex-1 p-4 md:p-8 bg-white rounded-2xl outline outline-[1.31px] outline-gray-200 flex flex-col gap-5">
+          <h2 className="text-zinc-900 text-lg md:text-xl font-bold font-['Space_Grotesk']">Contact Details</h2>
 
-          <div className="flex flex-col gap-4">
-            <Field label="Email Address" required>
-              <input type="email" required value={form.email} onChange={set('email')} placeholder="you@company.com" className={inputCls} />
+          <Field label="Email Address" required>
+            <input type="email" required value={form.email} onChange={set('email')} placeholder="you@company.com" className={inputCls} />
+          </Field>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Field label="First Name" required>
+              <input type="text" required value={form.firstName} onChange={set('firstName')} placeholder="John" className={inputCls} />
             </Field>
-
-            <div className="flex gap-4">
-              <Field label="First Name" required>
-                <input type="text" required value={form.firstName} onChange={set('firstName')} placeholder="John" className={inputCls} />
-              </Field>
-              <Field label="Last Name" required>
-                <input type="text" required value={form.lastName} onChange={set('lastName')} placeholder="Doe" className={inputCls} />
-              </Field>
-            </div>
-
-            <Field label="Company / Organisation">
-              <input type="text" value={form.company} onChange={set('company')} placeholder="Optional" className={inputCls} />
+            <Field label="Last Name" required>
+              <input type="text" required value={form.lastName} onChange={set('lastName')} placeholder="Doe" className={inputCls} />
             </Field>
-
-            <Field label="Phone Number" required>
-              <input type="tel" required value={form.phone} onChange={set('phone')} placeholder="+234..." className={inputCls} />
-            </Field>
-
-            <Field label="Street Address" required>
-              <input type="text" required value={form.address} onChange={set('address')} placeholder="Address" className={inputCls} />
-            </Field>
-
-            <div className="flex gap-4">
-              <Field label="City" required>
-                <input type="text" required value={form.city} onChange={set('city')} placeholder="City" className={inputCls} />
-              </Field>
-              <Field label="State / Region" required>
-                <select required value={form.state} onChange={set('state')} className={inputCls}>
-                  <option value="">Select state</option>
-                  {NIGERIAN_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
-                </select>
-              </Field>
-              <Field label="ZIP / Postal Code (Optional)">
-                <input type="text" value={form.zip} onChange={set('zip')} placeholder="100001" className={inputCls} />
-              </Field>
-            </div>
           </div>
+
+          <Field label="Company / Organisation">
+            <input type="text" value={form.company} onChange={set('company')} placeholder="Optional" className={inputCls} />
+          </Field>
+
+          <Field label="Phone Number" required>
+            <input type="tel" required value={form.phone} onChange={set('phone')} placeholder="+234..." className={inputCls} />
+          </Field>
+
+          <Field label="Street Address" required>
+            <input type="text" required value={form.address} onChange={set('address')} placeholder="Address" className={inputCls} />
+          </Field>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Field label="City" required>
+              <input type="text" required value={form.city} onChange={set('city')} placeholder="City" className={inputCls} />
+            </Field>
+            <Field label="State / Region" required>
+              <select required value={form.state} onChange={set('state')} className={inputCls}>
+                <option value="">Select state</option>
+                {NIGERIAN_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </Field>
+          </div>
+
+          <Field label="ZIP / Postal Code (Optional)">
+            <input type="text" value={form.zip} onChange={set('zip')} placeholder="100001" className={inputCls} />
+          </Field>
 
           <Field label="Delivery Note">
             <textarea
@@ -130,56 +128,55 @@ export default function CheckoutView() {
             />
           </Field>
 
+          {/* Submit button — visible on desktop inside form, hidden on mobile (mobile uses the one in summary) */}
           <button
             type="submit"
-            className="hidden"
-            id="checkout-submit"
-          />
+            className="hidden md:block w-full p-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Space_Grotesk'] hover:bg-sky-800 transition-colors"
+          >
+            Proceed to Shipping
+          </button>
         </form>
 
         {/* Order summary */}
-        <div className="w-96 shrink-0 px-6 py-8 bg-white rounded-[10px] outline outline-1 outline-gray-200 flex flex-col gap-6">
-          <h2 className="text-neutral-700 text-2xl font-bold font-['Space_Grotesk'] leading-7">Summary</h2>
+        <div className="w-full md:w-80 lg:w-96 shrink-0 px-4 md:px-6 py-6 md:py-8 bg-white rounded-[10px] outline outline-1 outline-gray-200 flex flex-col gap-5">
+          <h2 className="text-neutral-700 text-xl md:text-2xl font-bold font-['Space_Grotesk']">Summary</h2>
 
-          <div className="flex flex-col gap-6">
-            {/* Item list */}
-            <div className="flex flex-col gap-4">
-              {orderItems.length === 0 ? (
-                <p className="text-zinc-400 text-sm font-['Space_Grotesk']">No items in cart.</p>
-              ) : orderItems.map((item) => (
-                <div key={item.id} className="flex justify-between items-center">
-                  <span className="w-48 text-neutral-700 text-sm font-normal font-['Space_Grotesk'] leading-4">{item.name}</span>
-                  <span className="text-sky-700 text-xs font-medium font-['Onest']">{formatPrice(item.price * item.quantity)}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="w-full h-px bg-gray-200" />
-
-            <div className="flex flex-col gap-4">
-              <div className="flex justify-between">
-                <span className="text-slate-600 text-sm font-medium font-['Space_Grotesk'] leading-5">Sub Total</span>
-                <span className="text-slate-600 text-sm font-normal font-['Space_Grotesk'] leading-5">{formatPrice(orderTotal)}</span>
+          <div className="flex flex-col gap-4">
+            {orderItems.length === 0 ? (
+              <p className="text-zinc-400 text-sm font-['Space_Grotesk']">No items in cart.</p>
+            ) : orderItems.map((item) => (
+              <div key={item.id} className="flex justify-between items-start gap-2">
+                <span className="flex-1 text-neutral-700 text-sm font-normal font-['Space_Grotesk'] leading-5">{item.name} {item.quantity > 1 && <span className="text-zinc-400">×{item.quantity}</span>}</span>
+                <span className="text-sky-700 text-sm font-medium font-['Onest'] shrink-0">{formatPrice(item.price * item.quantity)}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-slate-600 text-sm font-medium font-['Space_Grotesk'] leading-5">VAT (7.5%)</span>
-                <span className="text-slate-600 text-sm font-normal font-['Space_Grotesk'] leading-5">₦0.00</span>
-              </div>
+            ))}
+          </div>
+
+          <div className="w-full h-px bg-gray-200" />
+
+          <div className="flex flex-col gap-3">
+            <div className="flex justify-between">
+              <span className="text-slate-600 text-sm font-medium font-['Space_Grotesk']">Sub Total</span>
+              <span className="text-slate-600 text-sm font-['Space_Grotesk']">{formatPrice(orderTotal)}</span>
             </div>
-
-            <div className="w-full h-px bg-gray-200" />
-
-            <div className="flex justify-between items-center">
-              <span className="text-slate-600 text-sm font-medium font-['Space_Grotesk'] leading-5">Total</span>
-              <span className="text-slate-800 text-base font-bold font-['Space_Grotesk'] leading-6">{formatPrice(orderTotal)}</span>
+            <div className="flex justify-between">
+              <span className="text-slate-600 text-sm font-medium font-['Space_Grotesk']">VAT (7.5%)</span>
+              <span className="text-slate-600 text-sm font-['Space_Grotesk']">₦0.00</span>
             </div>
           </div>
 
+          <div className="w-full h-px bg-gray-200" />
+
+          <div className="flex justify-between items-center">
+            <span className="text-slate-600 text-sm font-medium font-['Space_Grotesk']">Total</span>
+            <span className="text-slate-800 text-base font-bold font-['Space_Grotesk']">{formatPrice(orderTotal)}</span>
+          </div>
+
+          {/* Mobile submit button */}
           <button
-            form="checkout-submit"
             type="submit"
-            onClick={() => (document.getElementById('checkout-submit') as HTMLButtonElement)?.click()}
-            className="w-full p-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Space_Grotesk'] hover:bg-sky-800 transition-colors text-center"
+            form="checkout-form"
+            className="w-full p-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Space_Grotesk'] hover:bg-sky-800 transition-colors"
           >
             Proceed to Shipping
           </button>

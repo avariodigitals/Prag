@@ -61,7 +61,7 @@ export default function CheckoutSummary({ ctaLabel, onCta, shippingCost }: Props
 
       <button
         onClick={onCta}
-        className="w-full p-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Space_Grotesk'] hover:bg-sky-800 transition-colors"
+        className="md:hidden w-full p-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Space_Grotesk'] hover:bg-sky-800 transition-colors"
       >
         {ctaLabel}
       </button>

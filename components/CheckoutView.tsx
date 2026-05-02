@@ -72,10 +72,10 @@ export default function CheckoutView() {
       <CheckoutStepper activeStep={step} />
 
       {/* Mobile: summary on top, form below. Desktop: form left, summary right */}
-      <div className="w-full flex flex-col-reverse md:flex-row items-start gap-6 md:gap-10">
+      <div className="w-full flex flex-col md:flex-row items-start gap-6 md:gap-10">
 
-        {/* Contact form */}
-        <form onSubmit={proceedToShipping} id="checkout-form" className="w-full md:flex-1 p-4 md:p-8 bg-white rounded-2xl outline outline-[1.31px] outline-gray-200 flex flex-col gap-5">
+        {/* Contact form — top on mobile, left on desktop */}
+        <form id="checkout-form" onSubmit={proceedToShipping} className="w-full md:flex-1 md:order-1 px-4 md:px-6 py-6 md:py-8 bg-white rounded-[10px] outline outline-1 outline-gray-200 flex flex-col gap-5">
           <h2 className="text-zinc-900 text-lg md:text-xl font-bold font-['Space_Grotesk']">Contact Details</h2>
 
           <Field label="Email Address" required>
@@ -137,8 +137,8 @@ export default function CheckoutView() {
           </button>
         </form>
 
-        {/* Order summary */}
-        <div className="w-full md:w-80 lg:w-96 shrink-0 px-4 md:px-6 py-6 md:py-8 bg-white rounded-[10px] outline outline-1 outline-gray-200 flex flex-col gap-5">
+        {/* Order summary — below form on mobile, right on desktop */}
+        <div className="w-full md:w-80 lg:w-96 md:order-2 shrink-0 px-4 md:px-6 py-6 md:py-8 bg-white rounded-[10px] outline outline-1 outline-gray-200 flex flex-col gap-5">
           <h2 className="text-neutral-700 text-xl md:text-2xl font-bold font-['Space_Grotesk']">Summary</h2>
 
           <div className="flex flex-col gap-4">
@@ -176,7 +176,7 @@ export default function CheckoutView() {
           <button
             type="submit"
             form="checkout-form"
-            className="w-full p-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Space_Grotesk'] hover:bg-sky-800 transition-colors"
+            className="md:hidden w-full p-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Space_Grotesk'] hover:bg-sky-800 transition-colors"
           >
             Proceed to Shipping
           </button>

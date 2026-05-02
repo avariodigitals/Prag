@@ -6,16 +6,8 @@ import CheckoutStepper from './CheckoutStepper';
 import CheckoutSummary from './CheckoutSummary';
 
 const METHODS = [
-  {
-    id: 'local_pickup',
-    label: 'Local Pickup',
-    description: 'Pickup your products from our store.',
-  },
-  {
-    id: 'custom_shipping',
-    label: 'Custom Shipping',
-    description: 'Chat with support for your custom shipping arrangement',
-  },
+  { id: 'local_pickup', label: 'Local Pickup', description: 'Pickup your products from our store.' },
+  { id: 'custom_shipping', label: 'Custom Shipping', description: 'Chat with support for your custom shipping arrangement' },
 ];
 
 export default function ShippingView() {
@@ -31,13 +23,12 @@ export default function ShippingView() {
   }
 
   return (
-    <div className="w-full p-20 flex flex-col items-center gap-10">
+    <div className="w-full px-4 md:px-20 py-6 md:py-10 flex flex-col items-center gap-6 md:gap-10">
       <CheckoutStepper activeStep={1} />
 
-      <div className="w-full flex items-start gap-10">
-        {/* Shipping method form */}
-        <div className="flex-1 p-8 bg-white rounded-2xl outline outline-[1.31px] outline-gray-200 flex flex-col gap-6">
-          <h2 className="text-zinc-900 text-xl font-bold font-['Space_Grotesk'] leading-8">Shipping Method</h2>
+      <div className="w-full flex flex-col-reverse md:flex-row items-start gap-6 md:gap-10">
+        <div className="w-full md:flex-1 p-4 md:p-8 bg-white rounded-2xl outline outline-[1.31px] outline-gray-200 flex flex-col gap-5">
+          <h2 className="text-zinc-900 text-lg md:text-xl font-bold font-['Space_Grotesk']">Shipping Method</h2>
 
           <div className="flex flex-col gap-3">
             {METHODS.map((method) => {
@@ -47,16 +38,14 @@ export default function ShippingView() {
                   key={method.id}
                   type="button"
                   onClick={() => setSelected(method.id)}
-                  className={`w-full p-3 rounded-2xl outline outline-2 text-left flex flex-col gap-3 transition-colors ${
-                    active
-                      ? 'bg-slate-50 outline-sky-700'
-                      : 'bg-white outline-stone-200 hover:outline-sky-300'
+                  className={`w-full p-3 md:p-4 rounded-2xl outline outline-2 text-left flex flex-col gap-2 transition-colors ${
+                    active ? 'bg-slate-50 outline-sky-700' : 'bg-white outline-stone-200 hover:outline-sky-300'
                   }`}
                 >
-                  <p className={`text-lg font-bold font-['Space_Grotesk'] leading-7 ${active ? 'text-sky-700' : 'text-zinc-500'}`}>
+                  <p className={`text-base font-bold font-['Space_Grotesk'] ${active ? 'text-sky-700' : 'text-zinc-500'}`}>
                     {method.label}
                   </p>
-                  <p className={`text-base font-normal font-['DM_Sans'] leading-6 ${active ? 'text-sky-700' : 'text-zinc-500'}`}>
+                  <p className={`text-sm font-normal font-['Space_Grotesk'] ${active ? 'text-sky-700' : 'text-zinc-500'}`}>
                     {method.description}
                   </p>
                 </button>
@@ -65,7 +54,7 @@ export default function ShippingView() {
           </div>
 
           <div className="flex flex-col gap-1">
-            <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk'] leading-5">Delivery Note</label>
+            <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk']">Delivery Note</label>
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
@@ -73,9 +62,18 @@ export default function ShippingView() {
               className="w-full px-4 py-3 bg-white rounded-[10px] border-[1.31px] border-gray-200 text-zinc-500 text-sm font-normal font-['Space_Grotesk'] focus:border-sky-700 focus:text-zinc-900 transition-colors resize-none outline-none"
             />
           </div>
+
+          <button
+            onClick={proceed}
+            className="hidden md:block w-full p-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Space_Grotesk'] hover:bg-sky-800 transition-colors"
+          >
+            Proceed to Payment
+          </button>
         </div>
 
-        <CheckoutSummary ctaLabel="Proceed to Payment" onCta={proceed} />
+        <div className="w-full md:w-80 lg:w-96 shrink-0">
+          <CheckoutSummary ctaLabel="Proceed to Payment" onCta={proceed} />
+        </div>
       </div>
     </div>
   );

@@ -11,30 +11,33 @@ export async function POST(req: NextRequest) {
   const file = formData.get('file') as File;
   if (!file) return NextResponse.json({ error: 'No file provided' }, { status: 400 });
 
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
+  // Validate file type and size (max 2MB)
+  if (!file.type.startsWith('image/')) {
+    return NextResponse.json({ error: 'File must be an image' }, { status: 400 });
+  }
+  if (file.size > 2 * 1024 * 1024) {
+    return NextResponse.json({ error: 'Image must be under 2MB' }, { status: 400 });
+  }
 
-  // Upload to WP media library
-  const uploadRes = await fetch(`${WP}/wp/v2/media`, {
+  const bytes = await file.arrayBuffer();
+  const base64 = `data:${file.type};base64,${Buffer.from(bytes).toString('base64')}`;
+
+  // Store base64 directly in user meta — no upload_files capability needed
+  const res = await fetch(`${WP}/wp/v2/users/me`, {
     method: 'POST',
     headers: {
+      'Content-Type': 'application/json',
       Authorization: `Bearer ${session.token}`,
-      'Content-Disposition': `attachment; filename="${file.name}"`,
-      'Content-Type': file.type,
+      'Connection': 'keep-alive',
     },
-    body: buffer,
+    body: JSON.stringify({ meta: { prag_avatar: base64 } }),
   });
 
-  if (!uploadRes.ok) return NextResponse.json({ error: 'Upload failed' }, { status: uploadRes.status });
-  const media = await uploadRes.json();
-  const avatarUrl = media.source_url;
+  if (!res.ok) {
+    const err = await res.text();
+    console.error('Avatar save failed:', err);
+    return NextResponse.json({ error: 'Failed to save avatar' }, { status: res.status });
+  }
 
-  // Save avatar URL to user meta
-  await fetch(`${WP}/wp/v2/users/me`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.token}` },
-    body: JSON.stringify({ meta: { prag_avatar: avatarUrl } }),
-  });
-
-  return NextResponse.json({ url: avatarUrl });
+  return NextResponse.json({ url: base64 });
 }

@@ -13,11 +13,12 @@ function baseUrl() {
 async function wcFetch<T>(path: string, fallback: T): Promise<T> {
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 10000); // 10s timeout
+    const timeout = setTimeout(() => controller.abort(), 8000);
 
     const res = await fetch(`${baseUrl()}${path}${path.includes('?') ? '&' : '?'}${authParams()}`, {
-      next: { revalidate: 60 },
+      next: { revalidate: 300 },
       signal: controller.signal,
+      headers: { 'Connection': 'keep-alive' },
     });
     clearTimeout(timeout);
     if (!res.ok) return fallback;
@@ -179,11 +180,12 @@ function wpBase() {
 async function wpFetch<T>(path: string, fallback: T): Promise<T> {
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 10000); // 10s timeout
+    const timeout = setTimeout(() => controller.abort(), 8000);
 
     const res = await fetch(`${wpBase()}${path}`, { 
-      next: { revalidate: 60 },
+      next: { revalidate: 300 },
       signal: controller.signal,
+      headers: { 'Connection': 'keep-alive' },
     });
     clearTimeout(timeout);
     if (!res.ok) return fallback;

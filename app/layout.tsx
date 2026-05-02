@@ -2,11 +2,7 @@ import type { Metadata } from 'next';
 import { Onest, Space_Grotesk } from 'next/font/google';
 import { CartProvider } from '@/lib/CartContext';
 import { WishlistProvider } from '@/lib/WishlistContext';
-import TopBar from '@/components/TopBar';
-import NavBar from '@/components/NavBar';
-import Footer from '@/components/Footer';
-import ScrollToTop from '@/components/ScrollToTop';
-import NavigationScrollReset from '@/components/NavigationScrollReset';
+import SiteShell from '@/components/SiteShell';
 import './globals.css';
 
 const onest = Onest({ subsets: ['latin'], variable: '--font-onest' });
@@ -49,12 +45,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${onest.variable} ${spaceGrotesk.variable} antialiased`} suppressHydrationWarning>
         <CartProvider>
           <WishlistProvider>
-            <NavigationScrollReset />
-            <TopBar />
-            <NavBar />
-            {children}
-            <Footer />
-            <ScrollToTop />
+            <SiteShell>
+              {children}
+            </SiteShell>
           </WishlistProvider>
         </CartProvider>
       </body>

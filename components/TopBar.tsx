@@ -163,6 +163,18 @@ export default function TopBar() {
   const { count } = useCart();
   const [user, setUser] = useState<{ user_display_name: string } | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setProfileOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   useEffect(() => {
     const userInfo = document.cookie
@@ -220,13 +232,42 @@ export default function TopBar() {
           </Link>
 
           {user ? (
-            <div className="w-32 p-2.5 flex items-center gap-2.5">
-              <div className="w-8 h-8 bg-zinc-300 rounded-sm flex items-center justify-center text-xs font-bold text-neutral-700 shrink-0">
-                {user.user_display_name[0]}
-              </div>
-              <button onClick={handleLogout} className="text-neutral-700/70 text-base font-medium font-['Space_Grotesk'] leading-4 hover:text-sky-700 transition-colors text-left">
-                Logout
+            <div ref={profileRef} className="relative">
+              <button
+                onClick={() => setProfileOpen((o) => !o)}
+                className="w-9 h-9 bg-sky-700 rounded-full flex items-center justify-center text-white text-sm font-bold font-['Space_Grotesk'] hover:bg-sky-800 transition-colors"
+              >
+                {user.user_display_name[0].toUpperCase()}
               </button>
+              {profileOpen && (
+                <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden">
+                  <div className="px-4 py-3 border-b border-gray-100">
+                    <p className="text-zinc-900 text-sm font-semibold font-['Space_Grotesk'] truncate">{user.user_display_name}</p>
+                  </div>
+                  <div className="flex flex-col py-1">
+                    <Link href="/account" onClick={() => setProfileOpen(false)}
+                      className="px-4 py-2.5 text-sm text-zinc-700 font-['Space_Grotesk'] hover:bg-sky-50 hover:text-sky-700 transition-colors">
+                      Dashboard
+                    </Link>
+                    <Link href="/account/profile" onClick={() => setProfileOpen(false)}
+                      className="px-4 py-2.5 text-sm text-zinc-700 font-['Space_Grotesk'] hover:bg-sky-50 hover:text-sky-700 transition-colors">
+                      Profile
+                    </Link>
+                    <Link href="/account/orders" onClick={() => setProfileOpen(false)}
+                      className="px-4 py-2.5 text-sm text-zinc-700 font-['Space_Grotesk'] hover:bg-sky-50 hover:text-sky-700 transition-colors">
+                      Orders
+                    </Link>
+                    <Link href="/wishlist" onClick={() => setProfileOpen(false)}
+                      className="px-4 py-2.5 text-sm text-zinc-700 font-['Space_Grotesk'] hover:bg-sky-50 hover:text-sky-700 transition-colors">
+                      Wishlist
+                    </Link>
+                    <button onClick={() => { setProfileOpen(false); handleLogout(); }}
+                      className="px-4 py-2.5 text-sm text-red-500 font-['Space_Grotesk'] hover:bg-red-50 transition-colors text-left border-t border-gray-100 mt-1">
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <Link href="/login" className="p-2.5 flex items-center gap-2.5 hover:bg-stone-50 rounded-lg transition-colors">

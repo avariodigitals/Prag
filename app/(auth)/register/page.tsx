@@ -114,17 +114,17 @@ export default function RegisterPage() {
   }
 
   return (
-    <main className="h-screen bg-white flex overflow-hidden">
+    <main className="min-h-screen lg:h-screen bg-white flex flex-col lg:flex-row lg:overflow-hidden">
       <AuthPanel
         headline="Shop Reliable Power Systems Built for Real-World Performance"
         subtext="Explore stabilizers, inverters, batteries, and complete power solutions designed to keep your home or business running without interruption."
       />
 
-      <div className="flex-1 flex flex-col items-center justify-center px-6 py-8 lg:px-16 overflow-y-auto">
-        <div className="lg:hidden mb-8 self-start">
+      <div className="flex-1 flex flex-col items-center justify-start px-6 py-10 lg:px-16 lg:overflow-y-auto">
+        <div className="lg:hidden mb-6 self-start">
           <Image
             src="https://central.prag.global/wp-content/uploads/2026/04/prag-inverter-stabilizer-white-logo.png"
-            alt="Prag" width={120} height={28}
+            alt="Prag" width={100} height={24}
             style={{ height: 'auto', width: 'auto', filter: 'invert(1) sepia(1) saturate(5) hue-rotate(175deg)' }}
           />
         </div>

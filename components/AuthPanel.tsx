@@ -7,7 +7,7 @@ interface Props {
 
 export default function AuthPanel({ headline, subtext }: Props) {
   return (
-    <div className="hidden lg:flex w-[520px] xl:w-[600px] shrink-0 relative rounded-[24px] overflow-hidden m-4 min-h-[calc(100vh-32px)]">
+    <div className="hidden lg:flex w-[520px] xl:w-[600px] shrink-0 relative rounded-[24px] overflow-hidden m-4 self-stretch">
       <div className="absolute inset-0 bg-sky-700" />
       {/* Decorative grid squares */}
       {[

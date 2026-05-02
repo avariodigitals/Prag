@@ -9,7 +9,7 @@ interface FlashSalesProps {
   products: Product[];
 }
 
-const VISIBLE = 3;
+const VISIBLE_DESKTOP = 3;
 
 export default function FlashSales({ products }: FlashSalesProps) {
   const [current, setCurrent] = useState(0);
@@ -17,7 +17,7 @@ export default function FlashSales({ products }: FlashSalesProps) {
 
   if (products.length === 0) return null;
 
-  const maxIndex = Math.max(0, products.length - VISIBLE);
+  const maxIndex = Math.max(0, products.length - VISIBLE_DESKTOP);
 
   function prev() { setCurrent((c) => Math.max(0, c - 1)); }
   function next() { setCurrent((c) => Math.min(maxIndex, c + 1)); }
@@ -73,14 +73,13 @@ export default function FlashSales({ products }: FlashSalesProps) {
           onTouchEnd={onTouchEnd}
         >
           <div
-            className="flex gap-6 transition-transform duration-300 ease-in-out"
-            style={{ transform: `translateX(calc(-${current} * (100% / ${VISIBLE} + 8px)))` }}
+            className="flex gap-4 transition-transform duration-300 ease-in-out"
+            style={{ transform: `translateX(calc(-${current} * (100% + 16px)))` }}
           >
             {products.map((product) => (
               <div
                 key={product.id}
-                className="flex-shrink-0"
-                style={{ width: 'calc((100% - 48px) / 3)' }}
+                className="flex-shrink-0 w-full sm:w-[calc((100%-16px)/2)] md:w-[calc((100%-32px)/3)]"
               >
                 <ProductCard product={product} bg="bg-white" />
               </div>

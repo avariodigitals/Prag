@@ -41,8 +41,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${onest.variable} ${spaceGrotesk.variable} antialiased`} suppressHydrationWarning>
+    <html lang="en" className={`${onest.variable} ${spaceGrotesk.variable}`} suppressHydrationWarning>
+      <body className="antialiased" suppressHydrationWarning>
         <CartProvider>
           <WishlistProvider>
             <SiteShell>

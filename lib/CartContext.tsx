@@ -22,13 +22,17 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       const stored = localStorage.getItem('prag_cart');
-      if (stored) setItems(JSON.parse(stored));
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setItems(parsed);
+      }
     } catch {}
     setHydrated(true);
   }, []);
 
   useEffect(() => {
-    if (hydrated) localStorage.setItem('prag_cart', JSON.stringify(items));
+    if (!hydrated) return;
+    localStorage.setItem('prag_cart', JSON.stringify(items));
   }, [items, hydrated]);
 
   const add = useCallback((item: Omit<CartItem, 'quantity'>) => {

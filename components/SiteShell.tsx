@@ -1,28 +1,12 @@
-'use client';
+import { getSession } from '@/lib/auth';
+import SiteShellClient from './SiteShellClient';
+import { cache } from 'react';
 
-import { usePathname } from 'next/navigation';
-import TopBar from './TopBar';
-import NavBar from './NavBar';
-import Footer from './Footer';
-import ScrollToTop from './ScrollToTop';
-import NavigationScrollReset from './NavigationScrollReset';
+const getCachedSession = cache(getSession);
 
-const AUTH_ROUTES = ['/login', '/register'];
+export default async function SiteShell({ children }: { children: React.ReactNode }) {
+  const session = await getCachedSession();
+  const user = session?.user ?? null;
 
-export default function SiteShell({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const isAuth = AUTH_ROUTES.some((r) => pathname.startsWith(r));
-
-  if (isAuth) return <>{children}</>;
-
-  return (
-    <>
-      <NavigationScrollReset />
-      <TopBar />
-      <NavBar />
-      {children}
-      <Footer />
-      <ScrollToTop />
-    </>
-  );
+  return <SiteShellClient user={user}>{children}</SiteShellClient>;
 }

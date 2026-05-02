@@ -5,16 +5,10 @@ import Link from 'next/link';
 import { Search, ShoppingCart, X, Menu } from 'lucide-react';
 import MobileMenu from './MobileMenu';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect, useRef, startTransition, useSyncExternalStore } from 'react';
+import { useState, useEffect, useRef, startTransition } from 'react';
 import { useCart } from '@/lib/CartContext';
 import type { Product } from '@/lib/types';
 import { productUrl } from '@/lib/woocommerce';
-
-const noop = () => () => {};
-
-function useIsClient() {
-  return useSyncExternalStore(noop, () => true, () => false);
-}
 
 function useDebounce(value: string, delay: number) {
   const [debounced, setDebounced] = useState(value);
@@ -164,11 +158,10 @@ function SearchBox({ mobile = false }: { mobile?: boolean }) {
   );
 }
 
-export default function TopBar() {
+export default function TopBar({ initialUser = null }: { initialUser?: { user_display_name: string } | null }) {
   const router = useRouter();
   const { count } = useCart();
-  const isClient = useIsClient();
-  const [user, setUser] = useState<{ user_display_name: string } | null>(null);
+  const [user, setUser] = useState<{ user_display_name: string } | null>(() => initialUser);
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
@@ -181,19 +174,6 @@ export default function TopBar() {
     }
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
-  }, []);
-
-  useEffect(() => {
-    const userInfo = document.cookie
-      .split('; ')
-      .find((row) => row.startsWith('user_info='))
-      ?.split('=')[1];
-    if (userInfo) {
-      try {
-        const data = JSON.parse(decodeURIComponent(userInfo));
-        if (data?.user_display_name) startTransition(() => setUser(data));
-      } catch {}
-    }
   }, []);
 
   async function handleLogout() {
@@ -231,14 +211,12 @@ export default function TopBar() {
 
           <Link href="/cart" aria-label="Cart" className="relative w-9 h-9 flex items-center justify-center hover:bg-stone-50 rounded-full transition-colors">
             <ShoppingCart className="w-7 h-7 text-neutral-700/70" />
-            {count > 0 && (
-              <span suppressHydrationWarning className="absolute -top-1 -right-1 bg-sky-700 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">
-                {count}
-              </span>
-            )}
+            <span suppressHydrationWarning className={`absolute -top-1 -right-1 bg-sky-700 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full transition-opacity ${count > 0 ? 'opacity-100' : 'opacity-0'}`}>
+              {count || ''}
+            </span>
           </Link>
 
-          {isClient && user ? (
+          {user ? (
             <div ref={profileRef} className="relative">
               <button
                 onClick={() => setProfileOpen((o) => !o)}
@@ -297,13 +275,11 @@ export default function TopBar() {
           </Link>
           <Link href="/cart" aria-label="Cart" className="relative w-5 h-5 flex items-center justify-center">
             <ShoppingCart className="w-4 h-4 text-neutral-700/70" />
-            {count > 0 && (
-              <span suppressHydrationWarning className="absolute -top-1 -right-1 bg-sky-700 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
-                {count}
-              </span>
-            )}
+            <span suppressHydrationWarning className={`absolute -top-1 -right-1 bg-sky-700 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full transition-opacity ${count > 0 ? 'opacity-100' : 'opacity-0'}`}>
+              {count || ''}
+            </span>
           </Link>
-          <Link href={isClient && user ? '/account' : '/login'} aria-label="Account" className="w-5 h-5 flex items-center justify-center">
+          <Link href={user ? '/account' : '/login'} aria-label="Account" className="w-5 h-5 flex items-center justify-center">
             <svg className="w-4 h-4 text-neutral-700/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10" />
               <circle cx="12" cy="8" r="3" />

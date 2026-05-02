@@ -23,6 +23,14 @@ export async function generateMetadata({ params }: Props) {
   };
 }
 
+// Known category slug → ID map to skip a network round-trip
+const KNOWN_CATEGORY_IDS: Record<string, number> = {
+  'inverters': Number(process.env.WC_CAT_INVERTERS ?? 0),
+  'solar': Number(process.env.WC_CAT_SOLAR ?? 0),
+  'batteries': Number(process.env.WC_CAT_BATTERIES ?? 0),
+  'all-prag-stabilizers': Number(process.env.WC_CAT_STABILIZERS ?? 0),
+};
+
 export default async function CategoryPage({ params, searchParams }: Props) {
   const { category } = await params;
   const sp = await searchParams;
@@ -31,31 +39,33 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const orderby = sort === 'price' || sort === 'price-desc' ? 'price' : sort || undefined;
   const order = sort === 'price-desc' ? 'desc' : sort ? 'asc' : undefined;
 
+  const knownId = KNOWN_CATEGORY_IDS[category];
+
   const [cat, activeCategory] = await Promise.all([
-    getCategoryBySlug(category),
+    knownId ? Promise.resolve(null) : getCategoryBySlug(category),
     sp.sub ? getCategoryBySlug(sp.sub) : Promise.resolve(null),
   ]);
 
-  if (!cat) {
+  if (!knownId && !cat) {
     const product = await getProductBySlug(category);
     if (product) redirect(productUrl(product));
   }
 
-  const productCategoryId = activeCategory?.id ?? cat?.id;
+  const resolvedCatId = activeCategory?.id ?? (knownId || cat?.id);
   const productCategorySlug = sp.sub ?? category;
 
   const [subcategories, { products, total }] = await Promise.all([
-    cat ? getSubcategoriesByParentId(cat.id) : Promise.resolve([]),
+    resolvedCatId ? getSubcategoriesByParentId(resolvedCatId) : Promise.resolve([]),
     getProducts({
-      category: productCategoryId ? undefined : productCategorySlug,
-      category_id: productCategoryId,
+      category: resolvedCatId ? undefined : productCategorySlug,
+      category_id: resolvedCatId,
       orderby,
       order,
       page: sp.page ? Number(sp.page) : 1,
     }),
   ]);
 
-  if (!cat && products.length === 0) notFound();
+  if (!knownId && !cat && products.length === 0) notFound();
 
   const DISPLAY_NAMES: Record<string, string> = {
     'all-prag-stabilizers': 'Stabilizers',

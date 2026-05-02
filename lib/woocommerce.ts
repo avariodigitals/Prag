@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache';
 import type { Product, Category, Tag, Store } from './types';
 
 function authParams() {
@@ -6,7 +7,6 @@ function authParams() {
 
 function baseUrl() {
   const url = process.env.NEXT_PUBLIC_WP_API_URL ?? '';
-  // Ensure we use the /wc/v3 namespace for WooCommerce REST API
   return url.replace('/wp-json', '/wp-json/wc/v3');
 }
 
@@ -76,11 +76,11 @@ export async function getProducts({
   page?: number;
   per_page?: number;
 }): Promise<ProductsResult> {
-  // Resolve category slug to ID for accurate WooCommerce filtering
+  // Resolve category slug to ID using cached lookup
   let categoryId: string | undefined = category_id ? String(category_id) : undefined;
   if (!categoryId && category) {
-    const cats = await wcFetch<{ id: number }[]>(`/products/categories?slug=${category}`, []);
-    categoryId = cats[0]?.id ? String(cats[0].id) : category;
+    const cat = await getCategoryBySlug(category);
+    categoryId = cat?.id ? String(cat.id) : category;
   }
 
   const qs = new URLSearchParams({
@@ -100,7 +100,7 @@ export async function getProducts({
     const timeout = setTimeout(() => controller.abort(), 10000);
     const res = await fetch(
       `${baseUrl()}/products?${qs}&${authParams()}`,
-      { next: { revalidate: 60 }, signal: controller.signal }
+      { next: { revalidate: 300 }, signal: controller.signal, headers: { 'Connection': 'keep-alive' } }
     );
     clearTimeout(timeout);
     if (!res.ok) return { products: [], total: 0 };
@@ -130,10 +130,14 @@ export async function getProductTags(): Promise<Tag[]> {
   return wcFetch<Tag[]>('/products/tags?per_page=20&hide_empty=true', []);
 }
 
-export async function getCategoryBySlug(slug: string): Promise<Category | null> {
-  const cats = await wcFetch<Category[]>(`/products/categories?slug=${slug}&_fields=${CATEGORY_FIELDS}`, []);
-  return cats[0] ?? null;
-}
+export const getCategoryBySlug = unstable_cache(
+  async (slug: string): Promise<Category | null> => {
+    const cats = await wcFetch<Category[]>(`/products/categories?slug=${slug}&_fields=${CATEGORY_FIELDS}`, []);
+    return cats[0] ?? null;
+  },
+  ['category-by-slug'],
+  { revalidate: 3600 }
+);
 
 export async function searchProducts(query: string, sort?: string, page = 1, per_page = 9): Promise<ProductsResult> {
   const orderby = sort === 'price' || sort === 'price-desc' ? 'price' : sort || undefined;
@@ -168,9 +172,13 @@ export async function getSubcategories(parentSlug: string): Promise<Category[]> 
   return wcFetch<Category[]>(`/products/categories?parent=${parent.id}&per_page=20`, []);
 }
 
-export async function getSubcategoriesByParentId(parentId: number): Promise<Category[]> {
-  return wcFetch<Category[]>(`/products/categories?parent=${parentId}&per_page=20&_fields=${CATEGORY_FIELDS}`, []);
-}
+export const getSubcategoriesByParentId = unstable_cache(
+  async (parentId: number): Promise<Category[]> => {
+    return wcFetch<Category[]>(`/products/categories?parent=${parentId}&per_page=20&_fields=${CATEGORY_FIELDS}`, []);
+  },
+  ['subcategories-by-parent'],
+  { revalidate: 3600 }
+);
 
 // WordPress REST API base (without /wc/v3)
 function wpBase() {

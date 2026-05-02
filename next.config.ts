@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'central.prag.global' },
       { protocol: 'https', hostname: 'placehold.co' },
     ],
+    minimumCacheTTL: 3600,
   },
   env: {
     NEXT_PUBLIC_SHOP_URL: process.env.NEXT_PUBLIC_SHOP_URL ?? 'https://shop.xyz.com',

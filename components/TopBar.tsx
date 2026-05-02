@@ -83,10 +83,10 @@ function SearchBox({ mobile = false }: { mobile?: boolean }) {
 
   const wrapperCls = mobile
     ? "flex-1 h-8 pl-2.5 pr-3 py-2 bg-white rounded-[5px] flex items-center gap-3 overflow-visible relative"
-    : "hidden md:flex w-[566px] h-12 px-3 py-2 bg-white rounded-md border border-gray-300 items-center gap-3 relative";
+    : "hidden md:flex flex-1 max-w-[566px] h-12 px-3 py-2 bg-white rounded-md border border-gray-300 items-center gap-3 relative";
 
   return (
-    <div ref={containerRef} className={mobile ? 'flex-1 relative' : 'hidden md:block relative'}>
+    <div ref={containerRef} className={mobile ? 'flex-1 relative' : 'hidden md:block relative flex-1 max-w-[566px]'}>
       <form onSubmit={handleSubmit} className={wrapperCls}>
         <input
           type="text"
@@ -198,8 +198,8 @@ export default function TopBar() {
   return (
     <>
       <div className="w-full px-4 md:px-20 py-5 bg-white flex justify-between items-center">
-        <Link href="/">
-          <Image src="/Prag Logo.png" alt="Prag" width={140} height={40} priority className="h-8 md:h-10 w-auto" />
+        <Link href="/" className="shrink-0">
+          <Image src="/Prag Logo.png" alt="Prag" width={140} height={40} priority className="h-8 md:h-10 w-auto" style={{ width: 'auto' }} />
         </Link>
 
         <SearchBox />

@@ -104,18 +104,18 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
           </div>
         </div>
 
-        <div className="flex items-center gap-2 w-full justify-center">
+        <div className="flex items-center gap-2 w-full">
           <Link
             href={productUrl(product)}
-            className="flex-1 max-w-[130px] p-3 bg-sky-700 rounded-full flex justify-center items-center gap-2.5 hover:bg-sky-800 transition-all hover:shadow-md"
+            className="flex-1 py-2.5 px-3 bg-sky-700 rounded-full flex justify-center items-center gap-2.5 hover:bg-sky-800 transition-all hover:shadow-md"
           >
-            <span className="text-stone-50 text-sm font-medium font-['Space_Grotesk']">Learn more</span>
+            <span className="text-stone-50 text-sm font-medium font-['Space_Grotesk'] whitespace-nowrap">Learn more</span>
           </Link>
           <a
             href={shopUrl(product.slug)}
-            className="flex-1 max-w-[110px] p-3 rounded-full flex justify-center items-center gap-2.5 hover:bg-sky-50 transition-colors"
+            className="flex-1 py-2.5 px-3 rounded-full flex justify-center items-center gap-2.5 hover:bg-sky-50 transition-colors border border-sky-700"
           >
-            <span className="text-sky-700 text-sm font-medium font-['Space_Grotesk']">Buy &gt;</span>
+            <span className="text-sky-700 text-sm font-medium font-['Space_Grotesk'] whitespace-nowrap">Buy &gt;</span>
           </a>
         </div>
       </div>

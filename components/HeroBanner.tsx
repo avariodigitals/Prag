@@ -16,8 +16,8 @@ export default function HeroBanner() {
       <div className="absolute inset-0 bg-black/60 md:bg-black/60" />
 
       <div className="w-full max-w-[1280px] flex flex-col md:flex-row justify-between items-center gap-10 md:gap-12 relative z-10">
-        {/* Mobile Product Image (Top) */}
-        <div className="md:hidden flex justify-center w-full mb-4">
+        {/* Product Image — top on mobile, right on desktop */}
+        <div className="flex justify-center w-full md:hidden">
           <div className="relative w-48 h-60">
             <Image 
               src="https://central.prag.global/wp-content/uploads/2026/04/eebd514c0d3e75e4f32cb8fd691c7b3613fd99d5.png"
@@ -57,8 +57,6 @@ export default function HeroBanner() {
             <div className="hidden md:block w-2.5 h-2.5 bg-white/20 rounded-full cursor-pointer hover:bg-white/40 transition-colors" />
             <div className="hidden md:block w-2.5 h-2.5 bg-white/20 rounded-full cursor-pointer hover:bg-white/40 transition-colors" />
             <div className="hidden md:block w-2.5 h-2.5 bg-white/20 rounded-full cursor-pointer hover:bg-white/40 transition-colors" />
-            
-            {/* Mobile indicator */}
             <div className="md:hidden w-14 h-2.5 bg-white" />
           </div>
         </div>

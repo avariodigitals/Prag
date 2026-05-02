@@ -10,12 +10,10 @@ import { useCart } from '@/lib/CartContext';
 import type { Product } from '@/lib/types';
 import { productUrl } from '@/lib/woocommerce';
 
+const noop = () => () => {};
+
 function useIsClient() {
-  return useSyncExternalStore(
-    (cb) => { window.addEventListener('storage', cb); return () => window.removeEventListener('storage', cb); },
-    () => true,
-    () => false,
-  );
+  return useSyncExternalStore(noop, () => true, () => false);
 }
 
 function useDebounce(value: string, delay: number) {

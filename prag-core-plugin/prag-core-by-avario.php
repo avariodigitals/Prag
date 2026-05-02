@@ -84,6 +84,13 @@ class Prag_Core_Bridge {
             'permission_callback' => '__return_true',
         ]);
 
+        // Forgot password endpoint
+        register_rest_route($namespace, '/forgot-password', [
+            'methods' => 'POST',
+            'callback' => [$this, 'handle_forgot_password'],
+            'permission_callback' => '__return_true',
+        ]);
+
         // Distributor application endpoint
         register_rest_route($namespace, '/distributor', [
             'methods' => 'POST',
@@ -217,6 +224,17 @@ class Prag_Core_Bridge {
         delete_user_meta($user->ID, 'prag_otp_expires');
 
         return ['success' => true, 'user_id' => $user->ID, 'message' => 'Email verified'];
+    }
+
+    public function handle_forgot_password($request) {
+        $email = sanitize_email($request->get_json_params()['email'] ?? '');
+        if (!$email) return new WP_Error('missing_email', 'Email required', ['status' => 400]);
+
+        $user = get_user_by('email', $email);
+        if (!$user) return new WP_Error('not_found', 'No account found', ['status' => 404]);
+
+        retrieve_password($user->user_login);
+        return ['success' => true];
     }
 
     public function handle_distributor_application($request) {

@@ -32,25 +32,41 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       .finally(() => setLoading(false));
   }, []);
 
-  async function save(updated: WishlistItem[]) {
+  const save = useCallback(async (updated: WishlistItem[]) => {
     setItems(updated);
     await fetch('/api/wishlist', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ items: updated }),
     });
-  }
+  }, []);
 
   const isWishlisted = useCallback((id: number) => items.some((i) => i.id === id), [items]);
 
   const toggle = useCallback(async (product: WishlistItem) => {
-    const exists = items.some((i) => i.id === product.id);
-    await save(exists ? items.filter((i) => i.id !== product.id) : [...items, product]);
-  }, [items]);
+    setItems((prev) => {
+      const exists = prev.some((i) => i.id === product.id);
+      const updated = exists ? prev.filter((i) => i.id !== product.id) : [...prev, product];
+      fetch('/api/wishlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: updated }),
+      });
+      return updated;
+    });
+  }, []);
 
   const remove = useCallback(async (id: number) => {
-    await save(items.filter((i) => i.id !== id));
-  }, [items]);
+    setItems((prev) => {
+      const updated = prev.filter((i) => i.id !== id);
+      fetch('/api/wishlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: updated }),
+      });
+      return updated;
+    });
+  }, []);
 
   return (
     <WishlistContext.Provider value={{ items, isWishlisted, toggle, remove, setItems, authed, loading }}>

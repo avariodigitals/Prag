@@ -4,8 +4,10 @@ import { useEffect, useState } from 'react';
 
 export default function ScrollToTop() {
   const [visible, setVisible] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     function onScroll() {
       setVisible(window.scrollY > 400);
     }
@@ -13,7 +15,7 @@ export default function ScrollToTop() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  if (!visible) return null;
+  if (!mounted || !visible) return null;
 
   return (
     <button

@@ -5,10 +5,18 @@ import Link from 'next/link';
 import { Search, ShoppingCart, X, Menu } from 'lucide-react';
 import MobileMenu from './MobileMenu';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect, useRef, startTransition } from 'react';
+import { useState, useEffect, useRef, startTransition, useSyncExternalStore } from 'react';
 import { useCart } from '@/lib/CartContext';
 import type { Product } from '@/lib/types';
 import { productUrl } from '@/lib/woocommerce';
+
+function useIsClient() {
+  return useSyncExternalStore(
+    (cb) => { window.addEventListener('storage', cb); return () => window.removeEventListener('storage', cb); },
+    () => true,
+    () => false,
+  );
+}
 
 function useDebounce(value: string, delay: number) {
   const [debounced, setDebounced] = useState(value);
@@ -161,6 +169,7 @@ function SearchBox({ mobile = false }: { mobile?: boolean }) {
 export default function TopBar() {
   const router = useRouter();
   const { count } = useCart();
+  const isClient = useIsClient();
   const [user, setUser] = useState<{ user_display_name: string } | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -231,7 +240,7 @@ export default function TopBar() {
             )}
           </Link>
 
-          {user ? (
+          {isClient && user ? (
             <div ref={profileRef} className="relative">
               <button
                 onClick={() => setProfileOpen((o) => !o)}
@@ -296,7 +305,7 @@ export default function TopBar() {
               </span>
             )}
           </Link>
-          <Link href={user ? '/account' : '/login'} aria-label="Account" className="w-5 h-5 flex items-center justify-center">
+          <Link href={isClient && user ? '/account' : '/login'} aria-label="Account" className="w-5 h-5 flex items-center justify-center">
             <svg className="w-4 h-4 text-neutral-700/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10" />
               <circle cx="12" cy="8" r="3" />

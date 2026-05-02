@@ -46,8 +46,8 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
   const wishlisted = isWishlisted(product.id);
 
   return (
-    <div className="flex-1 min-w-[300px] relative inline-flex flex-col gap-4 group">
-      <div className={`w-full h-64 px-6 ${bg} relative flex justify-center items-center overflow-hidden rounded-2xl`}>
+    <div className="w-full relative flex flex-col gap-3 group">
+      <div className={`w-full h-52 px-4 ${bg} relative flex justify-center items-center overflow-hidden rounded-xl`}>
         {image ? (
           <Image
             src={image.src}
@@ -66,14 +66,14 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
         )}
 
         {product.on_sale && (
-          <div className="absolute left-6 top-6 px-3 py-1 bg-red-600 rounded-full flex justify-center items-center overflow-hidden">
+          <div className="absolute left-2 top-2 px-2 py-0.5 bg-red-600 rounded-full flex justify-center items-center overflow-hidden">
             <span className="text-white text-xs font-bold font-['Space_Grotesk'] uppercase tracking-wider">SALE</span>
           </div>
         )}
 
         {isNew && !product.on_sale && (
-          <div className="absolute left-6 top-6 px-3 py-1 bg-lime-700 rounded-full flex justify-center items-center overflow-hidden">
-            <span className="text-stone-50 text-xs font-bold font-['Space_Grotesk'] uppercase tracking-wider">NEW !</span>
+          <div className="absolute left-2 top-2 px-2 py-0.5 bg-lime-700 rounded-full flex justify-center items-center overflow-hidden">
+            <span className="text-stone-50 text-xs font-bold font-['Space_Grotesk'] uppercase tracking-wider">NEW</span>
           </div>
         )}
 
@@ -81,13 +81,13 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
           onClick={handleWishlist}
           disabled={saving}
           aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-          className="absolute top-6 right-6 p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-colors"
+          className="absolute top-2 right-2 p-1.5 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-colors"
         >
-          <Heart className={`w-5 h-5 transition-colors ${wishlisted ? 'text-sky-700 fill-sky-700' : 'text-zinc-500'}`} />
+          <Heart className={`w-4 h-4 transition-colors ${wishlisted ? 'text-sky-700 fill-sky-700' : 'text-zinc-500'}`} />
         </button>
       </div>
 
-      <div className="flex flex-col items-center gap-3 px-2">
+      <div className="flex flex-col items-center gap-2 px-1">
         <div className="w-full flex flex-col gap-2">
           <p className="text-center text-zinc-900 text-lg font-medium font-['Onest'] line-clamp-1 group-hover:text-sky-700 transition-colors">
             {product.name}
@@ -104,7 +104,7 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
           </div>
         </div>
 
-        <div className="flex items-center gap-3.5 w-full justify-center">
+        <div className="flex items-center gap-2 w-full justify-center">
           <Link
             href={productUrl(product)}
             className="flex-1 max-w-[130px] p-3 bg-sky-700 rounded-full flex justify-center items-center gap-2.5 hover:bg-sky-800 transition-all hover:shadow-md"

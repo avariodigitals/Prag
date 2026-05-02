@@ -84,6 +84,13 @@ class Prag_Core_Bridge {
             'permission_callback' => '__return_true',
         ]);
 
+        // Distributor application endpoint
+        register_rest_route($namespace, '/distributor', [
+            'methods' => 'POST',
+            'callback' => [$this, 'handle_distributor_application'],
+            'permission_callback' => '__return_true',
+        ]);
+
         // Settings endpoint (GET/POST)
         register_rest_route($namespace, '/settings', [
             [
@@ -210,6 +217,83 @@ class Prag_Core_Bridge {
         delete_user_meta($user->ID, 'prag_otp_expires');
 
         return ['success' => true, 'user_id' => $user->ID, 'message' => 'Email verified'];
+    }
+
+    public function handle_distributor_application($request) {
+        $p = $request->get_json_params();
+
+        $required = ['name', 'email', 'business'];
+        foreach ($required as $field) {
+            if (empty($p[$field])) {
+                return new WP_Error('missing_fields', ucfirst($field) . ' is required.', ['status' => 400]);
+            }
+        }
+
+        $name     = sanitize_text_field($p['name']);
+        $email    = sanitize_email($p['email']);
+        $business = sanitize_text_field($p['business']);
+        $phone    = sanitize_text_field($p['phone'] ?? '');
+        $city     = sanitize_text_field($p['city'] ?? '');
+        $type     = sanitize_text_field($p['type'] ?? '');
+        $tier     = sanitize_text_field($p['tier'] ?? '');
+        $message  = sanitize_textarea_field($p['message'] ?? '');
+
+        // Store as a custom post for the admin to review
+        wp_insert_post([
+            'post_type'   => 'prag_distributor',
+            'post_title'  => $name . ' – ' . $business,
+            'post_status' => 'private',
+            'meta_input'  => [
+                'applicant_name'     => $name,
+                'applicant_email'    => $email,
+                'applicant_phone'    => $phone,
+                'business_name'      => $business,
+                'business_city'      => $city,
+                'business_type'      => $type,
+                'partnership_tier'   => $tier,
+                'applicant_message'  => $message,
+                'submitted_at'       => current_time('mysql'),
+            ],
+        ]);
+
+        // Email notification to admin
+        $site_name  = get_bloginfo('name');
+        $admin_email = get_option('admin_email');
+        $from_email  = 'noreply@' . parse_url(get_site_url(), PHP_URL_HOST);
+
+        $subject = 'New Distributor Application – ' . $name;
+        $body  = "New distributor application received.\r\n\r\n";
+        $body .= "Name:             {$name}\r\n";
+        $body .= "Email:            {$email}\r\n";
+        $body .= "Phone:            {$phone}\r\n";
+        $body .= "Business:         {$business}\r\n";
+        $body .= "City:             {$city}\r\n";
+        $body .= "Business Type:    {$type}\r\n";
+        $body .= "Partnership Tier: {$tier}\r\n\r\n";
+        $body .= "Message:\r\n{$message}\r\n\r\n";
+        $body .= "-- \r\n{$site_name}\r\n";
+
+        $headers = [
+            'Content-Type: text/plain; charset=UTF-8',
+            'From: ' . $site_name . ' <' . $from_email . '>',
+            'Reply-To: ' . $name . ' <' . $email . '>',
+        ];
+
+        wp_mail($admin_email, $subject, $body, $headers);
+
+        // Confirmation email to applicant
+        $confirm_subject = 'We received your PRAG partnership application';
+        $confirm_body  = "Hi {$name},\r\n\r\n";
+        $confirm_body .= "Thank you for applying to become a PRAG distributor.\r\n";
+        $confirm_body .= "Our partnership team will review your application and contact you within 2 business days.\r\n\r\n";
+        $confirm_body .= "Application summary:\r\n";
+        $confirm_body .= "Business: {$business}\r\n";
+        $confirm_body .= "Tier: {$tier}\r\n\r\n";
+        $confirm_body .= "-- \r\n{$site_name}\r\n";
+
+        wp_mail($email, $confirm_subject, $confirm_body, $headers);
+
+        return ['success' => true, 'message' => 'Application received'];
     }
 
     /**

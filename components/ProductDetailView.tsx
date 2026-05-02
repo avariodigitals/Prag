@@ -6,8 +6,9 @@ import { useState, useEffect } from 'react';
 import { Minus, Plus } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import type { ProductReview, TechDocument } from '@/lib/woocommerce';
-import { formatPrice, shopUrl } from '@/lib/woocommerce';
+import { formatPrice } from '@/lib/woocommerce';
 import { useCart } from '@/lib/CartContext';
+import { useRouter } from 'next/navigation';
 import ProductCard from './ProductCard';
 
 function cleanWpContent(html: string): string {
@@ -34,26 +35,63 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
   const [activeTab, setActiveTab] = useState('Description');
   const [pageUrl, setPageUrl] = useState('');
   const { add } = useCart();
-  const image = product.images[0];
+  const router = useRouter();
+  const image = product.images?.[0];
 
   useEffect(() => {
     setPageUrl(window.location.href);
   }, []);
 
+  const [addedToCart, setAddedToCart] = useState(false);
+  const [adding, setAdding] = useState(false);
+
   function handleAddToCart() {
-    for (let i = 0; i < qty; i++) {
+    setAdding(true);
+    add({
+      id: product.id,
+      name: product.name,
+      price: Number(product.price),
+      slug: product.slug,
+      image: product.images?.[0]?.src ?? '',
+    });
+    for (let i = 1; i < qty; i++) {
       add({
         id: product.id,
         name: product.name,
         price: Number(product.price),
         slug: product.slug,
-        image: image?.src ?? '',
+        image: product.images?.[0]?.src ?? '',
       });
     }
+    setTimeout(() => {
+      setAdding(false);
+      setAddedToCart(true);
+      setTimeout(() => setAddedToCart(false), 2000);
+    }, 600);
+  }
+
+  function handleBuyNow() {
+    add({
+      id: product.id,
+      name: product.name,
+      price: Number(product.price),
+      slug: product.slug,
+      image: product.images?.[0]?.src ?? '',
+    });
+    for (let i = 1; i < qty; i++) {
+      add({
+        id: product.id,
+        name: product.name,
+        price: Number(product.price),
+        slug: product.slug,
+        image: product.images?.[0]?.src ?? '',
+      });
+    }
+    router.push('/checkout');
   }
 
   return (
-    <div className="w-full px-4 md:px-20 py-8 md:py-14 flex flex-col gap-8 md:gap-12">
+    <div className="w-full px-4 md:px-20 py-6 md:py-8 flex flex-col gap-6 md:gap-10">
       {/* Product hero */}
       <div className="flex flex-col md:flex-row gap-6 md:gap-10 items-start md:items-center">
         {/* Image */}
@@ -85,14 +123,28 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
 
           {/* CTAs */}
           <div className="flex gap-4">
-            <button onClick={handleAddToCart}
-              className="flex-1 p-4 bg-sky-700 rounded-3xl flex justify-center items-center gap-2.5 hover:bg-sky-800 transition-colors">
-              <span className="text-white text-base font-medium font-['Space_Grotesk']">Add to Cart</span>
+            <button onClick={handleAddToCart} disabled={adding || addedToCart}
+              className="flex-1 p-4 bg-sky-700 rounded-3xl flex justify-center items-center gap-2.5 hover:bg-sky-800 transition-colors disabled:opacity-80">
+              {adding ? (
+                <svg className="w-4 h-4 text-white animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                </svg>
+              ) : addedToCart ? (
+                <>
+                  <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span className="text-white text-base font-medium font-['Space_Grotesk']">Added to Cart</span>
+                </>
+              ) : (
+                <span className="text-white text-base font-medium font-['Space_Grotesk']">Add to Cart</span>
+              )}
             </button>
-            <a href={shopUrl(product.slug)}
-              className="flex-1 p-4 bg-sky-700 rounded-3xl flex justify-center items-center gap-2.5 hover:bg-sky-800 transition-colors">
-              <span className="text-white text-base font-medium font-['Space_Grotesk']">Buy &gt;</span>
-            </a>
+            <button onClick={handleBuyNow}
+              className="flex-1 p-4 bg-sky-800 rounded-3xl flex justify-center items-center gap-2.5 hover:bg-sky-900 transition-colors">
+              <span className="text-white text-base font-medium font-['Space_Grotesk']">Buy Now</span>
+            </button>
           </div>
           <Link href="/contact"
             className="w-full p-4 rounded-3xl outline outline-1 outline-sky-700 flex justify-center items-center gap-2.5 hover:bg-sky-50 transition-colors">
@@ -108,10 +160,7 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
               <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`} target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">
                 <svg className="w-5 h-5 text-neutral-700 hover:text-sky-700 transition-colors" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
               </a>
-              <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(pageUrl)}`} target="_blank" rel="noopener noreferrer" aria-label="Share on Twitter">
-                <svg className="w-5 h-5 text-neutral-700 hover:text-sky-700 transition-colors" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-              </a>
-              <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+              <a href="https://www.instagram.com/prag_ng/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                 <svg className="w-5 h-5 text-neutral-700 hover:text-sky-700 transition-colors" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/></svg>
               </a>
               <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(pageUrl)}`} target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn">

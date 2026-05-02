@@ -10,10 +10,16 @@ interface Props {
 
 export async function generateMetadata({ params }: Props) {
   const { category } = await params;
-  const cat = await getCategoryBySlug(category);
+  const DISPLAY_NAMES: Record<string, string> = {
+    'all-prag-stabilizers': 'Stabilizers',
+    'inverters': 'Inverters',
+    'solar': 'Solar Panels',
+    'batteries': 'Batteries',
+  };
+  const name = DISPLAY_NAMES[category] ?? (await getCategoryBySlug(category))?.name ?? category;
   return {
-    title: cat ? `${cat.name} – Prag` : 'Products – Prag',
-    description: cat?.description ?? '',
+    title: `${name} – Prag`,
+    description: '',
   };
 }
 
@@ -51,7 +57,13 @@ export default async function CategoryPage({ params, searchParams }: Props) {
 
   if (!cat && products.length === 0) notFound();
 
-  const displayName = cat?.name ?? category.charAt(0).toUpperCase() + category.slice(1);
+  const DISPLAY_NAMES: Record<string, string> = {
+    'all-prag-stabilizers': 'Stabilizers',
+    'inverters': 'Inverters',
+    'solar': 'Solar Panels',
+    'batteries': 'Batteries',
+  };
+  const displayName = DISPLAY_NAMES[category] ?? cat?.name ?? category.charAt(0).toUpperCase() + category.slice(1);
   const description = cat?.description ?? '';
 
   return (
@@ -80,8 +92,9 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       </div>
 
       {/* Products */}
-      <div className="w-full px-4 md:px-20 py-6 md:py-8 bg-white flex flex-col gap-6">
-        <CategoryProductsGrid
+      <div className="w-full px-4 md:px-20 py-6 md:py-8 bg-white flex justify-center">
+        <div className="w-full max-w-[1280px]">
+          <CategoryProductsGrid
           products={products}
           total={total}
           subcategories={subcategories}
@@ -89,6 +102,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
           activeSub={sp.sub}
           activeSort={sp.sort}
         />
+        </div>
       </div>
     </main>
   );

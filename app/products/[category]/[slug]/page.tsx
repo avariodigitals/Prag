@@ -33,13 +33,13 @@ export default async function ProductDetailPage({ params }: Props) {
 
   return (
     <main className="w-full bg-white flex flex-col">
-      <div className="w-full px-4 md:px-20 py-6 md:py-10 bg-stone-50 flex flex-col gap-6">
+      <div className="w-full px-4 md:px-20 py-3 md:py-4 bg-stone-50 flex flex-col gap-3">
         <div className="flex items-center gap-1 flex-wrap">
-          <Link href="/products" className="text-sky-700 text-sm md:text-2xl font-medium font-['Onest'] hover:underline">Product Catalog</Link>
-          <span className="text-zinc-500 text-xs md:text-base font-medium font-['Onest'] mx-1">/</span>
-          <Link href={`/products/${category}`} className="text-zinc-500 text-xs md:text-base font-medium font-['Onest'] hover:underline capitalize">{category}</Link>
-          <span className="text-zinc-500 text-xs md:text-base font-medium font-['Onest'] mx-1">/</span>
-          <span className="text-zinc-500 text-xs md:text-base font-medium font-['Onest'] truncate max-w-xs">{product.name}</span>
+          <Link href="/products" className="text-sky-700 text-sm font-medium font-['Onest'] hover:underline">Product Catalog</Link>
+          <span className="text-zinc-500 text-xs font-medium font-['Onest'] mx-1">/</span>
+          <Link href={`/products/${category}`} className="text-zinc-500 text-xs font-medium font-['Onest'] hover:underline capitalize">{category}</Link>
+          <span className="text-zinc-500 text-xs font-medium font-['Onest'] mx-1">/</span>
+          <span className="text-zinc-500 text-xs font-medium font-['Onest'] truncate max-w-xs">{product.name}</span>
         </div>
       </div>
       <ProductDetailView product={product} relatedProducts={relatedFiltered} reviews={reviews} techDocs={techDocs} />

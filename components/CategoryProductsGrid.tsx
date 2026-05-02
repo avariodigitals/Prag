@@ -60,10 +60,22 @@ export default function CategoryProductsGrid({
     'solar': 'All Solar Panels',
     'batteries': 'All Batteries',
   };
-  const allLabel = SLUG_TO_LABEL[categorySlug] ?? `All ${categorySlug.charAt(0).toUpperCase() + categorySlug.slice(1)}s`;
+
+  // Only show major subcategories — filter out granular WP sub-cats
+  const MAJOR_SUBS: Record<string, string[]> = {
+    'all-prag-stabilizers': [],
+    'inverters': [],
+    'solar': [],
+    'batteries': [],
+  };
+  const majorSubs = categorySlug in MAJOR_SUBS
+    ? subcategories.filter((s) => MAJOR_SUBS[categorySlug].includes(s.slug))
+    : subcategories;
+
+  const allLabel = SLUG_TO_LABEL[categorySlug] ?? `All ${categorySlug.charAt(0).toUpperCase() + categorySlug.slice(1)}`;
   const tabs = [
     { key: 'all', label: allLabel, slug: undefined },
-    ...subcategories.map((s) => ({ key: String(s.id), label: s.name, slug: s.slug })),
+    ...majorSubs.map((s) => ({ key: String(s.id), label: s.name, slug: s.slug })),
   ];
 
   return (
@@ -122,7 +134,7 @@ export default function CategoryProductsGrid({
           <p className="text-gray-400 text-lg font-['Space_Grotesk']">No products found.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {products.map((product) => (
             <ProductCard key={product.id} product={product} bg="bg-white" />
           ))}

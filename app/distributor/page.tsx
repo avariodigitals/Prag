@@ -21,7 +21,7 @@ export default function DistributorPage() {
   return (
     <main className="w-full bg-white flex flex-col">
       {/* Hero */}
-      <div className="w-full px-4 pt-10 md:pt-20 pb-8 md:pb-10 bg-stone-50 flex flex-col items-center gap-4 md:gap-6">
+      <div className="w-full px-4 pt-8 md:pt-12 pb-6 md:pb-8 bg-stone-50 flex flex-col items-center gap-3">
         <h1 className="text-sky-700 text-3xl md:text-5xl font-bold font-['Onest'] text-center">
           Sell the Solutions Nigeria Needs.
         </h1>
@@ -31,68 +31,62 @@ export default function DistributorPage() {
       </div>
 
       {/* Benefits */}
-      <section className="w-full px-4 md:px-20 py-10 md:py-12 flex flex-col gap-10 md:gap-20">
-        <div className="flex flex-col md:flex-row items-start gap-6 md:gap-24">
-          <div className="flex flex-col gap-4 md:gap-7">
-            <div className="flex items-center gap-1.5">
-              <div className="w-4 h-4 bg-sky-700" />
-              <span className="text-zinc-900 text-base font-normal font-['Space_Grotesk']">PARTNER BENEFITS</span>
-            </div>
-            <h2 className="max-w-[631px] text-zinc-900 text-3xl md:text-5xl font-bold font-['Onest']">
-              Everything You Need to Build a Thriving Power Business
-            </h2>
+      <section className="w-full px-4 md:px-20 py-8 md:py-10 flex flex-col gap-6 md:gap-10">
+        <div className="flex flex-col gap-3 md:gap-4">
+          <div className="flex items-center gap-1.5">
+            <div className="w-4 h-4 bg-sky-700" />
+            <span className="text-zinc-900 text-base font-normal font-['Space_Grotesk']">PARTNER BENEFITS</span>
           </div>
+          <h2 className="max-w-[631px] text-zinc-900 text-2xl md:text-4xl font-bold font-['Onest']">
+            Everything You Need to Build a Thriving Power Business
+          </h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {BENEFITS.map((b) => (
-            <div key={b.title} className="p-6 rounded-3xl outline outline-[0.3px] outline-zinc-500/50 flex flex-col gap-6 md:gap-36">
-              <div className="flex flex-col gap-4">
-                <div className="w-8 h-8 bg-sky-700 rounded-full" />
-                <h3 className="text-zinc-900 text-xl md:text-2xl font-medium font-['Onest']">{b.title}</h3>
-              </div>
-              <p className="text-neutral-700 text-base md:text-lg font-normal font-['Onest']">{b.body}</p>
+            <div key={b.title} className="p-5 rounded-2xl outline outline-[0.3px] outline-zinc-500/50 flex flex-col gap-4">
+              <div className="w-7 h-7 bg-sky-700 rounded-full" />
+              <h3 className="text-zinc-900 text-lg font-medium font-['Onest']">{b.title}</h3>
+              <p className="text-neutral-700 text-sm font-normal font-['Onest']">{b.body}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* Partnership tiers */}
-      <section className="w-full px-4 md:px-20 py-12 md:py-24 flex flex-col gap-10 md:gap-20">
-        <div className="flex flex-col items-center gap-4 md:gap-7">
+      <section className="w-full px-4 md:px-20 py-8 md:py-10 flex flex-col gap-6 md:gap-8">
+        <div className="flex flex-col items-center gap-3">
           <div className="flex items-center gap-1.5">
             <div className="w-4 h-4 bg-sky-700" />
             <span className="text-zinc-900 text-base font-normal font-['Space_Grotesk']">PARTNERSHIP TIER</span>
           </div>
-          <h2 className="max-w-[631px] text-center text-zinc-900 text-3xl md:text-5xl font-bold font-['Onest']">
+          <h2 className="max-w-[631px] text-center text-zinc-900 text-2xl md:text-4xl font-bold font-['Onest']">
             Choose the Tier That Fits Your Business
           </h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {TIERS.map((tier) => (
-            <div key={tier.title} className="p-6 bg-white rounded-3xl outline outline-[0.3px] outline-zinc-500/50 flex flex-col gap-10 md:gap-36">
-              <div className="flex flex-col gap-3">
-                <div className="p-3 bg-sky-700 rounded-full w-fit">
-                  <div className="w-4 h-4 bg-white rounded-sm" />
-                </div>
-                <h3 className="text-zinc-900 text-xl md:text-2xl font-medium font-['Onest']">{tier.title}</h3>
+            <div key={tier.title} className="p-5 bg-white rounded-2xl outline outline-[0.3px] outline-zinc-500/50 flex flex-col gap-4">
+              <div className="p-2.5 bg-sky-700 rounded-full w-fit">
+                <div className="w-4 h-4 bg-white rounded-sm" />
               </div>
-              <p className="text-neutral-700 text-base md:text-lg font-normal font-['Onest']">{tier.body}</p>
+              <h3 className="text-zinc-900 text-lg font-medium font-['Onest']">{tier.title}</h3>
+              <p className="text-neutral-700 text-sm font-normal font-['Onest']">{tier.body}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* Application form */}
-      <section className="w-full px-4 md:px-20 py-12 md:py-24 bg-neutral-50 flex flex-col items-center gap-10 md:gap-20">
-        <div className="flex flex-col items-center gap-4 md:gap-6">
+      <section className="w-full px-4 md:px-20 py-8 md:py-10 bg-neutral-50 flex flex-col items-center gap-6">
+        <div className="flex flex-col items-center gap-3">
           <div className="flex items-center gap-1.5">
             <div className="w-4 h-4 bg-sky-700" />
             <span className="text-zinc-900 text-base font-normal font-['Space_Grotesk']">APPLICATION FORM</span>
           </div>
-          <h2 className="max-w-[631px] text-center text-zinc-900 text-3xl md:text-5xl font-bold font-['Onest']">
+          <h2 className="max-w-[631px] text-center text-zinc-900 text-2xl md:text-4xl font-bold font-['Onest']">
             Start Your PRAG Partnership
           </h2>
-          <p className="max-w-[840px] text-center text-neutral-700 text-base md:text-xl font-normal font-['Onest']">
+          <p className="max-w-[631px] text-center text-neutral-700 text-sm md:text-base font-normal font-['Onest']">
             Fill in the form below and our partnership team will contact you within 2 business days.
           </p>
         </div>

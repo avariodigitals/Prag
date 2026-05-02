@@ -64,8 +64,8 @@ export default function Footer() {
             <div className="text-white text-base font-bold font-['Space_Grotesk']">Socials</div> 
             <div className="flex flex-col justify-start items-start gap-1.5"> 
               <a href="https://www.facebook.com/pragpowersolutions" target="_blank" rel="noopener noreferrer" className="text-white/70 text-sm font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Facebook</a> 
-              <a href="https://x.com/PRAG_Ng" target="_blank" rel="noopener noreferrer" className="text-white/70 text-sm font-normal font-['Space_Grotesk'] hover:text-white transition-colors">X (Twitter)</a> 
               <a href="https://www.instagram.com/prag_ng/" target="_blank" rel="noopener noreferrer" className="text-white/70 text-sm font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Instagram</a> 
+              <a href="https://www.linkedin.com/company/prag/" target="_blank" rel="noopener noreferrer" className="text-white/70 text-sm font-normal font-['Space_Grotesk'] hover:text-white transition-colors">LinkedIn</a> 
             </div> 
           </div> 
         </div> 

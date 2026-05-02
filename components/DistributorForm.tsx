@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { submitContactForm } from '@/lib/woocommerce';
 
 const TIERS = ['Authorized Dealer', 'Certified Installer', 'Product Reseller'];
 const inputCls = "w-full h-12 p-2.5 bg-white rounded-lg border-[1.31px] border-zinc-100 text-zinc-900 text-sm font-normal font-['Space_Grotesk'] focus:border-sky-700 outline-none transition-colors";
@@ -18,15 +17,26 @@ export default function DistributorForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setStatus('sending');
-    const result = await submitContactForm({
-      name: form.name,
-      email: form.email,
-      phone: form.phone,
-      company: form.business,
-      enquiry_type: `Distributor Application – ${form.tier}`,
-      message: `City: ${form.city}\nBusiness Type: ${form.type}\nTier: ${form.tier}\n\n${form.message}`,
-    });
-    setStatus(result.success ? 'sent' : 'error');
+    try {
+      const res = await fetch('/api/distributor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          business: form.business,
+          city: form.city,
+          type: form.type,
+          tier: form.tier,
+          message: form.message,
+        }),
+      });
+      const data = await res.json();
+      setStatus(res.ok && data.success ? 'sent' : 'error');
+    } catch {
+      setStatus('error');
+    }
   }
 
   return (

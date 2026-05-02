@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Heart } from 'lucide-react';
-import { formatPrice, productUrl, shopUrl } from '@/lib/woocommerce';
+import { formatPrice, productUrl } from '@/lib/woocommerce';
 import { useWishlist } from '@/lib/WishlistContext';
 import type { Product } from '@/lib/types';
 
@@ -21,6 +21,10 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
   const [saving, setSaving] = useState(false);
   const router = useRouter();
   const image = product.images?.[0];
+
+  function handleBuyNow() {
+    router.push(`/checkout?id=${product.id}&name=${encodeURIComponent(product.name)}&price=${product.price}&slug=${product.slug}&image=${encodeURIComponent(image?.src ?? '')}`);
+  }
 
   async function handleWishlist() {
     if (authed === null) return; // still loading auth state, do nothing
@@ -111,12 +115,12 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
           >
             <span className="text-stone-50 text-sm font-medium font-['Space_Grotesk'] whitespace-nowrap">Learn more</span>
           </Link>
-          <a
-            href={shopUrl(product.slug)}
+          <button
+            onClick={handleBuyNow}
             className="flex-1 py-2.5 px-3 rounded-full flex justify-center items-center gap-2.5 hover:bg-sky-50 transition-colors border border-sky-700"
           >
             <span className="text-sky-700 text-sm font-medium font-['Space_Grotesk'] whitespace-nowrap">Buy &gt;</span>
-          </a>
+          </button>
         </div>
       </div>
     </div>

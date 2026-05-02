@@ -71,23 +71,7 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
   }
 
   function handleBuyNow() {
-    add({
-      id: product.id,
-      name: product.name,
-      price: Number(product.price),
-      slug: product.slug,
-      image: product.images?.[0]?.src ?? '',
-    });
-    for (let i = 1; i < qty; i++) {
-      add({
-        id: product.id,
-        name: product.name,
-        price: Number(product.price),
-        slug: product.slug,
-        image: product.images?.[0]?.src ?? '',
-      });
-    }
-    router.push('/checkout');
+    router.push(`/checkout?id=${product.id}&name=${encodeURIComponent(product.name)}&price=${product.price}&slug=${product.slug}&image=${encodeURIComponent(product.images?.[0]?.src ?? '')}&qty=${qty}`);
   }
 
   return (

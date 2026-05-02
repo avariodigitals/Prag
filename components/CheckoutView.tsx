@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useCart } from '@/lib/CartContext';
 import CheckoutStepper from './CheckoutStepper';
 
@@ -33,7 +33,22 @@ const inputCls = "w-full h-12 px-4 py-3 bg-white rounded-[10px] outline outline-
 export default function CheckoutView() {
   const { items, total } = useCart();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [step] = useState(0);
+
+  // Buy Now mode — product passed via query params, bypasses cart
+  const buyNowId = searchParams.get('id');
+  const buyNowItem = buyNowId ? {
+    id: Number(buyNowId),
+    name: searchParams.get('name') ?? '',
+    slug: searchParams.get('slug') ?? '',
+    price: Number(searchParams.get('price') ?? 0),
+    image: searchParams.get('image') ?? '',
+    quantity: Number(searchParams.get('qty') ?? 1),
+  } : null;
+
+  const orderItems = buyNowItem ? [buyNowItem] : items;
+  const orderTotal = buyNowItem ? buyNowItem.price : total;
 
   const [form, setForm] = useState({
     email: '', firstName: '', lastName: '', company: '',
@@ -48,7 +63,7 @@ export default function CheckoutView() {
   function proceedToShipping(e: React.FormEvent) {
     e.preventDefault();
     const params = new URLSearchParams();
-    items.forEach((item) => params.append('items', `${item.slug}:${item.quantity}`));
+    orderItems.forEach((item) => params.append('items', `${item.slug}:${item.quantity}`));
     Object.entries(form).forEach(([k, v]) => { if (v) params.set(k, v); });
     router.push(`/checkout/shipping?${params.toString()}`);
   }
@@ -129,9 +144,9 @@ export default function CheckoutView() {
           <div className="flex flex-col gap-6">
             {/* Item list */}
             <div className="flex flex-col gap-4">
-              {items.length === 0 ? (
+              {orderItems.length === 0 ? (
                 <p className="text-zinc-400 text-sm font-['Space_Grotesk']">No items in cart.</p>
-              ) : items.map((item) => (
+              ) : orderItems.map((item) => (
                 <div key={item.id} className="flex justify-between items-center">
                   <span className="w-48 text-neutral-700 text-sm font-normal font-['Space_Grotesk'] leading-4">{item.name}</span>
                   <span className="text-sky-700 text-xs font-medium font-['Onest']">{formatPrice(item.price * item.quantity)}</span>
@@ -144,7 +159,7 @@ export default function CheckoutView() {
             <div className="flex flex-col gap-4">
               <div className="flex justify-between">
                 <span className="text-slate-600 text-sm font-medium font-['Space_Grotesk'] leading-5">Sub Total</span>
-                <span className="text-slate-600 text-sm font-normal font-['Space_Grotesk'] leading-5">{formatPrice(total)}</span>
+                <span className="text-slate-600 text-sm font-normal font-['Space_Grotesk'] leading-5">{formatPrice(orderTotal)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-600 text-sm font-medium font-['Space_Grotesk'] leading-5">VAT (7.5%)</span>
@@ -156,7 +171,7 @@ export default function CheckoutView() {
 
             <div className="flex justify-between items-center">
               <span className="text-slate-600 text-sm font-medium font-['Space_Grotesk'] leading-5">Total</span>
-              <span className="text-slate-800 text-base font-bold font-['Space_Grotesk'] leading-6">{formatPrice(total)}</span>
+              <span className="text-slate-800 text-base font-bold font-['Space_Grotesk'] leading-6">{formatPrice(orderTotal)}</span>
             </div>
           </div>
 

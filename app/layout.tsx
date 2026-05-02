@@ -5,8 +5,8 @@ import { WishlistProvider } from '@/lib/WishlistContext';
 import SiteShell from '@/components/SiteShell';
 import './globals.css';
 
-const onest = Onest({ subsets: ['latin'], variable: '--font-onest' });
-const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-space-grotesk' });
+const onest = Onest({ subsets: ['latin'], variable: '--font-onest', display: 'swap' });
+const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-space-grotesk', display: 'swap' });
 
 export const metadata: Metadata = {
   title: 'Prag – Nigeria\'s Leading Power Engineering Company',
@@ -41,8 +41,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${onest.variable} ${spaceGrotesk.variable}`} suppressHydrationWarning>
-      <body className="antialiased" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${onest.variable} ${spaceGrotesk.variable} antialiased`} suppressHydrationWarning>
         <CartProvider>
           <WishlistProvider>
             <SiteShell>

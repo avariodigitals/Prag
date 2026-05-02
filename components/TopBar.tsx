@@ -225,7 +225,7 @@ export default function TopBar() {
           <Link href="/cart" aria-label="Cart" className="relative w-9 h-9 flex items-center justify-center hover:bg-stone-50 rounded-full transition-colors">
             <ShoppingCart className="w-7 h-7 text-neutral-700/70" />
             {count > 0 && (
-              <span className="absolute -top-1 -right-1 bg-sky-700 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">
+              <span suppressHydrationWarning className="absolute -top-1 -right-1 bg-sky-700 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">
                 {count}
               </span>
             )}
@@ -291,7 +291,7 @@ export default function TopBar() {
           <Link href="/cart" aria-label="Cart" className="relative w-5 h-5 flex items-center justify-center">
             <ShoppingCart className="w-4 h-4 text-neutral-700/70" />
             {count > 0 && (
-              <span className="absolute -top-1 -right-1 bg-sky-700 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+              <span suppressHydrationWarning className="absolute -top-1 -right-1 bg-sky-700 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
                 {count}
               </span>
             )}

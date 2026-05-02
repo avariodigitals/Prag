@@ -50,8 +50,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const clear = useCallback(() => setItems([]), []);
 
-  const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
-  const count = items.reduce((sum, i) => sum + i.quantity, 0);
+  const total = hydrated ? items.reduce((sum, i) => sum + i.price * i.quantity, 0) : 0;
+  const count = hydrated ? items.reduce((sum, i) => sum + i.quantity, 0) : 0;
 
   return (
     <CartContext.Provider value={{ items, add, remove, update, clear, total, count }}>

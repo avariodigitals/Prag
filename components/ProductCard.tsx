@@ -20,7 +20,7 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
   const { isWishlisted, toggle, authed } = useWishlist();
   const [saving, setSaving] = useState(false);
   const router = useRouter();
-  const image = product.images[0];
+  const image = product.images?.[0];
 
   async function handleWishlist() {
     if (authed === null) return; // still loading auth state, do nothing

@@ -36,7 +36,7 @@ export async function POST(request: Request) {
     // Also set some non-sensitive user info in a cookie for the client to read
     cookieStore.set('user_info', JSON.stringify({
       email: authData.user_email,
-      name: authData.user_display_name,
+      user_display_name: authData.user_display_name,
     }), {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',

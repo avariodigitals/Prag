@@ -25,23 +25,16 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       .then((r) => {
         setAuthed(r.status !== 401);
         if (r.status === 401) return null;
-        return r.json();
+        return r.json().catch(() => null);
       })
-      .then((data) => { if (data) setItems(data.items ?? []); })
+      .then((data) => {
+        if (data && Array.isArray(data.items)) setItems(data.items);
+      })
       .catch(() => { setAuthed(false); })
       .finally(() => setLoading(false));
   }, []);
 
-  const save = useCallback(async (updated: WishlistItem[]) => {
-    setItems(updated);
-    await fetch('/api/wishlist', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: updated }),
-    });
-  }, []);
-
-  const isWishlisted = useCallback((id: number) => items.some((i) => i.id === id), [items]);
+const isWishlisted = useCallback((id: number) => items.some((i) => i.id === id), [items]);
 
   const toggle = useCallback(async (product: WishlistItem) => {
     setItems((prev) => {

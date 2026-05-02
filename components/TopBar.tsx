@@ -184,7 +184,7 @@ export default function TopBar() {
     if (userInfo) {
       try {
         const data = JSON.parse(decodeURIComponent(userInfo));
-        startTransition(() => setUser(data));
+        if (data?.user_display_name) startTransition(() => setUser(data));
       } catch {}
     }
   }, []);
@@ -237,7 +237,7 @@ export default function TopBar() {
                 onClick={() => setProfileOpen((o) => !o)}
                 className="w-9 h-9 bg-sky-700 rounded-full flex items-center justify-center text-white text-sm font-bold font-['Space_Grotesk'] hover:bg-sky-800 transition-colors"
               >
-                {user.user_display_name[0].toUpperCase()}
+                {(user.user_display_name?.[0] ?? '?').toUpperCase()}
               </button>
               {profileOpen && (
                 <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden">

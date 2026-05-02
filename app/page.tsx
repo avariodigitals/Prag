@@ -3,19 +3,15 @@ import CategoryGrid from '@/components/CategoryGrid';
 import FeaturedProducts from '@/components/FeaturedProducts';
 import BrandBanner from '@/components/BrandBanner';
 import FlashSales from '@/components/FlashSales';
-import { getFeaturedProducts, getFlashSaleProducts, getCategories, getProducts } from '@/lib/woocommerce';
+import { getFeaturedProducts, getFlashSaleProducts, getProducts } from '@/lib/woocommerce';
 
 export default async function HomePage() {
-  const [featuredResult, flashSaleProducts, categories] = await Promise.all([
+  const [featuredResult, flashSaleProducts] = await Promise.all([
     getFeaturedProducts(),
     getFlashSaleProducts(),
-    getCategories(),
   ]);
 
   let featuredProducts = featuredResult;
-  
-  // If no products are explicitly marked as featured, 
-  // fetch the most recent products to populate the section
   if (featuredProducts.length === 0) {
     const recent = await getProducts({ per_page: 6 });
     featuredProducts = recent.products;
@@ -24,7 +20,7 @@ export default async function HomePage() {
   return (
     <main className="w-full bg-white flex flex-col">
       <HeroBanner />
-      <CategoryGrid categories={categories} />
+      <CategoryGrid />
       <FeaturedProducts products={featuredProducts} />
       <BrandBanner />
       <FlashSales products={flashSaleProducts} />

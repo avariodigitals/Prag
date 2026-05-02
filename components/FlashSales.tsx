@@ -35,8 +35,8 @@ export default function FlashSales({ products }: FlashSalesProps) {
   }
 
   return (
-    <section className="w-full px-4 md:px-20 pt-10 pb-20 flex flex-col items-center gap-10 overflow-hidden">
-      <div className="w-full max-w-[1229px] flex flex-col gap-10">
+    <section className="w-full px-4 md:px-20 py-8 pb-12 flex flex-col items-center gap-8 overflow-hidden">
+      <div className="w-full max-w-[1229px] flex flex-col gap-8">
 
         {/* Header */}
         <div className="w-full flex justify-between items-end">

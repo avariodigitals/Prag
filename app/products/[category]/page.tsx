@@ -57,7 +57,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   return (
     <main className="w-full bg-white flex flex-col">
       {/* Hero */}
-      <div className="w-full pt-16 md:pt-20 pb-8 md:pb-10 bg-stone-50 flex flex-col items-center gap-4 md:gap-6 px-4">
+      <div className="w-full pt-10 md:pt-12 pb-6 md:pb-8 bg-stone-50 flex flex-col items-center gap-3 md:gap-4 px-4">
         {/* Breadcrumb */}
         <div className="flex items-center gap-1 text-sm font-['Space_Grotesk']">
           <Link href="/" className="text-sky-700 hover:underline">Home</Link>
@@ -80,7 +80,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       </div>
 
       {/* Products */}
-      <div className="w-full px-4 md:px-20 py-10 bg-white flex flex-col gap-10">
+      <div className="w-full px-4 md:px-20 py-6 md:py-8 bg-white flex flex-col gap-6">
         <CategoryProductsGrid
           products={products}
           total={total}

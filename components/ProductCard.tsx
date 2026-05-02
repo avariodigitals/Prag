@@ -47,7 +47,7 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
 
   return (
     <div className="flex-1 min-w-[300px] relative inline-flex flex-col gap-4 group">
-      <div className={`w-full h-80 px-7 ${bg} relative flex justify-center items-center overflow-hidden rounded-2xl`}>
+      <div className={`w-full h-64 px-6 ${bg} relative flex justify-center items-center overflow-hidden rounded-2xl`}>
         {image ? (
           <Image
             src={image.src}
@@ -87,7 +87,7 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
         </button>
       </div>
 
-      <div className="flex flex-col items-center gap-6 px-2">
+      <div className="flex flex-col items-center gap-3 px-2">
         <div className="w-full flex flex-col gap-2">
           <p className="text-center text-zinc-900 text-lg font-medium font-['Onest'] line-clamp-1 group-hover:text-sky-700 transition-colors">
             {product.name}

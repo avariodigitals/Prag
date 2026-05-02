@@ -86,7 +86,7 @@ export default function ProductsGrid({ products, total, categories = [], tags = 
   const hasFilters = activeCategory || activeTag || searchParams.get('min_price') || searchParams.get('max_price');
 
   return (
-    <div className="flex-1 flex flex-col gap-6 md:gap-10 min-w-0">
+    <div className="flex-1 flex flex-col gap-5 min-w-0">
 
       {/* Toolbar */}
       <div className="flex justify-between items-center gap-4">
@@ -122,7 +122,7 @@ export default function ProductsGrid({ products, total, categories = [], tags = 
 
       {/* Grid */}
       {products.length === 0 ? (
-        <div className="flex-1 flex flex-col items-center justify-center gap-4 py-20">
+        <div className="flex-1 flex flex-col items-center justify-center gap-4 py-10">
           <p className="text-gray-400 text-lg font-['Space_Grotesk']">No products found.</p>
           {hasFilters && (
             <button onClick={clearAll} className="text-sky-700 text-sm font-medium font-['Space_Grotesk'] underline">

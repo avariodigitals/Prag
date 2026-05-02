@@ -54,14 +54,20 @@ export default function CategoryProductsGrid({
     startTransition(() => router.push(`/products/${categorySlug}?${params.toString()}`));
   }
 
-  const allLabel = `All ${categorySlug.charAt(0).toUpperCase() + categorySlug.slice(1)}s`;
+  const SLUG_TO_LABEL: Record<string, string> = {
+    'all-prag-stabilizers': 'All Voltage Stabilizers',
+    'inverters': 'All Inverters',
+    'solar': 'All Solar Panels',
+    'batteries': 'All Batteries',
+  };
+  const allLabel = SLUG_TO_LABEL[categorySlug] ?? `All ${categorySlug.charAt(0).toUpperCase() + categorySlug.slice(1)}s`;
   const tabs = [
     { key: 'all', label: allLabel, slug: undefined },
     ...subcategories.map((s) => ({ key: String(s.id), label: s.name, slug: s.slug })),
   ];
 
   return (
-    <div className="flex flex-col gap-10 relative">
+    <div className="flex flex-col gap-6 relative">
       {/* Client-nav loading overlay */}
       {isPending && (
         <div className="absolute inset-0 z-10 bg-white/70 flex items-center justify-center rounded-xl">

@@ -53,7 +53,7 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
   }
 
   return (
-    <div className="w-full px-4 md:px-20 py-10 md:py-24 flex flex-col gap-10 md:gap-20">
+    <div className="w-full px-4 md:px-20 py-8 md:py-14 flex flex-col gap-8 md:gap-12">
       {/* Product hero */}
       <div className="flex flex-col md:flex-row gap-6 md:gap-10 items-start md:items-center">
         {/* Image */}

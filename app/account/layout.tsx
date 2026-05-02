@@ -17,7 +17,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
         <h1 className="text-black text-2xl md:text-4xl font-medium font-['Onest']">My Account</h1>
       </div>
 
-      <div className="w-full px-4 md:px-20 py-10 md:py-24 flex flex-col md:flex-row items-start gap-6 md:gap-10">
+      <div className="w-full px-4 md:px-20 py-8 md:py-12 flex flex-col md:flex-row items-start gap-6 md:gap-10">
         <AccountSidebar />
         <div className="flex-1 w-full">{children}</div>
       </div>

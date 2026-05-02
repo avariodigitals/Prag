@@ -41,7 +41,7 @@ export default async function ProductsPage({
   return (
     <main className="w-full bg-white flex flex-col">
       {/* Page title */}
-      <div className="w-full px-4 md:px-14 pt-8 md:pt-11 pb-6 md:pb-7 bg-stone-50 flex flex-col items-center gap-6">
+      <div className="w-full px-4 md:px-14 pt-8 pb-5 bg-stone-50 flex flex-col items-center gap-4">
         <h1 className="text-sky-700 text-3xl md:text-5xl font-bold font-['Onest'] text-center">Power Equipment Catalog</h1>
       </div>
 

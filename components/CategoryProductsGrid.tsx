@@ -55,15 +55,14 @@ export default function CategoryProductsGrid({
   }
 
   const SLUG_TO_LABEL: Record<string, string> = {
-    'all-prag-stabilizers': 'All Voltage Stabilizers',
+    'voltage-stabilizers': 'All Voltage Stabilizers',
     'inverters': 'All Inverters',
     'solar': 'All Solar Panels',
     'batteries': 'All Batteries',
   };
 
-  // Only show major subcategories — filter out granular WP sub-cats
   const MAJOR_SUBS: Record<string, string[]> = {
-    'all-prag-stabilizers': [],
+    'voltage-stabilizers': [],
     'inverters': [],
     'solar': [],
     'batteries': [],
@@ -134,9 +133,9 @@ export default function CategoryProductsGrid({
           <p className="text-gray-400 text-lg font-['Space_Grotesk']">No products found.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} bg="bg-white" />
+            <ProductCard key={product.id} product={product} bg="bg-stone-50" />
           ))}
         </div>
       )}

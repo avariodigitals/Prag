@@ -11,7 +11,7 @@ interface Props {
 export async function generateMetadata({ params }: Props) {
   const { category } = await params;
   const DISPLAY_NAMES: Record<string, string> = {
-    'all-prag-stabilizers': 'Stabilizers',
+    'voltage-stabilizers': 'Stabilizers',
     'inverters': 'Inverters',
     'solar': 'Solar Panels',
     'batteries': 'Batteries',
@@ -28,7 +28,7 @@ const KNOWN_CATEGORY_IDS: Record<string, number> = {
   'inverters': Number(process.env.WC_CAT_INVERTERS ?? 0),
   'solar': Number(process.env.WC_CAT_SOLAR ?? 0),
   'batteries': Number(process.env.WC_CAT_BATTERIES ?? 0),
-  'all-prag-stabilizers': Number(process.env.WC_CAT_STABILIZERS ?? 0),
+  'voltage-stabilizers': 144,
 };
 
 export default async function CategoryPage({ params, searchParams }: Props) {
@@ -68,7 +68,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   if (!knownId && !cat && products.length === 0) notFound();
 
   const DISPLAY_NAMES: Record<string, string> = {
-    'all-prag-stabilizers': 'Stabilizers',
+    'voltage-stabilizers': 'Stabilizers',
     'inverters': 'Inverters',
     'solar': 'Solar Panels',
     'batteries': 'Batteries',

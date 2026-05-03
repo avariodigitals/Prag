@@ -13,7 +13,7 @@ const FALLBACK_CATEGORIES = [
   { id: 1, name: 'Inverters', slug: 'inverters', count: 20, image: null, description: '' },
   { id: 2, name: 'Solar', slug: 'solar', count: 10, image: null, description: '' },
   { id: 3, name: 'Batteries', slug: 'batteries', count: 8, image: null, description: '' },
-  { id: 4, name: 'Stabilizers', slug: 'all-prag-stabilizers', count: 16, image: null, description: '' },
+  { id: 4, name: 'Stabilizers', slug: 'voltage-stabilizers', count: 16, image: null, description: '' },
 ];
 
 export default function ProductsSidebar({ categories, tags }: Props) {

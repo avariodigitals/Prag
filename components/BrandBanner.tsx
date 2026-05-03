@@ -21,9 +21,9 @@ export default function BrandBanner() {
           </div>
           <Link 
             href="/products/inverters"
-            className="w-full md:w-56 py-3 px-6 bg-sky-700 rounded-3xl flex justify-center items-center gap-2.5 hover:bg-sky-800 transition-colors"
+            className="w-full md:w-auto py-3 px-6 bg-sky-700 rounded-3xl flex justify-center items-center gap-2.5 hover:bg-sky-800 transition-colors"
           >
-            <div className="text-white text-sm font-medium font-['Space_Grotesk']">
+            <div className="text-white text-sm font-medium font-['Space_Grotesk'] whitespace-nowrap">
               Buy Inverters Built to Last
             </div>
           </Link>

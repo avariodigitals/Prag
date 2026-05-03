@@ -14,7 +14,7 @@ export default function FeaturedProducts({ products }: FeaturedProductsProps) {
   return (
     <div className="w-full px-4 md:px-20 py-10 md:py-14 bg-stone-50 flex flex-col justify-center items-center gap-8">
       <div className="w-full max-w-[1280px] flex flex-col justify-center items-center gap-8 md:gap-12">
-        <h2 className="w-full max-w-[631px] text-center text-3xl md:text-5xl font-bold font-['Onest'] text-black">
+        <h2 className="w-full max-w-[631px] text-center text-lg md:text-3xl font-bold font-['Onest'] text-black">
           Featured Products
         </h2>
 

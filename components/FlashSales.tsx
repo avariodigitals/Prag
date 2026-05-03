@@ -45,7 +45,7 @@ export default function FlashSales({ products }: FlashSalesProps) {
               <div className="w-4 h-4 bg-sky-700" />
               <span className="text-black text-xs md:text-base font-normal font-['Space_Grotesk']">Discount</span>
             </div>
-            <h2 className="text-black text-3xl md:text-5xl font-bold font-['Onest']">Flashsales</h2>
+            <h2 className="text-black text-lg md:text-3xl font-bold font-['Onest']">Flashsales</h2>
           </div>
 
           <div className="hidden md:flex items-center gap-3">

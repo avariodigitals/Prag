@@ -1,7 +1,7 @@
 'use client';
 
+import { useEffect, useRef, useState, useTransition } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useTransition } from 'react';
 import ProductCard from './ProductCard';
 import type { Product, Category } from '@/lib/types';
 import { ChevronDown } from 'lucide-react';
@@ -22,12 +22,42 @@ const SORT_OPTIONS = [
   { label: 'Newest', value: 'date' },
 ];
 
-const PER_PAGE = 9;
+const PER_PAGE = 24;
+
+const SLUG_TO_LABEL: Record<string, string> = {
+  'voltage-stabilizers': 'All Stabilizers',
+  'inverters': 'All Inverters',
+  'solar': 'All Solar Products',
+  'batteries': 'All Batteries',
+};
+
+const SECTION_TABS: Record<string, { label: string; slug: string }[]> = {
+  'voltage-stabilizers': [
+    { label: 'Thyristor Stabilizers', slug: 'thyristor-stabilizers' },
+    { label: 'Relay Stabilizers',     slug: 'relay-voltage-stabilizers' },
+    { label: 'Servo Stabilizers',     slug: 'servo-voltage-stabilizers' },
+    { label: '3 Phase Stabilizers',   slug: 'advanced-stabilizers' },
+  ],
+  'inverters': [
+    { label: 'Hybrid Inverters',      slug: 'hybrid-inverters' },
+    { label: 'Heavy-Duty Inverters',  slug: 'heavy-duty-inverters' },
+    { label: 'Pure Sine Wave',        slug: 'pure-sine-inverters' },
+  ],
+  'solar': [
+    { label: 'Solar Panels',          slug: 'solar-panels' },
+    { label: 'Solar Charge Controllers', slug: 'solar-charge-controllers' },
+    { label: 'Protective Devices',    slug: 'protective-device' },
+  ],
+  'batteries': [
+    { label: 'Tubular Batteries',     slug: 'tubular-batteries' },
+    { label: 'Lithium Batteries',     slug: 'lithium-battery' },
+    { label: 'Battery Racks',         slug: 'battery-rack' },
+  ],
+};
 
 export default function CategoryProductsGrid({
-  products,
+  products: initialProducts,
   total,
-  subcategories,
   categorySlug,
   activeSub,
   activeSort,
@@ -35,8 +65,63 @@ export default function CategoryProductsGrid({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
-  const currentPage = Number(searchParams.get('page') ?? 1);
-  const totalPages = Math.ceil(total / PER_PAGE);
+
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [page, setPage] = useState(2);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(initialProducts.length < total);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  // Reset when tab/sort changes
+  useEffect(() => {
+    setProducts(initialProducts);
+    setPage(2);
+    setHasMore(initialProducts.length < total);
+  }, [initialProducts, total]);
+
+  // Infinite scroll via IntersectionObserver
+  useEffect(() => {
+    if (!hasMore) return;
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !loading) loadMore();
+      },
+      { rootMargin: '200px' }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore, loading, page, activeSub, activeSort]);
+
+  async function loadMore() {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      params.set('category', categorySlug);
+      params.set('page', String(page));
+      params.set('per_page', String(PER_PAGE));
+      if (activeSub) params.set('sub', activeSub);
+      if (activeSort) params.set('sort', activeSort);
+
+      const res = await fetch(`/api/products/category?${params.toString()}`, {
+        priority: 'high',
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      const newProducts: Product[] = data.products ?? [];
+
+      setProducts((prev) => {
+        const ids = new Set(prev.map((p) => p.id));
+        return [...prev, ...newProducts.filter((p) => !ids.has(p.id))];
+      });
+      setPage((p) => p + 1);
+      setHasMore(data.hasMore ?? false);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   function navigate(updates: Record<string, string | undefined>) {
     const params = new URLSearchParams(searchParams.toString());
@@ -48,44 +133,6 @@ export default function CategoryProductsGrid({
     startTransition(() => router.push(`/products/${categorySlug}?${params.toString()}`));
   }
 
-  function setPage(page: number) {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('page', String(page));
-    startTransition(() => router.push(`/products/${categorySlug}?${params.toString()}`));
-  }
-
-  const SLUG_TO_LABEL: Record<string, string> = {
-    'voltage-stabilizers': 'All Stabilizers',
-    'inverters': 'All Inverters',
-    'solar': 'All Solar Products',
-    'batteries': 'All Batteries',
-  };
-
-  // Hardcoded subcategory tabs per section — pulled from WP category IDs
-  const SECTION_TABS: Record<string, { label: string; slug: string }[]> = {
-    'voltage-stabilizers': [
-      { label: 'Thyristor Stabilizers', slug: 'thyristor-stabilizers' },
-      { label: 'Relay Stabilizers',     slug: 'relay-voltage-stabilizers' },
-      { label: 'Servo Stabilizers',     slug: 'servo-voltage-stabilizers' },
-      { label: '3 Phase Stabilizers',   slug: 'advanced-stabilizers' },
-    ],
-    'inverters': [
-      { label: 'Hybrid Inverters',      slug: 'hybrid-inverters' },
-      { label: 'Heavy-Duty Inverters',  slug: 'heavy-duty-inverters' },
-      { label: 'Pure Sine Wave',        slug: 'pure-sine-inverters' },
-    ],
-    'solar': [
-      { label: 'Solar Panels',          slug: 'solar-panels' },
-      { label: 'Solar Charge Controllers', slug: 'solar-charge-controllers' },
-      { label: 'Protective Devices',    slug: 'protective-device' },
-    ],
-    'batteries': [
-      { label: 'Tubular Batteries',     slug: 'tubular-batteries' },
-      { label: 'Lithium Batteries',     slug: 'lithium-battery' },
-      { label: 'Battery Racks',         slug: 'battery-rack' },
-    ],
-  };
-
   const allLabel = SLUG_TO_LABEL[categorySlug] ?? `All ${categorySlug.charAt(0).toUpperCase() + categorySlug.slice(1)}`;
   const sectionSubs = SECTION_TABS[categorySlug] ?? [];
   const tabs = [
@@ -95,10 +142,9 @@ export default function CategoryProductsGrid({
 
   return (
     <div className="flex flex-col gap-6 relative">
-      {/* Client-nav loading overlay */}
       {isPending && (
         <div className="absolute inset-0 z-10 bg-white/70 flex items-center justify-center rounded-xl">
-          <svg className="w-10 h-10 text-sky-700 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <svg className="w-8 h-8 text-sky-700 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
             <path className="opacity-80" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
           </svg>
@@ -107,7 +153,6 @@ export default function CategoryProductsGrid({
 
       {/* Toolbar */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        {/* Subcategory tabs */}
         <div className="flex border-b border-gray-200 overflow-x-auto w-full sm:w-auto scrollbar-hide">
           {tabs.map((tab) => {
             const isActive = tab.slug ? activeSub === tab.slug : !activeSub;
@@ -128,7 +173,6 @@ export default function CategoryProductsGrid({
           })}
         </div>
 
-        {/* Sort */}
         <div className="relative shrink-0">
           <select
             value={activeSort ?? ''}
@@ -146,7 +190,7 @@ export default function CategoryProductsGrid({
       {/* Grid */}
       {products.length === 0 ? (
         <div className="flex justify-center py-20">
-          <p className="text-gray-400 text-lg font-['Space_Grotesk']">No products found.</p>
+          <p className="text-gray-400 text-sm font-['Space_Grotesk']">No products found.</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
@@ -156,57 +200,21 @@ export default function CategoryProductsGrid({
         </div>
       )}
 
-      {/* Smart Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 pt-4">
-          <button
-            onClick={() => setPage(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="px-3 py-2 rounded-lg text-sm font-medium font-['Space_Grotesk'] outline outline-1 outline-neutral-300 text-neutral-500 hover:outline-sky-700 hover:text-sky-700 disabled:opacity-30 transition-colors"
-          >
-            ← Prev
-          </button>
+      {/* Sentinel for infinite scroll */}
+      <div ref={sentinelRef} className="h-4" />
 
-          {(() => {
-            const pages: (number | '...')[] = [];
-            if (totalPages <= 7) {
-              for (let i = 1; i <= totalPages; i++) pages.push(i);
-            } else {
-              pages.push(1);
-              if (currentPage > 3) pages.push('...');
-              for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
-                pages.push(i);
-              }
-              if (currentPage < totalPages - 2) pages.push('...');
-              pages.push(totalPages);
-            }
-            return pages.map((p, i) =>
-              p === '...' ? (
-                <span key={`e-${i}`} className="w-9 text-center text-neutral-400 text-sm">…</span>
-              ) : (
-                <button
-                  key={p}
-                  onClick={() => setPage(p as number)}
-                  className={`w-9 h-9 rounded-full text-sm font-medium font-['Space_Grotesk'] transition-colors ${
-                    p === currentPage
-                      ? 'bg-sky-700 text-white'
-                      : 'bg-white text-neutral-500 outline outline-1 outline-neutral-300 hover:outline-sky-700 hover:text-sky-700'
-                  }`}
-                >
-                  {p}
-                </button>
-              )
-            );
-          })()}
-
-          <button
-            onClick={() => setPage(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="px-3 py-2 rounded-lg text-sm font-medium font-['Space_Grotesk'] outline outline-1 outline-neutral-300 text-neutral-500 hover:outline-sky-700 hover:text-sky-700 disabled:opacity-30 transition-colors"
-          >
-            Next →
-          </button>
+      {/* Loading spinner */}
+      {loading && (
+        <div className="flex justify-center py-6">
+          <svg className="w-7 h-7 text-sky-700 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+            <path className="opacity-80" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+          </svg>
         </div>
+      )}
+
+      {!hasMore && products.length > 0 && (
+        <p className="text-center text-zinc-400 text-xs font-['Space_Grotesk'] py-4">All products loaded</p>
       )}
     </div>
   );

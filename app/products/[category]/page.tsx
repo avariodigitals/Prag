@@ -76,7 +76,8 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       category_id: resolvedCatId,
       orderby,
       order,
-      page: sp.page ? Number(sp.page) : 1,
+      page: 1,
+      per_page: 24,
     }),
   ]);
 

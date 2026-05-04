@@ -20,7 +20,7 @@ export default function AuthPanel({ headline, subtext }: Props) {
       <div className="relative z-10 flex flex-col justify-between h-full p-12">
         <Image
           src="https://central.prag.global/wp-content/uploads/2026/04/prag-inverter-stabilizer-white-logo.png"
-          alt="Prag" width={70} height={18} style={{ height: 'auto', width: 'auto' }}
+          alt="Prag" width={100} height={24} style={{ height: 'auto', width: '100px' }}
         />
         <div className="flex flex-col gap-4">
           <h1 className="text-white text-2xl xl:text-3xl font-bold font-['Onest'] leading-tight">{headline}</h1>

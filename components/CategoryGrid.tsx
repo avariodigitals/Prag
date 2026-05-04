@@ -17,12 +17,12 @@ export default function CategoryGrid() {
         <div className="flex justify-between items-end gap-10">
           <div className="flex-1 flex flex-col gap-3 md:gap-7">
             <div className="flex items-center gap-1.5">
-              <div className="w-4 h-4 bg-sky-700" />
-              <span className="text-black text-xs md:text-base font-normal font-['Space_Grotesk'] uppercase">PRODUCT CATEGORIES</span>
+              <div className="w-3 h-3 bg-sky-700" />
+              <span className="text-black text-xs font-medium font-['Space_Grotesk'] uppercase tracking-widest">PRODUCT CATEGORIES</span>
             </div>
-            <h2 className="text-black text-lg md:text-3xl font-bold font-['Onest']">Shop by Categories</h2>
+            <h2 className="text-black text-base md:text-2xl font-bold font-['Onest']">Shop by Categories</h2>
           </div>
-          <Link href="/products" className="flex items-center gap-2.5 text-sky-700 text-xs md:text-base font-normal font-['Onest'] hover:underline">
+          <Link href="/products" className="flex items-center gap-1.5 text-sky-700 text-xs md:text-sm font-normal font-['Onest'] hover:underline">
             View all Products
             <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
           </Link>
@@ -45,7 +45,7 @@ export default function CategoryGrid() {
               />
 
               <div className="absolute left-[23px] bottom-[24px]">
-                <span className="text-white text-2xl font-semibold font-['Onest']">
+                <span className="text-white text-base md:text-lg font-semibold font-['Onest']">
                   {cat.name}
                 </span>
               </div>

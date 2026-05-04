@@ -30,10 +30,10 @@ export default function AboutPage() {
 
       {/* Hero */}
       <div className="w-full px-4 md:px-14 pt-10 md:pt-20 pb-8 md:pb-10 bg-stone-50 flex flex-col items-center gap-4 md:gap-6">
-        <h1 className="text-sky-700 text-3xl md:text-5xl font-bold font-['Onest'] text-center">
+        <h1 className="text-sky-700 text-2xl md:text-4xl font-bold font-['Onest'] text-center leading-snug">
           Engineering Reliable Power Solutions for Real-World Challenges
         </h1>
-        <p className="max-w-[531px] text-center text-sky-700 text-base md:text-lg font-normal font-['Space_Grotesk']">
+        <p className="max-w-[531px] text-center text-sky-700 text-sm md:text-base font-normal font-['Space_Grotesk'] leading-relaxed">
           PRAG is a power solutions company focused on designing and delivering systems that solve unstable electricity problems for homes, businesses, and industries.
         </p>
       </div>
@@ -42,15 +42,15 @@ export default function AboutPage() {
       <section className="w-full px-4 md:px-20 py-12 md:py-24 flex flex-col gap-10">
         <div className="flex flex-col md:flex-row items-start gap-8 md:gap-20">
           <div className="flex items-center gap-1.5 shrink-0">
-            <div className="w-4 h-4 bg-sky-700" />
-            <span className="text-zinc-900 text-base font-normal font-['Space_Grotesk']">ABOUT PRAG</span>
+            <div className="w-3 h-3 bg-sky-700" />
+            <span className="text-zinc-900 text-xs font-medium font-['Space_Grotesk'] uppercase tracking-widest">ABOUT PRAG</span>
           </div>
-          <div className="flex-1 flex flex-col gap-10 md:gap-20">
-            <div className="flex flex-col gap-6">
-              <h2 className="text-zinc-900 text-3xl md:text-5xl font-medium font-['Space_Grotesk']">
+          <div className="flex-1 flex flex-col gap-10 md:gap-16">
+            <div className="flex flex-col gap-4">
+              <h2 className="text-zinc-900 text-xl md:text-3xl font-semibold font-['Space_Grotesk'] leading-snug">
                 Built on Engineering, Driven by Real Power Challenges
               </h2>
-          <p className="text-zinc-500 text-sm md:text-xl font-normal font-['Space_Grotesk']">
+              <p className="text-zinc-500 text-sm md:text-base font-normal font-['Space_Grotesk'] leading-relaxed">
                 PRAG was founded to address one core problem, unreliable electricity. Instead of simply supplying equipment, we set out to design complete power solutions that ensure stability, efficiency, and long-term performance.
                 <br /><br />
                 Today, we work with homeowners, businesses, and industrial clients to deliver systems tailored to their specific needs, backed by technical expertise and real-world experience.
@@ -61,10 +61,10 @@ export default function AboutPage() {
             <div className="flex flex-col md:flex-row md:justify-between items-center gap-10 md:gap-0">
               {STATS.map((stat) => (
                 <div key={stat.label} className="flex flex-col items-center gap-0.5 w-full">
-                  <span className="text-sky-700 text-5xl font-light font-['Onest'] text-center">
+                  <span className="text-sky-700 text-3xl md:text-4xl font-bold font-['Onest'] text-center">
                     <CountUp value={stat.display} suffix={stat.suffix} />
                   </span>
-                  <span className="text-sky-700 text-3xl font-normal font-['Onest'] text-center">{stat.label}</span>
+                  <span className="text-zinc-500 text-xs md:text-sm font-normal font-['Onest'] text-center">{stat.label}</span>
                 </div>
               ))}
             </div>
@@ -87,10 +87,10 @@ export default function AboutPage() {
       <section className="w-full px-4 md:px-20 py-12 md:py-24 flex flex-col items-center gap-8 md:gap-10">
         <div className="flex flex-col items-center gap-4 md:gap-6">
           <div className="flex items-center gap-1.5">
-            <div className="w-4 h-4 bg-sky-700" />
-            <span className="text-zinc-900 text-base font-normal font-['Space_Grotesk']">OUR STORY</span>
+            <div className="w-3 h-3 bg-sky-700" />
+            <span className="text-zinc-900 text-xs font-medium font-['Space_Grotesk'] uppercase tracking-widest">OUR STORY</span>
           </div>
-          <h2 className="max-w-[1082px] text-center text-zinc-900 text-3xl md:text-5xl font-medium font-['Space_Grotesk']">
+          <h2 className="max-w-[1082px] text-center text-zinc-900 text-xl md:text-3xl font-semibold font-['Space_Grotesk'] leading-snug">
             Nigeria&apos;s Leading Provider of Voltage Regulation, Power Backup, Storage, and Renewable Energy Solutions.
           </h2>
         </div>
@@ -107,7 +107,7 @@ export default function AboutPage() {
           </div>
           <div className="flex-1 flex flex-col gap-6 order-1 md:order-2">
             {STORY_PARAS.map((para, i) => (
-              <p key={i} className="text-zinc-500 text-sm md:text-xl font-normal font-['Space_Grotesk']">{para}</p>
+              <p key={i} className="text-zinc-500 text-sm md:text-base font-normal font-['Space_Grotesk'] leading-relaxed">{para}</p>
             ))}
           </div>
         </div>
@@ -117,13 +117,13 @@ export default function AboutPage() {
       <section className="w-full px-4 md:px-20 py-12 md:py-24 bg-stone-50 flex flex-col items-center gap-10 md:gap-20">
         <div className="flex flex-col items-center gap-4 md:gap-7">
           <div className="flex items-center gap-1.5">
-            <div className="w-4 h-4 bg-sky-700" />
-            <span className="text-zinc-900 text-base font-normal font-['Space_Grotesk']">OUR CORE VALUES</span>
+            <div className="w-3 h-3 bg-sky-700" />
+            <span className="text-zinc-900 text-xs font-medium font-['Space_Grotesk'] uppercase tracking-widest">OUR CORE VALUES</span>
           </div>
-          <h2 className="max-w-[631px] text-center text-zinc-900 text-3xl md:text-5xl font-bold font-['Onest']">
+          <h2 className="max-w-[631px] text-center text-zinc-900 text-xl md:text-3xl font-bold font-['Onest'] leading-snug">
             Built on Principles That Deliver Reliable Results
           </h2>
-          <p className="text-center text-neutral-700 text-sm md:text-base md:text-xl font-normal font-['Onest']">
+          <p className="text-center text-neutral-500 text-sm md:text-base font-normal font-['Onest'] leading-relaxed">
             Our work is guided by a commitment to quality, precision, and long-term performance.
           </p>
         </div>
@@ -135,9 +135,9 @@ export default function AboutPage() {
                 <div className="p-3 bg-sky-700 rounded-full w-fit">
                   <div className="w-4 h-4 bg-white rounded-sm" />
                 </div>
-                <h3 className="text-zinc-900 text-xl md:text-2xl font-medium font-['Onest']">{val.title}</h3>
+                <h3 className="text-zinc-900 text-base md:text-lg font-semibold font-['Onest'] leading-snug">{val.title}</h3>
               </div>
-              <p className="text-neutral-700 text-base md:text-lg font-normal font-['Onest']">{val.body}</p>
+              <p className="text-neutral-500 text-sm md:text-base font-normal font-['Onest'] leading-relaxed">{val.body}</p>
             </div>
           ))}
         </div>

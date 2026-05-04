@@ -33,16 +33,16 @@ export default function Footer() {
         </div> 
         <div className="w-full lg:w-[724px] grid grid-cols-2 md:grid-cols-4 gap-8 lg:flex lg:justify-between lg:items-start"> 
           <div className="flex flex-col justify-start items-start gap-4"> 
-            <div className="text-white text-base font-bold font-['Space_Grotesk']">Products</div> 
+            <div className="text-white text-sm font-bold font-['Space_Grotesk']">Products</div> 
             <div className="flex flex-col justify-start items-start gap-1.5"> 
               <Link href="/products/batteries" className="text-white/70 text-sm font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Batteries</Link> 
-              <Link href="/products/all-prag-stabilizers" className="text-white/70 text-sm font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Stabilizers</Link> 
+              <Link href="/products/voltage-stabilizers" className="text-white/70 text-xs font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Stabilizers</Link> 
               <Link href="/products/inverters" className="text-white/70 text-sm font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Inverter</Link> 
               <Link href="/products/solar" className="text-white/70 text-sm font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Solar</Link> 
             </div> 
           </div> 
           <div className="flex flex-col justify-start items-start gap-4"> 
-            <div className="text-white text-base font-bold font-['Space_Grotesk']">Company</div> 
+            <div className="text-white text-sm font-bold font-['Space_Grotesk']">Company</div> 
             <div className="flex flex-col justify-start items-start gap-1.5"> 
               <Link href="/about" className="text-white/70 text-sm font-normal font-['Space_Grotesk'] hover:text-white transition-colors">About us</Link> 
               <Link href="/stores" className="text-white/70 text-sm font-normal font-['Space_Grotesk'] hover:text-white transition-colors">PRAG Stores</Link> 
@@ -51,7 +51,7 @@ export default function Footer() {
             </div> 
           </div> 
           <div className="flex flex-col justify-start items-start gap-4"> 
-            <div className="text-white text-base font-bold font-['Space_Grotesk']">Support</div> 
+            <div className="text-white text-sm font-bold font-['Space_Grotesk']">Support</div> 
             <div className="flex flex-col justify-start items-start gap-1.5"> 
               <Link href="/contact" className="text-white/70 text-sm font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Contact Us</Link> 
               <Link href="/power-calculator" className="text-white/70 text-sm font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Power Calculator</Link> 
@@ -61,7 +61,7 @@ export default function Footer() {
             </div> 
           </div> 
           <div className="flex flex-col justify-start items-start gap-4"> 
-            <div className="text-white text-base font-bold font-['Space_Grotesk']">Socials</div> 
+            <div className="text-white text-sm font-bold font-['Space_Grotesk']">Socials</div> 
             <div className="flex flex-col justify-start items-start gap-1.5"> 
               <a href="https://www.facebook.com/pragpowersolutions" target="_blank" rel="noopener noreferrer" className="text-white/70 text-sm font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Facebook</a> 
               <a href="https://www.instagram.com/prag_ng/" target="_blank" rel="noopener noreferrer" className="text-white/70 text-sm font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Instagram</a> 

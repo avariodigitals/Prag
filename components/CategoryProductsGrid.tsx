@@ -55,26 +55,42 @@ export default function CategoryProductsGrid({
   }
 
   const SLUG_TO_LABEL: Record<string, string> = {
-    'voltage-stabilizers': 'All Voltage Stabilizers',
+    'voltage-stabilizers': 'All Stabilizers',
     'inverters': 'All Inverters',
-    'solar': 'All Solar Panels',
+    'solar': 'All Solar Products',
     'batteries': 'All Batteries',
   };
 
-  const MAJOR_SUBS: Record<string, string[]> = {
-    'voltage-stabilizers': [],
-    'inverters': [],
-    'solar': [],
-    'batteries': [],
+  // Hardcoded subcategory tabs per section — pulled from WP category IDs
+  const SECTION_TABS: Record<string, { label: string; slug: string }[]> = {
+    'voltage-stabilizers': [
+      { label: 'Thyristor Stabilizers', slug: 'thyristor-stabilizers' },
+      { label: 'Relay Stabilizers',     slug: 'relay-voltage-stabilizers' },
+      { label: 'Servo Stabilizers',     slug: 'servo-voltage-stabilizers' },
+      { label: '3 Phase Stabilizers',   slug: 'advanced-stabilizers' },
+    ],
+    'inverters': [
+      { label: 'Hybrid Inverters',      slug: 'hybrid-inverters' },
+      { label: 'Heavy-Duty Inverters',  slug: 'heavy-duty-inverters' },
+      { label: 'Pure Sine Wave',        slug: 'pure-sine-inverters' },
+    ],
+    'solar': [
+      { label: 'Solar Panels',          slug: 'solar-panels' },
+      { label: 'Solar Charge Controllers', slug: 'solar-charge-controllers' },
+      { label: 'Protective Devices',    slug: 'protective-device' },
+    ],
+    'batteries': [
+      { label: 'Tubular Batteries',     slug: 'tubular-batteries' },
+      { label: 'Lithium Batteries',     slug: 'lithium-battery' },
+      { label: 'Battery Racks',         slug: 'battery-rack' },
+    ],
   };
-  const majorSubs = categorySlug in MAJOR_SUBS
-    ? subcategories.filter((s) => MAJOR_SUBS[categorySlug].includes(s.slug))
-    : subcategories;
 
   const allLabel = SLUG_TO_LABEL[categorySlug] ?? `All ${categorySlug.charAt(0).toUpperCase() + categorySlug.slice(1)}`;
+  const sectionSubs = SECTION_TABS[categorySlug] ?? [];
   const tabs = [
     { key: 'all', label: allLabel, slug: undefined },
-    ...majorSubs.map((s) => ({ key: String(s.id), label: s.name, slug: s.slug })),
+    ...sectionSubs.map((s) => ({ key: s.slug, label: s.label, slug: s.slug })),
   ];
 
   return (
@@ -90,9 +106,9 @@ export default function CategoryProductsGrid({
       )}
 
       {/* Toolbar */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         {/* Subcategory tabs */}
-        <div className="flex border-b border-gray-200 overflow-x-auto">
+        <div className="flex border-b border-gray-200 overflow-x-auto w-full sm:w-auto scrollbar-hide">
           {tabs.map((tab) => {
             const isActive = tab.slug ? activeSub === tab.slug : !activeSub;
             return (
@@ -101,23 +117,23 @@ export default function CategoryProductsGrid({
                 onClick={() => navigate({ sub: tab.slug })}
                 className="inline-flex flex-col items-center shrink-0"
               >
-                <span className={`px-4 pt-4 pb-3.5 text-sm font-medium font-['Space_Grotesk'] whitespace-nowrap ${
+                <span className={`px-3 md:px-4 pt-3 pb-3 text-xs md:text-sm font-medium font-['Space_Grotesk'] whitespace-nowrap transition-colors ${
                   isActive ? 'text-sky-700' : 'text-zinc-500 hover:text-zinc-700'
                 }`}>
                   {tab.label}
                 </span>
-                <div className={`h-px w-full ${isActive ? 'bg-sky-700' : 'bg-transparent'}`} />
+                <div className={`h-0.5 w-full rounded-full ${isActive ? 'bg-sky-700' : 'bg-transparent'}`} />
               </button>
             );
           })}
         </div>
 
         {/* Sort */}
-        <div className="relative shrink-0 ml-4">
+        <div className="relative shrink-0">
           <select
             value={activeSort ?? ''}
             onChange={(e) => navigate({ sort: e.target.value || undefined })}
-            className="appearance-none p-2.5 pr-8 bg-white rounded-lg outline outline-[0.3px] outline-neutral-500 text-neutral-500 text-base font-medium font-['Space_Grotesk'] cursor-pointer"
+            className="appearance-none p-2.5 pr-8 bg-white rounded-lg outline outline-[0.3px] outline-neutral-500 text-neutral-500 text-sm font-medium font-['Space_Grotesk'] cursor-pointer"
           >
             {SORT_OPTIONS.map((o) => (
               <option key={o.value} value={o.value}>{o.label}</option>

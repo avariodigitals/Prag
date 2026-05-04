@@ -13,15 +13,15 @@ export default function BrandBanner() {
           height={256}
         />
         <div className="flex-1 flex flex-col justify-start items-center md:items-start gap-4 text-center md:text-left">
-          <div className="w-full text-black text-2xl md:text-4xl font-bold font-['Onest'] leading-tight">
+          <div className="w-full text-black text-xl md:text-2xl font-bold font-['Onest'] leading-tight">
             No Hype. Just Inverters That Deliver.
           </div>
-          <div className="w-full max-w-[631px] text-black text-sm md:text-base font-normal font-['Space_Grotesk']">
+          <div className="w-full max-w-[631px] text-zinc-600 text-sm font-normal font-['Space_Grotesk'] leading-relaxed">
             Explore stabilizers, inverters, batteries, and complete power solutions designed to keep your home or business running without interruption.
           </div>
           <Link 
             href="/products/inverters"
-            className="w-full md:w-auto py-3 px-6 bg-sky-700 rounded-3xl flex justify-center items-center gap-2.5 hover:bg-sky-800 transition-colors"
+            className="w-full md:w-auto py-2.5 px-5 bg-sky-700 rounded-3xl flex justify-center items-center gap-2.5 hover:bg-sky-800 transition-colors"
           >
             <div className="text-white text-sm font-medium font-['Space_Grotesk'] whitespace-nowrap">
               Buy Inverters Built to Last

@@ -50,8 +50,8 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
   const wishlisted = isWishlisted(product.id);
 
   return (
-    <div className="w-full relative flex flex-col gap-2 group bg-white rounded-xl p-2 hover:shadow-md transition-shadow">
-      <div className={`w-full h-48 md:h-56 ${bg} relative flex justify-center items-center rounded-lg overflow-hidden`}>
+    <div className="w-full relative flex flex-col gap-2 group bg-white rounded-xl p-2 md:rounded-2xl md:p-0 md:overflow-hidden md:border md:border-gray-100 hover:shadow-lg transition-shadow duration-300">
+      <div className={`w-full h-48 md:h-72 ${bg} relative flex justify-center items-center rounded-lg md:rounded-none overflow-hidden`}>
         {image ? (
           <>
             <Image
@@ -79,9 +79,9 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
               onClick={handleWishlist}
               disabled={saving}
               aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-              className="absolute top-2 right-2 p-1.5 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-colors z-10"
+              className="absolute top-2 right-2 p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-colors z-10"
             >
-              <Heart className={`w-4 h-4 transition-colors ${wishlisted ? 'text-sky-700 fill-sky-700' : 'text-zinc-500'}`} />
+              <Heart className={`w-5 h-5 transition-colors ${wishlisted ? 'text-sky-700 fill-sky-700' : 'text-zinc-500'}`} />
             </button>
           </>
         ) : (
@@ -89,39 +89,66 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
             <span className="text-zinc-400 text-xs">No Image</span>
           </div>
         )}
-
       </div>
 
-      <div className="flex flex-col items-center gap-2 px-1">
+      {/* Mobile info */}
+      <div className="flex flex-col items-center gap-2 px-1 md:hidden">
         <div className="w-full flex flex-col gap-1">
-          <p className="text-center text-zinc-900 text-sm md:text-xs font-medium font-['Onest'] line-clamp-2 group-hover:text-sky-700 transition-colors">
+          <p className="text-center text-zinc-900 text-sm font-medium font-['Onest'] line-clamp-2 group-hover:text-sky-700 transition-colors">
             {product.name}
           </p>
           <div className="flex justify-center items-center gap-2">
             {product.on_sale && product.regular_price && (
-              <span className="text-zinc-400 text-xs md:text-[10px] font-light font-['Onest'] line-through">
+              <span className="text-zinc-400 text-xs font-light font-['Onest'] line-through">
                 {formatPrice(product.regular_price)}
               </span>
             )}
-            <span className="text-zinc-900 text-sm md:text-xs font-semibold font-['Onest']">
+            <span className="text-zinc-900 text-sm font-semibold font-['Onest']">
+              {formatPrice(product.price)}
+            </span>
+          </div>
+        </div>
+        <div className="flex items-center gap-1.5 w-full">
+          <Link href={productUrl(product)} className="flex-1 py-1.5 bg-sky-700 rounded-full flex justify-center items-center hover:bg-sky-800 transition-all">
+            <span className="text-stone-50 text-xs font-medium font-['Space_Grotesk'] whitespace-nowrap">Learn more</span>
+          </Link>
+          <button onClick={handleBuyNow} className="flex-1 py-1.5 rounded-full flex justify-center items-center hover:bg-sky-50 transition-colors border border-sky-700">
+            <span className="text-sky-700 text-xs font-medium font-['Space_Grotesk'] whitespace-nowrap">Buy now</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Desktop info */}
+      <div className="hidden md:flex flex-col gap-3 px-4 pb-4 pt-3">
+        <div className="flex flex-col gap-1">
+          <p className="text-zinc-900 text-sm font-semibold font-['Onest'] leading-snug line-clamp-2 group-hover:text-sky-700 transition-colors">
+            {product.name}
+          </p>
+          <div className="flex items-center gap-2 mt-0.5">
+            {product.on_sale && product.regular_price && (
+              <span className="text-zinc-400 text-xs font-normal font-['Onest'] line-through">
+                {formatPrice(product.regular_price)}
+              </span>
+            )}
+            <span className="text-sky-700 text-sm font-bold font-['Onest']">
               {formatPrice(product.price)}
             </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5 w-full">
-          <Link
-            href={productUrl(product)}
-            className="flex-1 py-1.5 bg-sky-700 rounded-full flex justify-center items-center hover:bg-sky-800 transition-all hover:shadow-md"
-          >
-            <span className="text-stone-50 text-xs font-medium font-['Space_Grotesk'] whitespace-nowrap">Learn more</span>
-          </Link>
+        <div className="flex flex-col gap-2">
           <button
             onClick={handleBuyNow}
-            className="flex-1 py-1.5 rounded-full flex justify-center items-center hover:bg-sky-50 transition-colors border border-sky-700"
+            className="w-full py-2 bg-sky-700 rounded-lg text-white text-xs font-semibold font-['Space_Grotesk'] tracking-wide hover:bg-sky-800 transition-colors"
           >
-            <span className="text-sky-700 text-xs font-medium font-['Space_Grotesk'] whitespace-nowrap">Buy now</span>
+            Buy Now
           </button>
+          <Link
+            href={productUrl(product)}
+            className="w-full py-2 rounded-lg border border-gray-200 text-zinc-500 text-xs font-medium font-['Space_Grotesk'] text-center hover:border-sky-700 hover:text-sky-700 transition-colors"
+          >
+            View Details
+          </Link>
         </div>
       </div>
     </div>

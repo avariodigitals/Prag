@@ -54,7 +54,7 @@ export default function LoginPage() {
 
         <div className="w-full max-w-[480px] flex flex-col gap-8">
           <div className="flex flex-col gap-2">
-            <h2 className="text-stone-900 text-3xl md:text-4xl font-semibold font-['Onest'] leading-tight">Welcome back!</h2>
+            <h2 className="text-stone-900 text-xl md:text-2xl font-semibold font-['Onest'] leading-tight">Welcome back!</h2>
             <div className="flex items-center gap-1">
               <span className="text-neutral-500 text-sm font-normal font-['Space_Grotesk']">Don&apos;t have an account?</span>
               <Link href="/register" className="text-sky-700 text-sm font-medium font-['Space_Grotesk'] hover:underline">Sign Up</Link>
@@ -84,7 +84,7 @@ export default function LoginPage() {
             </div>
 
             <button type="submit" disabled={loading}
-              className="w-full h-14 bg-sky-700 rounded-2xl text-white text-base font-semibold font-['Space_Grotesk'] hover:bg-sky-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              className="w-full h-12 bg-sky-700 rounded-2xl text-white text-sm font-semibold font-['Space_Grotesk'] hover:bg-sky-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
               {loading ? 'Logging in...' : 'Log in'}
             </button>
           </form>

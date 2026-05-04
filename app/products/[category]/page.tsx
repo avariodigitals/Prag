@@ -29,6 +29,20 @@ const KNOWN_CATEGORY_IDS: Record<string, number> = {
   'solar': Number(process.env.WC_CAT_SOLAR ?? 0),
   'batteries': Number(process.env.WC_CAT_BATTERIES ?? 0),
   'voltage-stabilizers': 144,
+  // subcategories
+  'thyristor-stabilizers': 266,
+  'relay-voltage-stabilizers': 167,
+  'servo-voltage-stabilizers': 168,
+  'advanced-stabilizers': 178,
+  'hybrid-inverters': 171,
+  'heavy-duty-inverters': 165,
+  'pure-sine-inverters': 203,
+  'solar-panels': 169,
+  'solar-charge-controllers': 170,
+  'protective-device': 261,
+  'tubular-batteries': 220,
+  'lithium-battery': 240,
+  'battery-rack': 179,
 };
 
 export default async function CategoryPage({ params, searchParams }: Props) {
@@ -40,10 +54,11 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const order = sort === 'price-desc' ? 'desc' : sort ? 'asc' : undefined;
 
   const knownId = KNOWN_CATEGORY_IDS[category];
+  const knownSubId = sp.sub ? KNOWN_CATEGORY_IDS[sp.sub] : undefined;
 
   const [cat, activeCategory] = await Promise.all([
     knownId ? Promise.resolve(null) : getCategoryBySlug(category),
-    sp.sub ? getCategoryBySlug(sp.sub) : Promise.resolve(null),
+    (sp.sub && !knownSubId) ? getCategoryBySlug(sp.sub) : Promise.resolve(null),
   ]);
 
   if (!knownId && !cat) {
@@ -51,7 +66,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
     if (product) redirect(productUrl(product));
   }
 
-  const resolvedCatId = activeCategory?.id ?? (knownId || cat?.id);
+  const resolvedCatId = knownSubId ?? activeCategory?.id ?? (knownId || cat?.id);
   const productCategorySlug = sp.sub ?? category;
 
   const [subcategories, { products, total }] = await Promise.all([
@@ -90,7 +105,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         </div>
 
         <div className="flex flex-col items-center gap-3">
-          <h1 className="text-sky-700 text-3xl md:text-5xl font-bold font-['Onest'] text-center">
+          <h1 className="text-sky-700 text-2xl md:text-3xl font-bold font-['Onest'] text-center">
             {displayName}
           </h1>
           {description && (

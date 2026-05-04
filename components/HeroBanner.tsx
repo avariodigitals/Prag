@@ -81,18 +81,18 @@ export default function HeroBanner() {
 
         <div className="flex-1 flex flex-col gap-8 md:gap-10 items-center md:items-start text-center md:text-left">
           <div className="flex flex-col gap-4 md:gap-6">
-            <h1 className="text-white text-3xl md:text-6xl lg:text-7xl font-bold font-['Onest'] leading-[1.1] transition-opacity duration-500">
+            <h1 className="text-white text-2xl md:text-4xl lg:text-5xl font-bold font-['Onest'] leading-tight transition-opacity duration-500">
               {slide.title}
             </h1>
-            <p className="max-w-[580px] text-white/90 text-lg font-normal font-['Space_Grotesk'] leading-relaxed transition-opacity duration-500">
+            <p className="max-w-[580px] text-white/80 text-sm md:text-base font-normal font-['Space_Grotesk'] leading-relaxed transition-opacity duration-500">
               {slide.description}
             </p>
             <div className="flex justify-center md:justify-start">
               <Link
                 href={slide.link}
-                className="w-64 md:w-fit px-8 py-4 bg-sky-700 rounded-3xl md:rounded-full flex justify-center items-center gap-2.5 hover:bg-sky-800 transition-all hover:scale-105"
+                className="w-64 md:w-auto px-6 py-3 bg-sky-700 rounded-3xl md:rounded-full flex justify-center items-center gap-2.5 hover:bg-sky-800 transition-all hover:scale-105"
               >
-                <span className="text-white text-base font-medium font-['Space_Grotesk']">
+                <span className="text-white text-sm font-medium font-['Space_Grotesk'] whitespace-nowrap">
                   {slide.cta}
                 </span>
               </Link>

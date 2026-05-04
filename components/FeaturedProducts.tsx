@@ -14,7 +14,7 @@ export default function FeaturedProducts({ products }: FeaturedProductsProps) {
   return (
     <div className="w-full px-4 md:px-20 py-10 md:py-14 bg-stone-50 flex flex-col justify-center items-center gap-8">
       <div className="w-full max-w-[1280px] flex flex-col justify-center items-center gap-8 md:gap-12">
-        <h2 className="w-full max-w-[631px] text-center text-lg md:text-3xl font-bold font-['Onest'] text-black">
+        <h2 className="w-full max-w-[631px] text-center text-base md:text-2xl font-bold font-['Onest'] text-black">
           Featured Products
         </h2>
 
@@ -32,7 +32,7 @@ export default function FeaturedProducts({ products }: FeaturedProductsProps) {
         href="/products"
         className="w-64 p-4 rounded-3xl outline outline-1 outline-offset-[-1px] outline-sky-700 inline-flex justify-center items-center gap-2.5 hover:bg-sky-50 transition-colors"
       >
-        <span className="text-sky-700 text-base font-medium font-['Space_Grotesk']">View all products</span>
+        <span className="text-sky-700 text-sm font-medium font-['Space_Grotesk']">View all products</span>
       </Link>
     </div>
   );

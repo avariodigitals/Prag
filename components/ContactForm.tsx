@@ -25,7 +25,7 @@ export default function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex-1 px-6 py-6 bg-white rounded-xl outline outline-1 outline-zinc-100 flex flex-col gap-5">
-      <h2 className="text-neutral-950 text-2xl font-medium font-['Space_Grotesk'] leading-7">Send us a Message</h2>
+      <h2 className="text-neutral-950 text-lg font-semibold font-['Space_Grotesk'] leading-6">Send us a Message</h2>
 
       <div className="flex flex-col gap-2">
         <label className="text-zinc-900 text-sm font-normal font-['Space_Grotesk'] leading-5">Full Name *</label>
@@ -73,7 +73,7 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={status === 'sending'}
-        className="w-full py-3 bg-sky-700 rounded-lg text-white text-base font-semibold font-['DM_Sans'] leading-6 hover:bg-sky-800 transition-colors disabled:opacity-60"
+        className="w-full py-2.5 bg-sky-700 rounded-lg text-white text-sm font-semibold font-['DM_Sans'] leading-6 hover:bg-sky-800 transition-colors disabled:opacity-60"
       >
         {status === 'sending' ? 'Sending...' : 'Send Enquiry'}
       </button>

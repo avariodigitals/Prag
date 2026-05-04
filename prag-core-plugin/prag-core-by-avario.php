@@ -20,6 +20,64 @@ class Prag_Core_Bridge {
         add_action('rest_api_init', [$this, 'register_routes']);
         // Register prag_wishlist user meta for REST API access
         add_action('init', [$this, 'register_user_meta']);
+        // Register custom post types
+        add_action('init', [$this, 'register_post_types']);
+    }
+
+    /**
+     * Register Custom Post Types
+     */
+    public function register_post_types() {
+
+        // prag_document — Technical Resources attached to products
+        register_post_type('prag_document', [
+            'labels'       => ['name' => 'Tech Documents', 'singular_name' => 'Tech Document'],
+            'public'       => false,
+            'show_ui'      => true,
+            'show_in_rest' => true,
+            'rest_base'    => 'prag_document',
+            'supports'     => ['title', 'custom-fields'],
+            'menu_icon'    => 'dashicons-media-document',
+        ]);
+
+        register_post_meta('prag_document', 'file_url', [
+            'type' => 'string', 'single' => true, 'show_in_rest' => true,
+            'auth_callback' => function() { return current_user_can('edit_posts'); },
+        ]);
+        register_post_meta('prag_document', 'file_type', [
+            'type' => 'string', 'single' => true, 'show_in_rest' => true,
+            'auth_callback' => function() { return current_user_can('edit_posts'); },
+        ]);
+        register_post_meta('prag_document', 'file_size', [
+            'type' => 'string', 'single' => true, 'show_in_rest' => true,
+            'auth_callback' => function() { return current_user_can('edit_posts'); },
+        ]);
+        register_post_meta('prag_document', 'pages', [
+            'type' => 'string', 'single' => true, 'show_in_rest' => true,
+            'auth_callback' => function() { return current_user_can('edit_posts'); },
+        ]);
+        register_post_meta('prag_document', 'product_id', [
+            'type' => 'integer', 'single' => true, 'show_in_rest' => true,
+            'auth_callback' => function() { return current_user_can('edit_posts'); },
+        ]);
+
+        // prag_store — Physical and online store locations
+        register_post_type('prag_store', [
+            'labels'       => ['name' => 'Stores', 'singular_name' => 'Store'],
+            'public'       => false,
+            'show_ui'      => true,
+            'show_in_rest' => true,
+            'rest_base'    => 'prag_store',
+            'supports'     => ['title', 'custom-fields'],
+            'menu_icon'    => 'dashicons-store',
+        ]);
+
+        foreach (['city', 'address', 'phone', 'map_url', 'store_type'] as $field) {
+            register_post_meta('prag_store', $field, [
+                'type' => 'string', 'single' => true, 'show_in_rest' => true,
+                'auth_callback' => function() { return current_user_can('edit_posts'); },
+            ]);
+        }
     }
 
     /**
@@ -318,15 +376,71 @@ class Prag_Core_Bridge {
      * Get Site Settings
      */
     public function get_settings() {
-        $settings = get_option('prag_site_settings', [
-            'hero_title' => 'Shop Reliable Power Systems',
-            'hero_subtitle' => 'Built for Real-World Performance',
-            'contact_phone' => '+2348032170129',
-            'contact_email' => 'info@prag.global',
-            'announcement_bar' => 'Free shipping on orders over ₦500,000!',
-        ]);
+        $defaults = [
+            'contact_phone'             => '+2348032170129',
+            'contact_email'             => 'sales@prag.global',
+            'whatsapp'                  => '+2348032170129',
+            'address'                   => '14 Industrial Layout, Victoria Island, Lagos, Nigeria',
+            'business_hours_weekday'    => 'Mon–Fri: 8:00 AM – 6:00 PM',
+            'business_hours_saturday'   => 'Sat: 9:00 AM – 2:00 PM',
+            'announcement_bar'          => '',
+            'footer_description'        => 'Nigeria\'s leading power engineering company. We design, supply and install power solutions for homes, businesses and industrial facilities across the country.',
+            'brand_banner_title'        => 'No Hype. Just Inverters That Deliver.',
+            'brand_banner_description'  => 'Explore stabilizers, inverters, batteries, and complete power solutions designed to keep your home or business running without interruption.',
+            'brand_banner_cta'          => 'Buy Inverters Built to Last',
+            'brand_banner_link'         => '/products/inverters',
+            'brand_banner_image'        => 'https://central.prag.global/wp-content/uploads/2026/04/f80b14a4d9e3fc153ae2e60c3d8d11a58ebe33fe.png',
+            'socials' => [
+                'facebook'  => 'https://www.facebook.com/pragpowersolutions',
+                'instagram' => 'https://www.instagram.com/prag_ng/',
+                'linkedin'  => 'https://www.linkedin.com/company/prag/',
+                'twitter'   => '',
+                'whatsapp'  => 'https://wa.me/2348032170129',
+            ],
+            'slides' => [
+                [
+                    'title'        => 'No Hype. Just Inverters That Deliver.',
+                    'description'  => 'Choose inverters engineered for real-world loads. Shop reliable power systems today.',
+                    'cta'          => 'Buy Inverters Built to Last',
+                    'link'         => '/products',
+                    'productImage' => 'https://central.prag.global/wp-content/uploads/2026/04/eebd514c0d3e75e4f32cb8fd691c7b3613fd99d5.png',
+                    'productAlt'   => 'Heavy Duty Inverter',
+                ],
+                [
+                    'title'        => 'Power Your Home. Power Your Business.',
+                    'description'  => 'From residential to industrial applications. Trusted inverters for every power need.',
+                    'cta'          => 'Explore Our Range',
+                    'link'         => '/products',
+                    'productImage' => 'https://central.prag.global/wp-content/uploads/2026/04/7ee70985fdddba92a39a6e67f80ec4773cbf34fd.png',
+                    'productAlt'   => 'Residential Inverter',
+                ],
+                [
+                    'title'        => 'Built Tough. Tested Tougher.',
+                    'description'  => 'Heavy-duty inverters designed to handle the toughest loads without compromise.',
+                    'cta'          => 'Shop Heavy Duty Inverters',
+                    'link'         => '/inverter',
+                    'productImage' => 'https://central.prag.global/wp-content/uploads/2026/04/b5564cf299de3eea9dbe804a547cf74e99bc41a7.png',
+                    'productAlt'   => 'Industrial Inverter',
+                ],
+                [
+                    'title'        => 'Reliable Power. Unbeatable Performance.',
+                    'description'  => 'Experience consistent power delivery with inverters engineered for excellence.',
+                    'cta'          => 'Get Started Today',
+                    'link'         => '/products',
+                    'productImage' => 'https://central.prag.global/wp-content/uploads/2026/04/dd4b835690b546ee636b7659added08cd02d9891.png',
+                    'productAlt'   => 'Premium Inverter',
+                ],
+            ],
+            'categories' => [
+                ['name' => 'Voltage Stabilizers', 'slug' => 'voltage-stabilizers', 'image' => 'https://central.prag.global/wp-content/uploads/2026/04/7ee70985fdddba92a39a6e67f80ec4773cbf34fd.png'],
+                ['name' => 'Inverters',           'slug' => 'inverters',            'image' => 'https://central.prag.global/wp-content/uploads/2026/04/eebd514c0d3e75e4f32cb8fd691c7b3613fd99d5-1.png'],
+                ['name' => 'Solar Panels',        'slug' => 'solar',                'image' => 'https://central.prag.global/wp-content/uploads/2026/04/b5564cf299de3eea9dbe804a547cf74e99bc41a7.png'],
+                ['name' => 'Batteries',           'slug' => 'batteries',            'image' => 'https://central.prag.global/wp-content/uploads/2026/04/dd4b835690b546ee636b7659added08cd02d9891.png'],
+            ],
+        ];
 
-        return $settings;
+        $saved = get_option('prag_site_settings', []);
+        return array_merge($defaults, $saved);
     }
 
     /**

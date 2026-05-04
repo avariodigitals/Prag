@@ -81,18 +81,19 @@ export default function CategoryProductsGrid({
 
   // Infinite scroll via IntersectionObserver
   useEffect(() => {
-    if (!hasMore) return;
+    if (!hasMore || loading) return;
     const sentinel = sentinelRef.current;
     if (!sentinel) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && !loading) loadMore();
+        if (entries[0].isIntersecting) loadMore();
       },
       { rootMargin: '200px' }
     );
     observer.observe(sentinel);
     return () => observer.disconnect();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasMore, loading, page, activeSub, activeSort]);
 
   async function loadMore() {

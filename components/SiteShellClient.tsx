@@ -6,15 +6,17 @@ import NavBar from './NavBar';
 import Footer from './Footer';
 import ScrollToTop from './ScrollToTop';
 import NavigationScrollReset from './NavigationScrollReset';
+import type { SiteSettings } from '@/lib/woocommerce';
 
 const AUTH_ROUTES = ['/login', '/register'];
 
 interface Props {
   children: React.ReactNode;
   user: { user_display_name: string } | null;
+  settings: SiteSettings;
 }
 
-export default function SiteShellClient({ children, user }: Props) {
+export default function SiteShellClient({ children, user, settings }: Props) {
   const pathname = usePathname();
   const isAuth = AUTH_ROUTES.some((r) => pathname.startsWith(r));
 
@@ -23,10 +25,10 @@ export default function SiteShellClient({ children, user }: Props) {
   return (
     <>
       <NavigationScrollReset />
-      <TopBar initialUser={user} />
+      <TopBar initialUser={user} phone={settings.contact_phone} whatsapp={settings.whatsapp} />
       <NavBar />
       {children}
-      <Footer />
+      <Footer settings={settings} />
       <ScrollToTop />
     </>
   );

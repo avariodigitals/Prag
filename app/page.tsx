@@ -3,12 +3,13 @@ import CategoryGrid from '@/components/CategoryGrid';
 import FeaturedProducts from '@/components/FeaturedProducts';
 import BrandBanner from '@/components/BrandBanner';
 import FlashSales from '@/components/FlashSales';
-import { getFeaturedProducts, getFlashSaleProducts, getProducts } from '@/lib/woocommerce';
+import { getFeaturedProducts, getFlashSaleProducts, getProducts, getSiteSettings } from '@/lib/woocommerce';
 
 export default async function HomePage() {
-  const [featuredResult, flashSaleProducts] = await Promise.all([
+  const [featuredResult, flashSaleProducts, settings] = await Promise.all([
     getFeaturedProducts(),
     getFlashSaleProducts(),
+    getSiteSettings(),
   ]);
 
   let featuredProducts = featuredResult;
@@ -19,10 +20,10 @@ export default async function HomePage() {
 
   return (
     <main className="w-full bg-white flex flex-col">
-      <HeroBanner />
-      <CategoryGrid />
+      <HeroBanner slides={settings.slides} />
+      <CategoryGrid settings={settings} />
       <FeaturedProducts products={featuredProducts} />
-      <BrandBanner />
+      <BrandBanner settings={settings} />
       <FlashSales products={flashSaleProducts} />
     </main>
   );

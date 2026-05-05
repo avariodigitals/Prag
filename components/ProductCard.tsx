@@ -51,7 +51,8 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
   const wishlisted = isWishlisted(product.id);
   const numericPrice = Number(String(product.price ?? '').replace(/,/g, ''));
   const hasValidPrice = Number.isFinite(numericPrice) && numericPrice > 0;
-  const isOutOfStock = product.stock_status === 'outofstock' || !hasValidPrice;
+  const isActuallyOutOfStock = product.stock_status === 'outofstock';
+  const isOutOfStock = isActuallyOutOfStock || !hasValidPrice;
   const hasNewTag = product.tags?.some((tag) => tag.slug === 'new' || tag.name.toLowerCase().includes('new'));
   const shouldShowNew = (isNew || hasNewTag) && !isOutOfStock;
 
@@ -72,7 +73,7 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
             />
 
             <div className="absolute left-2 md:left-3 top-2 md:top-14 z-10 flex flex-col gap-1">
-              {isOutOfStock && (
+              {isActuallyOutOfStock && (
                 <span className="px-2 py-1 rounded-full bg-rose-100 text-rose-700 text-[10px] font-semibold font-['Space_Grotesk'] uppercase tracking-wide">
                   Out of stock
                 </span>

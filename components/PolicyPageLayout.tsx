@@ -22,7 +22,7 @@ export default function PolicyPageLayout({ title, breadcrumb, sections, highligh
           <span className="text-zinc-500 text-xs md:text-base font-medium font-['Onest'] mx-1">/</span>
           <span className="text-zinc-500 text-xs md:text-base font-medium font-['Onest']">{breadcrumb}</span>
         </div>
-        <h1 className="text-black text-2xl md:text-4xl font-medium font-['Onest']">{title}</h1>
+        <h1 className="text-black text-2xl md:text-3xl font-medium font-['Onest']">{title}</h1>
       </div>
 
       {/* Content */}

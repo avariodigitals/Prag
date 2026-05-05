@@ -53,7 +53,7 @@ export default function CartView() {
             <div className="flex justify-between items-center">
               {/* Product info */}
               <div className="flex items-center gap-5">
-                <div className="w-32 h-28 relative bg-stone-50 rounded-2xl overflow-hidden shrink-0">
+                <div className="w-32 h-28 relative bg-white rounded-2xl overflow-hidden shrink-0">
                   <Image src={item.image || '/placeholder-product.png'} alt={item.name} fill className="object-contain p-2" />
                 </div>
                 <div className="flex flex-col gap-3">

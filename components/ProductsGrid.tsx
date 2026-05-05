@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ProductCard from './ProductCard';
 import type { Product, Category, Tag } from '@/lib/types';
 import { ChevronDown, SlidersHorizontal, X } from 'lucide-react';
@@ -14,25 +14,72 @@ interface Props {
 }
 
 const SORT_OPTIONS = [
-  { label: 'Default', value: '' },
+  { label: 'Default: Size + Price (Low to High)', value: '' },
   { label: 'Price: Low to High', value: 'price' },
   { label: 'Price: High to Low', value: 'price-desc' },
   { label: 'Newest', value: 'date' },
 ];
 
-const PER_PAGE = 9;
+const PER_PAGE = 16;
 
 export default function ProductsGrid({ products, total, categories = [], tags = [] }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const currentPage = Number(searchParams.get('page') ?? 1);
-  const totalPages = Math.ceil(total / PER_PAGE);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [minPrice, setMinPrice] = useState(searchParams.get('min_price') ?? '');
   const [maxPrice, setMaxPrice] = useState(searchParams.get('max_price') ?? '');
+  const [items, setItems] = useState<Product[]>(products);
+  const [page, setPage] = useState(2);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(products.length < total);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   const activeCategory = searchParams.get('category') ?? '';
   const activeTag = searchParams.get('tag') ?? '';
+
+  useEffect(() => {
+    setItems(products);
+    setPage(2);
+    setHasMore(products.length < total);
+  }, [products, total]);
+
+  useEffect(() => {
+    if (!hasMore || loadingMore) return;
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) loadMore();
+      },
+      { rootMargin: '220px' }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasMore, loadingMore, page, searchParams.toString()]);
+
+  async function loadMore() {
+    setLoadingMore(true);
+    try {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('page', String(page));
+      params.set('per_page', String(PER_PAGE));
+      const res = await fetch(`/api/products/list?${params.toString()}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      const newProducts: Product[] = data.products ?? [];
+
+      setItems((prev) => {
+        const ids = new Set(prev.map((p) => p.id));
+        return [...prev, ...newProducts.filter((p) => !ids.has(p.id))];
+      });
+      setPage((p) => p + 1);
+      setHasMore(Boolean(data.hasMore));
+    } finally {
+      setLoadingMore(false);
+    }
+  }
 
   function buildParams(overrides: Record<string, string | null>) {
     const params = new URLSearchParams(searchParams.toString());
@@ -49,12 +96,6 @@ export default function ProductsGrid({ products, total, categories = [], tags = 
     if (value) params.set('sort', value);
     else params.delete('sort');
     params.delete('page');
-    router.push(`/products?${params.toString()}`);
-  }
-
-  function setPage(page: number) {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('page', String(page));
     router.push(`/products?${params.toString()}`);
   }
 
@@ -121,7 +162,7 @@ export default function ProductsGrid({ products, total, categories = [], tags = 
       </div>
 
       {/* Grid */}
-      {products.length === 0 ? (
+      {items.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center gap-4 py-10">
           <p className="text-gray-400 text-lg font-['Space_Grotesk']">No products found.</p>
           {hasFilters && (
@@ -131,67 +172,26 @@ export default function ProductsGrid({ products, total, categories = [], tags = 
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((product) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-9 md:gap-x-6 md:gap-y-11">
+          {items.map((product) => (
             <ProductCard key={product.id} product={product} bg="bg-white" />
           ))}
         </div>
       )}
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 pt-4">
-          {/* Prev */}
-          <button
-            onClick={() => setPage(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="px-3 py-2 rounded-lg text-sm font-medium font-['Space_Grotesk'] outline outline-1 outline-neutral-300 text-neutral-500 hover:outline-sky-700 hover:text-sky-700 disabled:opacity-30 transition-colors"
-          >
-            ← Prev
-          </button>
+      <div ref={sentinelRef} className="h-4" />
 
-          {/* Page numbers */}
-          {(() => {
-            const pages: (number | '...')[] = [];
-            if (totalPages <= 7) {
-              for (let i = 1; i <= totalPages; i++) pages.push(i);
-            } else {
-              pages.push(1);
-              if (currentPage > 3) pages.push('...');
-              for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
-                pages.push(i);
-              }
-              if (currentPage < totalPages - 2) pages.push('...');
-              pages.push(totalPages);
-            }
-            return pages.map((p, i) =>
-              p === '...' ? (
-                <span key={`ellipsis-${i}`} className="w-9 text-center text-neutral-400 text-sm">…</span>
-              ) : (
-                <button
-                  key={p}
-                  onClick={() => setPage(p as number)}
-                  className={`w-9 h-9 rounded-full text-sm font-medium font-['Space_Grotesk'] transition-colors ${
-                    p === currentPage
-                      ? 'bg-sky-700 text-white'
-                      : 'bg-white text-neutral-500 outline outline-1 outline-neutral-300 hover:outline-sky-700 hover:text-sky-700'
-                  }`}
-                >
-                  {p}
-                </button>
-              )
-            );
-          })()}
-
-          {/* Next */}
-          <button
-            onClick={() => setPage(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="px-3 py-2 rounded-lg text-sm font-medium font-['Space_Grotesk'] outline outline-1 outline-neutral-300 text-neutral-500 hover:outline-sky-700 hover:text-sky-700 disabled:opacity-30 transition-colors"
-          >
-            Next →
-          </button>
+      {loadingMore && (
+        <div className="flex justify-center py-4">
+          <svg className="w-6 h-6 text-sky-700 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+            <path className="opacity-80" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+          </svg>
         </div>
+      )}
+
+      {!hasMore && items.length > 0 && (
+        <p className="text-center text-zinc-400 text-xs font-['Space_Grotesk'] py-2">All products loaded</p>
       )}
 
       {/* Mobile Filter Drawer */}

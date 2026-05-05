@@ -4,9 +4,9 @@ import { getProducts } from '@/lib/woocommerce';
 export const runtime = 'nodejs';
 
 const KNOWN_CATEGORY_IDS: Record<string, number> = {
-  'inverters': Number(process.env.WC_CAT_INVERTERS ?? 0),
-  'solar': Number(process.env.WC_CAT_SOLAR ?? 0),
-  'batteries': Number(process.env.WC_CAT_BATTERIES ?? 0),
+  'inverters': Number(process.env.WC_CAT_INVERTERS ?? 117),
+  'solar': Number(process.env.WC_CAT_SOLAR ?? 147),
+  'batteries': Number(process.env.WC_CAT_BATTERIES ?? 151),
   'voltage-stabilizers': 144,
   'thyristor-stabilizers': 266,
   'relay-voltage-stabilizers': 167,
@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
   const sub = searchParams.get('sub');
   const sort = searchParams.get('sort') ?? '';
   const page = Number(searchParams.get('page') ?? 2);
-  const per_page = 24; // larger batch = fewer round trips
+  const per_page = Number(searchParams.get('per_page') ?? 16);
 
   const orderby = sort === 'price' || sort === 'price-desc' ? 'price' : sort || undefined;
   const order = sort === 'price-desc' ? 'desc' : sort ? 'asc' : undefined;

@@ -79,7 +79,7 @@ export default function BlogGrid({ featured, posts, categories, activeCategory }
                 <span className="text-neutral-700 text-sm font-normal font-['Onest']" suppressHydrationWarning>{readTime(featured)}</span>
                 <span className="text-sky-700 text-sm md:text-base font-normal font-['Onest']" suppressHydrationWarning>{postDate(featured)}</span>
               </div>
-              <h2 className="text-zinc-900 text-2xl md:text-4xl font-medium font-['Onest']"
+              <h2 className="text-zinc-900 text-2xl md:text-3xl font-medium font-['Onest']"
                 dangerouslySetInnerHTML={{ __html: sanitize(featured.title.rendered) }} />
               <p className="text-neutral-700 text-base md:text-xl font-normal font-['Onest'] line-clamp-3">
                 {stripHtml(featured.excerpt.rendered)}

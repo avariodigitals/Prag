@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 import ProductCard from './ProductCard';
 import type { Product } from '@/lib/types';
 import { ChevronDown } from 'lucide-react';
@@ -12,31 +13,73 @@ interface Props {
 }
 
 const SORT_OPTIONS = [
-  { label: 'Default', value: '' },
+  { label: 'Default: Size + Price (Low to High)', value: '' },
   { label: 'Price: Low to High', value: 'price' },
   { label: 'Price: High to Low', value: 'price-desc' },
   { label: 'Newest', value: 'date' },
 ];
 
-const PER_PAGE = 9;
+const PER_PAGE = 16;
 
 export default function SearchResultsGrid({ products, total, query }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const currentPage = Number(searchParams.get('page') ?? 1);
-  const totalPages = Math.ceil(total / PER_PAGE);
+  const [items, setItems] = useState<Product[]>(products);
+  const [page, setPage] = useState(2);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(products.length < total);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setItems(products);
+    setPage(2);
+    setHasMore(products.length < total);
+  }, [products, total]);
+
+  useEffect(() => {
+    if (!hasMore || loadingMore || !query) return;
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) loadMore();
+      },
+      { rootMargin: '220px' }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasMore, loadingMore, page, query, searchParams.toString()]);
+
+  async function loadMore() {
+    setLoadingMore(true);
+    try {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('q', query);
+      params.set('page', String(page));
+      params.set('per_page', String(PER_PAGE));
+      const res = await fetch(`/api/products/search?${params.toString()}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      const newProducts: Product[] = data.products ?? [];
+
+      setItems((prev) => {
+        const ids = new Set(prev.map((p) => p.id));
+        return [...prev, ...newProducts.filter((p) => !ids.has(p.id))];
+      });
+      setPage((p) => p + 1);
+      setHasMore(Boolean(data.hasMore));
+    } finally {
+      setLoadingMore(false);
+    }
+  }
 
   function setSort(value: string) {
     const params = new URLSearchParams(searchParams.toString());
     if (value) params.set('sort', value);
     else params.delete('sort');
     params.delete('page');
-    router.push(`/search?${params.toString()}`);
-  }
-
-  function setPage(page: number) {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('page', String(page));
     router.push(`/search?${params.toString()}`);
   }
 
@@ -66,15 +109,15 @@ export default function SearchResultsGrid({ products, total, query }: Props) {
       </div>
 
       {/* Grid */}
-      {products.length === 0 ? (
+      {items.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 gap-4">
           <p className="text-gray-400 text-lg font-['Space_Grotesk']">
             {query ? `No results found for "${query}".` : 'Enter a search term above.'}
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {products.map((product) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-9 md:gap-x-6 md:gap-y-11">
+          {items.map((product) => (
             <ProductCard key={product.id} product={product} bg="bg-white" />
           ))}
         </div>
@@ -83,23 +126,19 @@ export default function SearchResultsGrid({ products, total, query }: Props) {
       {/* Divider */}
       <div className="w-full h-px bg-stone-50 mt-2" />
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2">
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <button
-              key={page}
-              onClick={() => setPage(page)}
-              className={`w-9 h-9 rounded-full text-sm font-medium font-['Space_Grotesk'] transition-colors ${
-                page === currentPage
-                  ? 'bg-sky-700 text-white'
-                  : 'bg-white text-neutral-500 outline outline-1 outline-neutral-300 hover:outline-sky-700 hover:text-sky-700'
-              }`}
-            >
-              {page}
-            </button>
-          ))}
+      <div ref={sentinelRef} className="h-4" />
+
+      {loadingMore && (
+        <div className="flex justify-center py-4">
+          <svg className="w-6 h-6 text-sky-700 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+            <path className="opacity-80" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+          </svg>
         </div>
+      )}
+
+      {!hasMore && items.length > 0 && (
+        <p className="text-center text-zinc-400 text-xs font-['Space_Grotesk'] py-2">All products loaded</p>
       )}
     </div>
   );

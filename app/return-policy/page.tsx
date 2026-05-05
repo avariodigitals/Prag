@@ -40,11 +40,11 @@ export default async function ReturnPolicyPage() {
       <main className="w-full bg-white flex flex-col">
         <div className="w-full px-4 md:px-20 py-6 md:py-10 bg-stone-50 flex flex-col gap-4 md:gap-6">
           <div className="flex items-center gap-1">
-            <Link href="/" className="text-sky-700 text-2xl font-medium font-['Onest'] hover:underline">Home</Link>
-            <span className="text-zinc-500 text-base font-medium font-['Onest'] mx-1">/</span>
-            <span className="text-zinc-500 text-base font-medium font-['Onest']">Return Policy</span>
+            <Link href="/" className="text-sky-700 text-sm md:text-base font-medium font-['Onest'] hover:underline">Home</Link>
+            <span className="text-zinc-500 text-xs md:text-base font-medium font-['Onest'] mx-1">/</span>
+            <span className="text-zinc-500 text-xs md:text-base font-medium font-['Onest']">Return Policy</span>
           </div>
-          <h1 className="text-black text-4xl font-medium font-['Onest']"
+          <h1 className="text-black text-2xl md:text-3xl font-medium font-['Onest']"
             dangerouslySetInnerHTML={{ __html: wpPage.title.rendered }}
           />
         </div>
@@ -64,19 +64,14 @@ export default async function ReturnPolicyPage() {
       breadcrumb="Return Policy"
       sections={[
         {
-          heading: '30-Day Return Window',
-          body: "We want you to be completely satisfied with your purchase. If you're not happy with your order, you can return it within 30 days of delivery for a full refund or exchange. The product must be in its original condition, unused, and in the original packaging.",
-        },
-        {
-          heading: 'Eligibility for Returns',
+          heading: 'Return Eligibility',
           body: (
-            <div className="flex flex-col gap-1">
-              <p>To be eligible for a return, your item must meet the following conditions:</p>
+            <div className="flex flex-col gap-2">
+              <p className="font-medium">Returns are accepted only where:</p>
               <ul className="list-disc pl-5 space-y-1">
-                <li>The product is in its original condition and packaging</li>
-                <li>All accessories, manuals, and warranty cards are included</li>
-                <li>The product has not been installed or used</li>
-                <li>The return is initiated within 30 days of delivery</li>
+                <li>The product is unused</li>
+                <li>The product is in original packaging</li>
+                <li>The request is made within 7 days of purchase</li>
               </ul>
             </div>
           ),
@@ -84,45 +79,48 @@ export default async function ReturnPolicyPage() {
         {
           heading: 'Non-Returnable Items',
           body: (
-            <div className="flex flex-col gap-1">
-              <p>Certain items cannot be returned for hygiene and safety reasons:</p>
+            <div className="flex flex-col gap-2">
+              <p className="font-medium">The following are not eligible for return:</p>
               <ul className="list-disc pl-5 space-y-1">
-                <li>Installed products (solar panels, inverters that have been connected)</li>
-                <li>Used batteries or batteries with broken seals</li>
-                <li>Custom-ordered or special-order items</li>
-                <li>Products damaged due to misuse or improper handling</li>
+                <li>Installed products</li>
+                <li>Used or damaged products</li>
+                <li>Custom or special-order items</li>
               </ul>
             </div>
           ),
         },
         {
-          heading: 'How to Initiate a Return',
+          heading: 'Refunds',
           body: (
-            <div className="flex flex-col gap-4">
-              {RETURN_STEPS.map((step) => (
-                <div key={step.heading} className="px-4 border-l-[5px] border-sky-700 flex flex-col gap-2">
-                  <p className="text-neutral-950 text-lg font-medium font-['Space_Grotesk']">{step.heading}</p>
-                  <p className="text-neutral-700 text-base font-normal font-['Space_Grotesk']">{step.body}</p>
-                </div>
-              ))}
+            <div className="flex flex-col gap-2">
+              <p className="font-medium">Approved returns may be:</p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Exchanged, or</li>
+                <li>Refunded via the original payment method</li>
+              </ul>
             </div>
           ),
         },
         {
-          heading: 'Return Shipping Costs',
-          body: "If the return is due to our error (wrong item shipped, defective product, etc.), we will cover the return shipping costs. For all other returns, the customer is responsible for return shipping fees.",
-        },
-        {
-          heading: 'Exchanges',
-          body: "If you need to exchange an item for a different model or variant, please follow the return process above and place a new order for the desired item. This ensures faster processing and delivery of your replacement.",
-        },
-        {
-          heading: 'Warranty Claims',
-          body: "For warranty-related issues, please refer to the manufacturer's warranty documentation included with your product. Most of our products come with a manufacturer's warranty ranging from 1 to 5 years. Contact us for assistance with warranty claims.",
+          heading: 'Important Notice',
+          body: (
+            <div className="p-4 bg-sky-100 rounded-lg border-l-4 border-sky-700">
+              <p className="text-sky-900 font-medium">
+                Once a product has been installed, it is deemed accepted and cannot be returned.
+              </p>
+            </div>
+          ),
         },
         {
           heading: 'Contact Us',
-          body: contactLine,
+          body: (
+            <p>
+              If you have any questions about our return policy, please contact our customer support team at{' '}
+              <a href="mailto:sales@prag.global" className="text-sky-700 underline">sales@prag.global</a>
+              {' '}or call us at{' '}
+              <a href="tel:+2348032170129" className="text-sky-700 underline">+2348032170129</a>.
+            </p>
+          ),
         },
       ]}
     />

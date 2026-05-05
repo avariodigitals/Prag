@@ -61,7 +61,7 @@ export default function TechResourcesView({ products, selectedSlug }: Props) {
       {selectedProduct && (
         <div className="flex flex-col gap-6 md:gap-10">
           <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
-            <h2 className="text-zinc-900 text-2xl md:text-4xl font-bold font-['Onest'] leading-tight">{selectedProduct.name}</h2>
+            <h2 className="text-zinc-900 text-2xl md:text-3xl font-bold font-['Onest'] leading-tight">{selectedProduct.name}</h2>
             {!loading && <span className="text-zinc-500 text-sm md:text-base font-normal font-['Space_Grotesk'] leading-6">{docs.length} document{docs.length !== 1 ? 's' : ''} available</span>}
           </div>
 

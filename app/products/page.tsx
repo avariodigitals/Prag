@@ -10,7 +10,6 @@ interface SearchParams {
   max_price?: string;
   tag?: string;
   sort?: string;
-  page?: string;
 }
 
 export default async function ProductsPage({
@@ -34,7 +33,8 @@ export default async function ProductsPage({
       tag: params.tag,
       orderby,
       order,
-      page: params.page ? Number(params.page) : 1,
+      page: 1,
+      per_page: 16,
     }),
   ]);
 

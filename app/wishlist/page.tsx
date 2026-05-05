@@ -17,7 +17,7 @@ export default async function WishlistPage() {
           <span className="text-zinc-500 text-xs md:text-base font-medium font-['Onest'] mx-1">/</span>
           <span className="text-zinc-500 text-xs md:text-base font-medium font-['Onest']">Saved items</span>
         </div>
-        <h1 className="text-black text-2xl md:text-4xl font-medium font-['Onest']">Saved items</h1>
+        <h1 className="text-black text-2xl md:text-3xl font-medium font-['Onest']">Saved items</h1>
       </div>
       <WishlistView />
     </main>

@@ -9,7 +9,8 @@ interface FlashSalesProps {
   products: Product[];
 }
 
-const VISIBLE_DESKTOP = 3;
+const VISIBLE_DESKTOP = 4;
+const LISTING_PRICE_COLOR = 'lab(26.8019 1.35387 -4.68303)';
 
 export default function FlashSales({ products }: FlashSalesProps) {
   const [current, setCurrent] = useState(0);
@@ -79,9 +80,9 @@ export default function FlashSales({ products }: FlashSalesProps) {
             {products.map((product) => (
               <div
                 key={product.id}
-                className="flex-shrink-0 w-full sm:w-[calc((100%-16px)/2)] md:w-[calc((100%-32px)/3)]"
+                className="flex-shrink-0 w-full sm:w-[calc((100%-16px)/2)] md:w-[calc((100%-48px)/4)]"
               >
-                <ProductCard product={product} bg="bg-white" />
+                <ProductCard product={product} bg="bg-white" priceColor={LISTING_PRICE_COLOR} />
               </div>
             ))}
           </div>

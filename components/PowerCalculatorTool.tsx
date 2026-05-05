@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { formatPrice, productUrl } from '@/lib/woocommerce';
+import ProductCard from './ProductCard';
 import type { Product } from '@/lib/types';
 
 const APPLIANCES = [
@@ -189,38 +190,10 @@ export default function PowerCalculatorTool() {
               </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {recommendations.map((product) => {
-                const img = product.images?.[0];
-                return (
-                  <div key={product.id} className="bg-white rounded-xl outline outline-1 outline-zinc-100 flex flex-col overflow-hidden group">
-                    <div className="h-48 bg-stone-50 flex items-center justify-center p-4 relative">
-                      {img ? (
-                        <Image src={img.src} alt={img.alt || product.name} fill sizes="300px"
-                          className="object-contain p-4 group-hover:scale-105 transition-transform duration-300" />
-                      ) : (
-                        <div className="w-20 h-20 bg-zinc-100 rounded-full" />
-                      )}
-                      {product.on_sale && (
-                        <span className="absolute top-2 left-2 px-2 py-0.5 bg-red-600 rounded-full text-white text-xs font-bold font-['Space_Grotesk']">SALE</span>
-                      )}
-                    </div>
-                    <div className="p-4 flex flex-col gap-3">
-                      <p className="text-zinc-900 text-sm font-semibold font-['Onest'] line-clamp-2 group-hover:text-sky-700 transition-colors">{product.name}</p>
-                      <div className="flex items-center gap-2">
-                        {product.on_sale && product.regular_price && (
-                          <span className="text-zinc-400 text-xs line-through font-['Onest']">{formatPrice(product.regular_price)}</span>
-                        )}
-                        <span className="text-sky-700 text-base font-bold font-['Onest']">{formatPrice(product.price)}</span>
-                      </div>
-                      <Link href={productUrl(product)}
-                        className="w-full py-2.5 bg-sky-700 rounded-full text-white text-sm font-medium font-['Space_Grotesk'] text-center hover:bg-sky-800 transition-colors">
-                        View Product
-                      </Link>
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {recommendations.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
             </div>
           )}
         </div>

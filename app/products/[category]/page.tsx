@@ -25,9 +25,9 @@ export async function generateMetadata({ params }: Props) {
 
 // Known category slug → ID map to skip a network round-trip
 const KNOWN_CATEGORY_IDS: Record<string, number> = {
-  'inverters': Number(process.env.WC_CAT_INVERTERS ?? 0),
-  'solar': Number(process.env.WC_CAT_SOLAR ?? 0),
-  'batteries': Number(process.env.WC_CAT_BATTERIES ?? 0),
+  'inverters': Number(process.env.WC_CAT_INVERTERS ?? 117),
+  'solar': Number(process.env.WC_CAT_SOLAR ?? 147),
+  'batteries': Number(process.env.WC_CAT_BATTERIES ?? 151),
   'voltage-stabilizers': 144,
   // subcategories
   'thyristor-stabilizers': 266,
@@ -77,7 +77,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       orderby,
       order,
       page: 1,
-      per_page: 24,
+      per_page: 16,
     }),
   ]);
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
 import TopBar from './TopBar';
 import NavBar from './NavBar';
 import Footer from './Footer';
@@ -19,6 +20,12 @@ interface Props {
 export default function SiteShellClient({ children, user, settings }: Props) {
   const pathname = usePathname();
   const isAuth = AUTH_ROUTES.some((r) => pathname.startsWith(r));
+
+  useEffect(() => {
+    if (isAuth) return;
+    const current = `${pathname}${window.location.search}${window.location.hash}`;
+    sessionStorage.setItem('prag:returnTo', current);
+  }, [isAuth, pathname]);
 
   if (isAuth) return <>{children}</>;
 

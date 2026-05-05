@@ -30,7 +30,7 @@ export default function AboutPage() {
 
       {/* Hero */}
       <div className="w-full px-4 md:px-14 pt-10 md:pt-20 pb-8 md:pb-10 bg-stone-50 flex flex-col items-center gap-4 md:gap-6">
-        <h1 className="text-sky-700 text-2xl md:text-4xl font-bold font-['Onest'] text-center leading-snug">
+        <h1 className="text-sky-700 text-2xl md:text-3xl font-bold font-['Onest'] text-center leading-snug">
           Engineering Reliable Power Solutions for Real-World Challenges
         </h1>
         <p className="max-w-[531px] text-center text-sky-700 text-sm md:text-base font-normal font-['Space_Grotesk'] leading-relaxed">

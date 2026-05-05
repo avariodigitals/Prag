@@ -27,8 +27,8 @@ function StoreCard({ store }: StoreCardProps) {
   return (
     <div className="flex-1 p-4 bg-white rounded-2xl outline outline-1 outline-zinc-100 flex flex-col gap-4">
       <div className="flex flex-col gap-2">
-        <h3 className="text-sky-700 text-3xl font-bold font-['Onest'] leading-10">{store.name}</h3>
-        <p className="text-neutral-700 text-lg font-medium font-['Space_Grotesk'] leading-7">{store.city}</p>
+        <h3 className="text-sky-700 text-lg md:text-xl font-bold font-['Onest'] leading-7">{store.name}</h3>
+        <p className="text-neutral-700 text-base font-medium font-['Space_Grotesk'] leading-6">{store.city}</p>
       </div>
       <div className="flex flex-col gap-3">
         <div className="flex flex-col gap-1">
@@ -75,7 +75,7 @@ export default function StoresGrid({ pragStores, onlineStores, chainStores }: Pr
     <section className="w-full px-4 md:px-20 py-10 md:py-24 flex flex-col gap-10">
       {/* Prag Stores */}
       <div className="flex flex-col gap-6">
-        <h2 className="text-zinc-900 text-3xl md:text-4xl font-bold font-['Onest'] leading-[60px]">PRAG Stores</h2>
+        <h2 className="text-zinc-900 text-2xl md:text-3xl font-bold font-['Onest'] leading-tight">PRAG Stores</h2>
         <div className="flex flex-col gap-6 md:gap-10">
           {rows(displayPrag).map((row, i) => (
             <div key={i} className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -86,27 +86,31 @@ export default function StoresGrid({ pragStores, onlineStores, chainStores }: Pr
       </div>
 
       {/* Online Stores */}
-      <div className="flex flex-col gap-6">
-        <h2 className="text-zinc-900 text-3xl md:text-4xl font-bold font-['Onest'] leading-[60px]">Online Stores</h2>
-        <div className="flex gap-10 md:gap-36 flex-wrap items-center">
+      <div className="flex flex-col gap-4">
+        <h2 className="text-zinc-900 text-xl md:text-2xl font-bold font-['Onest'] leading-tight">Online Stores</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {(onlineStores.length > 0
             ? onlineStores.filter(s => s.logo).map(s => ({ src: s.logo!.src, alt: s.logo!.alt || s.name }))
             : FALLBACK_ONLINE
           ).map((img, i) => (
-            <Image key={i} src={img.src} alt={img.alt} width={182} height={91} className="object-contain" />
+            <div key={i} className="flex items-center justify-center bg-white border border-zinc-100 rounded-2xl p-4 h-20 hover:border-zinc-200 hover:shadow-sm transition-all cursor-pointer active:scale-95">
+              <Image src={img.src} alt={img.alt} width={140} height={60} className="object-contain max-h-12 w-auto" />
+            </div>
           ))}
         </div>
       </div>
 
       {/* Chain Stores */}
-      <div className="flex flex-col gap-6">
-        <h2 className="text-zinc-900 text-3xl md:text-4xl font-bold font-['Onest'] leading-[60px]">Chain Stores</h2>
-        <div className="flex gap-10 md:gap-36 flex-wrap items-center">
+      <div className="flex flex-col gap-4">
+        <h2 className="text-zinc-900 text-xl md:text-2xl font-bold font-['Onest'] leading-tight">Chain Stores</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {(chainStores.length > 0
             ? chainStores.filter(s => s.logo).map(s => ({ src: s.logo!.src, alt: s.logo!.alt || s.name }))
             : FALLBACK_CHAIN
           ).map((img, i) => (
-            <Image key={i} src={img.src} alt={img.alt} width={200} height={131} className="object-contain" />
+            <div key={i} className="flex items-center justify-center bg-white border border-zinc-100 rounded-2xl p-4 h-20 hover:border-zinc-200 hover:shadow-sm transition-all cursor-pointer active:scale-95">
+              <Image src={img.src} alt={img.alt} width={140} height={60} className="object-contain max-h-12 w-auto" />
+            </div>
           ))}
         </div>
       </div>

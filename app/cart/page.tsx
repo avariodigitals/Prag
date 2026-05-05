@@ -14,7 +14,7 @@ export default function CartPage() {
           <span className="text-zinc-500 text-xs md:text-base font-medium font-['Onest'] mx-1">/</span>
           <span className="text-zinc-500 text-xs md:text-base font-medium font-['Onest']">Cart</span>
         </div>
-        <h1 className="text-black text-xl md:text-4xl font-medium font-['Onest']">My Cart</h1>
+        <h1 className="text-black text-2xl md:text-3xl font-medium font-['Onest']">My Cart</h1>
       </div>
 
       <div className="w-full px-4 md:px-20 pt-6 md:pt-10 pb-10 md:pb-20 flex flex-col gap-10">

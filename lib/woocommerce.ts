@@ -1,6 +1,8 @@
 import { unstable_cache } from 'next/cache';
 import type { Product, Category, Tag, Store } from './types';
 
+const PRODUCTS_FETCH_PAGE_SIZE = 100;
+
 function authParams() {
   return `consumer_key=${process.env.WC_CONSUMER_KEY}&consumer_secret=${process.env.WC_CONSUMER_SECRET}`;
 }
@@ -31,15 +33,155 @@ async function wcFetch<T>(path: string, fallback: T): Promise<T> {
   }
 }
 
-const PRODUCT_LIST_FIELDS = 'id,name,slug,price,regular_price,sale_price,images,categories,on_sale,stock_status,date_created';
+const PRODUCT_LIST_FIELDS = 'id,name,slug,price,regular_price,sale_price,images,categories,on_sale,stock_status,date_created,attributes';
 const CATEGORY_FIELDS = 'id,name,slug,description,count,parent';
 
+function toPriceNumber(product: Product): number {
+  const candidates = [product.price, product.sale_price, product.regular_price];
+  for (const value of candidates) {
+    const parsed = Number(String(value ?? '').replace(/,/g, ''));
+    if (Number.isFinite(parsed) && parsed >= 0) return parsed;
+  }
+  return Number.POSITIVE_INFINITY;
+}
+
+function capacityFromText(text: string): number | null {
+  const normalized = text.toLowerCase();
+
+  const batteryRack = normalized.match(/(\d+(?:\.\d+)?)\s*[x*]\s*(\d+(?:\.\d+)?)\s*v\s*(\d+(?:\.\d+)?)\s*ah/);
+  if (batteryRack) {
+    const count = Number(batteryRack[1]);
+    const volt = Number(batteryRack[2]);
+    const ah = Number(batteryRack[3]);
+    if (Number.isFinite(count) && Number.isFinite(volt) && Number.isFinite(ah)) {
+      return count * volt * ah;
+    }
+  }
+
+  const kva = normalized.match(/(\d+(?:\.\d+)?)\s*kva\b/);
+  if (kva) return Number(kva[1]) * 1_000_000;
+
+  const kw = normalized.match(/(\d+(?:\.\d+)?)\s*kw\b/);
+  if (kw) return Number(kw[1]) * 100_000;
+
+  const ah = normalized.match(/(\d+(?:\.\d+)?)\s*ah\b/);
+  if (ah) return Number(ah[1]) * 1_000;
+
+  const watts = normalized.match(/(\d+(?:\.\d+)?)\s*w\b/);
+  if (watts) return Number(watts[1]) * 100;
+
+  return null;
+}
+
+function extractCapacityScore(product: Product): number {
+  const attrs = (product.attributes ?? [])
+    .map((attr) => `${attr.name} ${(attr.options ?? []).join(' ')}`)
+    .join(' ');
+  const haystack = `${product.name} ${attrs}`;
+  const fromText = capacityFromText(haystack);
+  if (fromText !== null) return fromText;
+
+  // Keep unknown capacities at the end while preserving deterministic ordering.
+  return Number.POSITIVE_INFINITY;
+}
+
+function extractPhaseCount(product: Product): number {
+  const attrs = (product.attributes ?? [])
+    .map((attr) => `${attr.name} ${(attr.options ?? []).join(' ')}`)
+    .join(' ');
+  const haystack = `${product.name} ${attrs}`.toLowerCase();
+  const match = haystack.match(/(\d)\s*phase\b/);
+  return match ? Number(match[1]) : 1;
+}
+
+function sortProductsByCapacityThenPrice(products: Product[]): Product[] {
+  return [...products].sort((a, b) => {
+    const capA = extractCapacityScore(a);
+    const capB = extractCapacityScore(b);
+    if (capA !== capB) {
+      if (Number.isFinite(capA) && Number.isFinite(capB)) return capA - capB;
+      return Number.isFinite(capA) ? -1 : 1;
+    }
+
+    const phaseDiff = extractPhaseCount(a) - extractPhaseCount(b);
+    if (phaseDiff !== 0) return phaseDiff;
+
+    const priceA = toPriceNumber(a);
+    const priceB = toPriceNumber(b);
+    if (priceA !== priceB) {
+      if (Number.isFinite(priceA) && Number.isFinite(priceB)) return priceA - priceB;
+      return Number.isFinite(priceA) ? -1 : 1;
+    }
+
+    return a.name.localeCompare(b.name);
+  });
+}
+
+async function fetchProductsRaw(qs: URLSearchParams, revalidate = 300): Promise<{ products: Product[]; total: number }> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5000);
+  const res = await fetch(
+    `${baseUrl()}/products?${qs}&${authParams()}`,
+    {
+      next: { revalidate },
+      signal: controller.signal,
+      keepalive: true,
+      headers: { 'Connection': 'keep-alive', 'Accept-Encoding': 'gzip, deflate, br' },
+    }
+  );
+  clearTimeout(timeout);
+
+  if (!res.ok) return { products: [], total: 0 };
+  const text = await res.text();
+  if (!text.startsWith('[')) return { products: [], total: 0 };
+
+  return {
+    products: JSON.parse(text) as Product[],
+    total: Number(res.headers.get('X-WP-Total') ?? 0),
+  };
+}
+
+async function fetchAllProductsForDefaultSort(baseParams: URLSearchParams, revalidate = 300): Promise<{ products: Product[]; total: number }> {
+  const firstQs = new URLSearchParams(baseParams.toString());
+  firstQs.set('per_page', String(PRODUCTS_FETCH_PAGE_SIZE));
+  firstQs.set('page', '1');
+
+  const firstPage = await fetchProductsRaw(firstQs, revalidate);
+  if (firstPage.total <= firstPage.products.length) {
+    return { products: sortProductsByCapacityThenPrice(firstPage.products), total: firstPage.total };
+  }
+
+  const totalPages = Math.ceil(firstPage.total / PRODUCTS_FETCH_PAGE_SIZE);
+  const remainingPageNumbers = Array.from({ length: Math.max(totalPages - 1, 0) }, (_, i) => i + 2);
+
+  const rest = await Promise.all(
+    remainingPageNumbers.map(async (pageNumber) => {
+      const qs = new URLSearchParams(baseParams.toString());
+      qs.set('per_page', String(PRODUCTS_FETCH_PAGE_SIZE));
+      qs.set('page', String(pageNumber));
+      return fetchProductsRaw(qs, revalidate);
+    })
+  );
+
+  const allProducts = [
+    ...firstPage.products,
+    ...rest.flatMap((result) => result.products),
+  ];
+
+  return {
+    products: sortProductsByCapacityThenPrice(allProducts),
+    total: firstPage.total,
+  };
+}
+
 export async function getFeaturedProducts(): Promise<Product[]> {
-  return wcFetch<Product[]>(`/products?featured=true&per_page=6&status=publish&_fields=${PRODUCT_LIST_FIELDS}`, []);
+  const products = await wcFetch<Product[]>(`/products?featured=true&per_page=6&status=publish&_fields=${PRODUCT_LIST_FIELDS}`, []);
+  return sortProductsByCapacityThenPrice(products);
 }
 
 export async function getFlashSaleProducts(): Promise<Product[]> {
-  return wcFetch<Product[]>(`/products?on_sale=true&per_page=4&status=publish&_fields=${PRODUCT_LIST_FIELDS}`, []);
+  const products = await wcFetch<Product[]>(`/products?on_sale=true&per_page=4&status=publish&_fields=${PRODUCT_LIST_FIELDS}`, []);
+  return sortProductsByCapacityThenPrice(products);
 }
 
 export async function getCategories(): Promise<Category[]> {
@@ -98,10 +240,8 @@ export async function getProducts({
     categoryId = cat?.id ? String(cat.id) : category;
   }
 
-  const qs = new URLSearchParams({
+  const baseQs = new URLSearchParams({
     status: 'publish',
-    per_page: String(per_page),
-    page: String(page),
     _fields: PRODUCT_LIST_FIELDS,
     ...(categoryId && { category: categoryId }),
     ...(min_price && { min_price }),
@@ -110,19 +250,26 @@ export async function getProducts({
     ...(orderby && { orderby }),
     ...(order && { order }),
   });
+
+  const hasExplicitSort = Boolean(orderby || order);
+
+  if (!hasExplicitSort) {
+    try {
+      const { products: allProducts, total } = await fetchAllProductsForDefaultSort(baseQs, 300);
+      const start = (page - 1) * per_page;
+      const end = start + per_page;
+      return { products: allProducts.slice(start, end), total };
+    } catch {
+      return { products: [], total: 0 };
+    }
+  }
+
+  const qs = new URLSearchParams(baseQs.toString());
+  qs.set('per_page', String(per_page));
+  qs.set('page', String(page));
+
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
-    const res = await fetch(
-      `${baseUrl()}/products?${qs}&${authParams()}`,
-      { next: { revalidate: 300 }, signal: controller.signal, keepalive: true, headers: { 'Connection': 'keep-alive', 'Accept-Encoding': 'gzip, deflate, br' } }
-    );
-    clearTimeout(timeout);
-    if (!res.ok) return { products: [], total: 0 };
-    const text = await res.text();
-    if (!text.startsWith('[')) return { products: [], total: 0 };
-    const total = Number(res.headers.get('X-WP-Total') ?? 0);
-    return { products: JSON.parse(text) as Product[], total };
+    return await fetchProductsRaw(qs, 300);
   } catch {
     return { products: [], total: 0 };
   }
@@ -168,25 +315,33 @@ export const getCategoryBySlug = unstable_cache(
 export async function searchProducts(query: string, sort?: string, page = 1, per_page = 9): Promise<ProductsResult> {
   const orderby = sort === 'price' || sort === 'price-desc' ? 'price' : sort || undefined;
   const order = sort === 'price-desc' ? 'desc' : sort ? 'asc' : undefined;
-  const qs = new URLSearchParams({
+  const baseQs = new URLSearchParams({
     search: query,
     status: 'publish',
-    per_page: String(per_page),
-    page: String(page),
     _fields: PRODUCT_LIST_FIELDS,
     ...(orderby && { orderby }),
     ...(order && { order }),
   });
+
+  const hasExplicitSort = Boolean(orderby || order);
+
+  if (!hasExplicitSort) {
+    try {
+      const { products: allProducts, total } = await fetchAllProductsForDefaultSort(baseQs, 0);
+      const start = (page - 1) * per_page;
+      const end = start + per_page;
+      return { products: allProducts.slice(start, end), total };
+    } catch {
+      return { products: [], total: 0 };
+    }
+  }
+
+  const qs = new URLSearchParams(baseQs.toString());
+  qs.set('per_page', String(per_page));
+  qs.set('page', String(page));
+
   try {
-    const res = await fetch(
-      `${baseUrl()}/products?${qs}&${authParams()}`,
-      { next: { revalidate: 0 } }
-    );
-    if (!res.ok) return { products: [], total: 0 };
-    const text = await res.text();
-    if (!text.startsWith('[')) return { products: [], total: 0 };
-    const total = Number(res.headers.get('X-WP-Total') ?? 0);
-    return { products: JSON.parse(text) as Product[], total };
+    return await fetchProductsRaw(qs, 0);
   } catch {
     return { products: [], total: 0 };
   }

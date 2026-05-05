@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children, modal }: { children: React.ReactNode; modal: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${onest.variable} ${spaceGrotesk.variable} antialiased`} suppressHydrationWarning>
@@ -48,6 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <SiteShell>
               {children}
             </SiteShell>
+              {modal}
           </WishlistProvider>
         </CartProvider>
       </body>

@@ -108,3 +108,16 @@ body {
 .wp-content * {
   font-family: inherit;
 }
+
+@media (hover: hover) and (min-width: 1024px) {
+  a:hover,
+  button:hover,
+  [role='button']:hover {
+    cursor: pointer;
+  }
+
+  button:disabled:hover,
+  [aria-disabled='true']:hover {
+    cursor: not-allowed;
+  }
+}

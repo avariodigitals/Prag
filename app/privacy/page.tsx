@@ -92,7 +92,7 @@ export default async function PrivacyPage() {
             <span className="text-zinc-500 text-xs md:text-base font-medium font-['Onest'] mx-1">/</span>
             <span className="text-zinc-500 text-xs md:text-base font-medium font-['Onest']">Privacy Policy</span>
           </div>
-          <h1 className="text-black text-2xl md:text-4xl font-medium font-['Onest']" dangerouslySetInnerHTML={{ __html: wpPage.title.rendered }} />
+          <h1 className="text-black text-2xl md:text-3xl font-medium font-['Onest']" dangerouslySetInnerHTML={{ __html: wpPage.title.rendered }} />
         </div>
         <div className="w-full px-4 md:px-20 py-6 md:py-10 flex justify-center">
           <div className="w-full max-w-[997px] p-4 md:p-8 bg-white rounded-2xl outline outline-1 outline-zinc-100 wp-content"

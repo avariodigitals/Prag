@@ -14,7 +14,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
           <span className="text-zinc-500 text-xs md:text-base font-medium font-['Onest'] mx-1">/</span>
           <span className="text-zinc-500 text-xs md:text-base font-medium font-['Onest']">My Account</span>
         </div>
-        <h1 className="text-black text-2xl md:text-4xl font-medium font-['Onest']">My Account</h1>
+        <h1 className="text-black text-2xl md:text-3xl font-medium font-['Onest']">My Account</h1>
       </div>
 
       <div className="w-full px-4 md:px-20 py-8 md:py-12 flex flex-col md:flex-row items-start gap-6 md:gap-10">

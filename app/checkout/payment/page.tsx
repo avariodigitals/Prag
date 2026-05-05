@@ -15,7 +15,7 @@ export default function PaymentPage() {
           <span className="text-zinc-500 text-sm font-medium font-['Onest'] mx-1">/</span>
           <span className="text-zinc-500 text-sm md:text-base font-medium font-['Onest']">Payment</span>
         </div>
-        <h1 className="text-black text-2xl md:text-4xl font-medium font-['Onest']">Checkout</h1>
+        <h1 className="text-black text-2xl md:text-3xl font-medium font-['Onest']">Checkout</h1>
       </div>
 
       <PaymentView />

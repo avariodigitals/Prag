@@ -27,6 +27,32 @@ const STATIC_SECTIONS = [
     heading: 'Damaged or Lost Packages',
     body: 'If your package arrives damaged or goes missing during transit, please contact our customer support team within 48 hours of the expected delivery date. We will work with the courier to investigate and resolve the issue promptly. You may be eligible for a replacement or full refund.',
   },
+  {
+    heading: 'Delivery & Installation',
+    body: (
+      <div className="flex flex-col gap-6">
+        <div>
+          <h3 className="text-neutral-950 text-lg font-semibold font-['Space_Grotesk'] mb-3">Delivery</h3>
+          <ul className="list-disc pl-5 space-y-2 text-neutral-700">
+            <li>Available nationwide</li>
+            <li>Delivery fees vary by location</li>
+            <li>Timelines will be communicated at order confirmation</li>
+          </ul>
+        </div>
+        <div>
+          <h3 className="text-neutral-950 text-lg font-semibold font-['Space_Grotesk'] mb-3">Installation</h3>
+          <ul className="list-disc pl-5 space-y-2 text-neutral-700">
+            <li>Installation is not mandatory through PRAG</li>
+            <li>Customers are responsible for ensuring proper installation</li>
+          </ul>
+        </div>
+      </div>
+    ),
+  },
+  {
+    heading: 'Disclaimer',
+    body: 'PRAG is not liable for issues resulting from: Poor installation, Incorrect system configuration, Load mismatch',
+  },
 ];
 
 function sanitizeHtml(html: string): string {
@@ -46,11 +72,11 @@ export default async function ShippingPolicyPage() {
       <main className="w-full bg-white flex flex-col">
         <div className="w-full px-4 md:px-20 py-6 md:py-10 bg-stone-50 flex flex-col gap-4 md:gap-6">
           <div className="flex items-center gap-1">
-            <Link href="/" className="text-sky-700 text-2xl font-medium font-['Onest'] hover:underline">Home</Link>
-            <span className="text-zinc-500 text-base font-medium font-['Onest'] mx-1">/</span>
-            <span className="text-zinc-500 text-base font-medium font-['Onest']">Shipping Policy</span>
+            <Link href="/" className="text-sky-700 text-sm md:text-base font-medium font-['Onest'] hover:underline">Home</Link>
+            <span className="text-zinc-500 text-xs md:text-base font-medium font-['Onest'] mx-1">/</span>
+            <span className="text-zinc-500 text-xs md:text-base font-medium font-['Onest']">Shipping Policy</span>
           </div>
-          <h1 className="text-black text-4xl font-medium font-['Onest']"
+          <h1 className="text-black text-2xl md:text-3xl font-medium font-['Onest']"
             dangerouslySetInnerHTML={{ __html: sanitizeHtml(wpPage.title.rendered) }}
           />
         </div>
@@ -107,6 +133,14 @@ export default async function ShippingPolicyPage() {
         {
           heading: 'Damaged or Lost Packages',
           body: STATIC_SECTIONS[3].body,
+        },
+        {
+          heading: 'Delivery & Installation',
+          body: STATIC_SECTIONS[4].body,
+        },
+        {
+          heading: 'Disclaimer',
+          body: STATIC_SECTIONS[5].body,
         },
         {
           heading: 'Contact Us',

@@ -57,7 +57,7 @@ export default async function KnowledgeCenterPost({ params }: Props) {
           <span className="px-2 py-1 bg-sky-700 rounded-3xl text-white text-xs font-medium font-['Space_Grotesk']">{catName}</span>
           <span className="text-zinc-400 text-sm font-['Space_Grotesk']">{date}</span>
         </div>
-        <h1 className="text-zinc-900 text-2xl md:text-4xl font-bold font-['Onest'] leading-tight"
+        <h1 className="text-zinc-900 text-2xl md:text-3xl font-bold font-['Onest'] leading-tight"
           dangerouslySetInnerHTML={{ __html: sanitize(post.title.rendered) }} />
       </div>
 

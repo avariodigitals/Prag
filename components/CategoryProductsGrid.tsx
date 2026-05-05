@@ -16,13 +16,13 @@ interface Props {
 }
 
 const SORT_OPTIONS = [
-  { label: 'Sort by', value: '' },
+  { label: 'Default: Size + Price (Low to High)', value: '' },
   { label: 'Price: Low to High', value: 'price' },
   { label: 'Price: High to Low', value: 'price-desc' },
   { label: 'Newest', value: 'date' },
 ];
 
-const PER_PAGE = 24;
+const PER_PAGE = 16;
 
 const SLUG_TO_LABEL: Record<string, string> = {
   'voltage-stabilizers': 'All Stabilizers',
@@ -30,6 +30,7 @@ const SLUG_TO_LABEL: Record<string, string> = {
   'solar': 'All Solar Products',
   'batteries': 'All Batteries',
 };
+const LISTING_PRICE_COLOR = 'lab(26.8019 1.35387 -4.68303)';
 
 const SECTION_TABS: Record<string, { label: string; slug: string }[]> = {
   'voltage-stabilizers': [
@@ -155,8 +156,37 @@ export default function CategoryProductsGrid({
   return (
     <div className="flex flex-col gap-6 relative">
       {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <div className="flex border-b border-gray-200 overflow-x-auto w-full sm:w-auto scrollbar-hide">
+      <div className="flex flex-col gap-3 md:gap-4">
+        <div className="md:hidden flex items-center gap-2 w-full">
+          <div className="relative flex-1 min-w-0">
+            <select
+              value={activeSub ?? ''}
+              onChange={(e) => navigate({ sub: e.target.value || undefined })}
+              className="appearance-none w-full h-10 px-3 pr-8 bg-white rounded-full outline outline-1 outline-sky-700/60 text-sky-700 text-xs font-medium font-['Space_Grotesk'] cursor-pointer"
+            >
+              {tabs.map((tab) => (
+                <option key={tab.key} value={tab.slug ?? ''}>{tab.label}</option>
+              ))}
+            </select>
+            <ChevronDown className="w-4 h-4 text-sky-700 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          </div>
+
+          <div className="relative w-[112px] shrink-0">
+            <select
+              value={activeSort ?? ''}
+              onChange={(e) => navigate({ sort: e.target.value || undefined })}
+              className="appearance-none w-full h-10 px-3 pr-8 bg-white rounded-md outline outline-[0.3px] outline-neutral-400 text-neutral-500 text-xs font-medium font-['Space_Grotesk'] cursor-pointer"
+            >
+              {SORT_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+            <ChevronDown className="w-4 h-4 text-neutral-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          </div>
+        </div>
+
+        <div className="hidden md:flex justify-between items-start md:items-center gap-3">
+          <div className="flex border-b border-gray-200 overflow-x-auto w-full md:w-auto scrollbar-hide">
           {tabs.map((tab) => {
             const isActive = tab.slug ? activeSub === tab.slug : !activeSub;
             const tabKey = tab.slug ?? 'all';
@@ -182,27 +212,28 @@ export default function CategoryProductsGrid({
               </button>
             );
           })}
-        </div>
+          </div>
 
-        <div className="relative shrink-0">
-          <select
-            value={activeSort ?? ''}
-            onChange={(e) => navigate({ sort: e.target.value || undefined })}
-            className="appearance-none p-2.5 pr-8 bg-white rounded-lg outline outline-[0.3px] outline-neutral-500 text-neutral-500 text-sm font-medium font-['Space_Grotesk'] cursor-pointer"
-          >
-            {SORT_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>{o.label}</option>
-            ))}
-          </select>
-          <ChevronDown className="w-4 h-4 text-neutral-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <div className="relative shrink-0">
+            <select
+              value={activeSort ?? ''}
+              onChange={(e) => navigate({ sort: e.target.value || undefined })}
+              className="appearance-none p-2.5 pr-8 bg-white rounded-lg outline outline-[0.3px] outline-neutral-500 text-neutral-500 text-sm font-medium font-['Space_Grotesk'] cursor-pointer"
+            >
+              {SORT_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+            <ChevronDown className="w-4 h-4 text-neutral-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          </div>
         </div>
       </div>
 
       {/* Grid */}
       {isPending ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 animate-pulse">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-6 animate-pulse">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="flex flex-col gap-3">
+            <div key={i} className="flex flex-col gap-3 w-full max-w-[340px] mx-auto sm:max-w-none sm:mx-0">
               <div className="h-56 md:h-64 bg-stone-100 rounded-xl" />
               <div className="h-3 w-3/4 bg-stone-200 rounded" />
               <div className="h-3 w-1/2 bg-stone-200 rounded" />
@@ -218,9 +249,11 @@ export default function CategoryProductsGrid({
           <p className="text-gray-400 text-sm font-['Space_Grotesk']">No products found.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-9 md:gap-x-6 md:gap-y-11">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} bg="bg-stone-50" />
+            <div key={product.id} className="w-full max-w-[340px] mx-auto sm:max-w-none sm:mx-0">
+              <ProductCard product={product} bg="bg-stone-50" priceColor={LISTING_PRICE_COLOR} />
+            </div>
           ))}
         </div>
       )}

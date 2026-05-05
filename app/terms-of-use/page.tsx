@@ -5,15 +5,141 @@ import Link from 'next/link';
 export const metadata = { title: 'Terms of Use – Prag' };
 
 const SECTIONS = [
-  { heading: 'Use of Our Website', body: 'You agree to use this website only for lawful purposes. You must not use it in any way that may damage, disrupt, or interfere with the functionality, security, or accessibility of the platform. We reserve the right to restrict or terminate access to any user who violates these terms.' },
-  { heading: 'Product Information & Availability', body: (<><p>We strive to ensure that all product descriptions, specifications, and pricing are accurate and up to date. However, errors may occasionally occur.</p><p className="mt-2">Prag reserves the right to correct any errors, update product information without prior notice, and modify or discontinue products at any time.</p></>) },
-  { heading: 'Orders & Payments', body: (<><p>All orders are subject to acceptance and availability. Prag reserves the right to cancel or refuse any order, limit quantities purchased, or request additional verification before processing.</p><p className="mt-2">Payments must be completed through our approved payment methods.</p></>) },
-  { heading: 'Installation & Services', body: (<><p>For installation and technical services, Prag will provide timelines and scope based on your selected package. Delays may occur due to site conditions, weather or logistics, or availability of materials. We will communicate any changes promptly.</p></>) },
-  { heading: 'Intellectual Property', body: 'All content on this website, including text, images, graphics, and logos, is the property of Prag and is protected by applicable copyright and intellectual property laws. You may not reproduce, distribute, or use any content without prior written consent.' },
-  { heading: 'Third-Party Links', body: 'Our website may contain links to third-party websites. Prag is not responsible for the content, policies, or practices of these external sites.' },
-  { heading: 'Limitation of Liability', body: 'Prag shall not be held liable for any indirect, incidental, or consequential damages arising from the use or inability to use our website, products, or services. All products and services are provided "as is" without warranties unless explicitly stated.' },
-  { heading: 'Changes to These Terms', body: 'We reserve the right to update or modify these Terms of Use at any time. Continued use of the website constitutes acceptance of the updated terms.' },
-  { heading: 'Contact Us', body: (<p>If you have any questions, please contact us at <a href="mailto:sales@prag.global" className="text-sky-700 underline">sales@prag.global</a> or call <a href="tel:+2348032170129" className="text-sky-700 underline">+2348032170129</a>.</p>) },
+  {
+    heading: 'Terms of Use',
+    body: 'Please read these Terms of Use carefully before using this website. By accessing and using this website, you agree to be bound by these terms and all applicable laws and regulations.',
+  },
+  {
+    heading: 'Use of Our Website',
+    body: (
+      <div className="flex flex-col gap-2">
+        <p>By using this website, you agree:</p>
+        <ul className="list-disc pl-5 space-y-1">
+          <li>Not to misuse or alter the platform</li>
+          <li>Not to copy or reproduce content without permission</li>
+        </ul>
+        <p className="mt-2">All content remains the property of PRAG.</p>
+      </div>
+    ),
+  },
+  {
+    heading: 'Limitation of Liability',
+    body: (
+      <div className="flex flex-col gap-2">
+        <p className="font-medium">PRAG is not liable for:</p>
+        <ul className="list-disc pl-5 space-y-1">
+          <li>Website interruptions</li>
+          <li>Errors in content</li>
+          <li>Reliance on website information</li>
+        </ul>
+      </div>
+    ),
+  },
+  {
+    heading: 'Terms of Sale',
+    body: (
+      <div className="flex flex-col gap-5">
+        <div>
+          <h4 className="text-neutral-950 font-semibold mb-2">Orders & Payments</h4>
+          <ul className="list-disc pl-5 space-y-1 text-sm">
+            <li>Orders are subject to confirmation and availability</li>
+            <li>Full payment is required before delivery, unless otherwise agreed</li>
+          </ul>
+        </div>
+        <div>
+          <h4 className="text-neutral-950 font-semibold mb-2">Pricing</h4>
+          <ul className="list-disc pl-5 space-y-1 text-sm">
+            <li>Prices may change without notice</li>
+            <li>Pricing errors may be corrected at any time</li>
+          </ul>
+        </div>
+        <div>
+          <h4 className="text-neutral-950 font-semibold mb-2">Delivery</h4>
+          <ul className="list-disc pl-5 space-y-1 text-sm">
+            <li>Nationwide delivery is available</li>
+            <li>Delivery timelines are estimates and only</li>
+          </ul>
+        </div>
+        <div>
+          <h4 className="text-neutral-950 font-semibold mb-2">Risk Transfer</h4>
+          <ul className="list-disc pl-5 space-y-1 text-sm">
+            <li>Responsibility for products passes to the customer upon delivery</li>
+            <li>Customers are advised to inspect items immediately upon receipt</li>
+          </ul>
+        </div>
+        <div>
+          <h4 className="text-neutral-950 font-semibold mb-2">Installation</h4>
+          <ul className="list-disc pl-5 space-y-1 text-sm">
+            <li>Customers may use any qualified installer</li>
+            <li>PRAG may recommend installers but is not responsible for third-party installation outcomes</li>
+          </ul>
+        </div>
+        <div>
+          <h4 className="text-neutral-950 font-semibold mb-2">Product Performance</h4>
+          <ul className="list-disc pl-5 space-y-1 text-sm">
+            <li>Performance depends on:</li>
+            <li>Installation quality</li>
+            <li>System configuration</li>
+            <li>Environmental conditions</li>
+          </ul>
+        </div>
+      </div>
+    ),
+  },
+  {
+    heading: 'Warranty Policy',
+    body: (
+      <div className="flex flex-col gap-5">
+        <div>
+          <h4 className="text-neutral-950 font-semibold mb-2">Warranty Coverage</h4>
+          <p className="text-sm mb-2">At PRAG (Pragmatic Technologies Ltd.), we stand behind the quality of our products:</p>
+          <ul className="list-disc pl-5 space-y-1 text-sm">
+            <li>All PRAG inverters: 1-year Limited Warranty</li>
+            <li>Lithium Batteries: 5-Year Limited Warranty</li>
+          </ul>
+          <p className="text-sm mt-2">This warranty covers manufacturing defects under normal and proper use.</p>
+        </div>
+        <div>
+          <h4 className="text-neutral-950 font-semibold mb-2">Conditions for Warranty</h4>
+          <p className="text-sm font-medium mb-1">What Is Not Covered</p>
+          <p className="text-sm mb-2">The warranty does not cover issues arising from:</p>
+          <ul className="list-disc pl-5 space-y-1 text-sm">
+            <li>Misuse or poor installation</li>
+            <li>Incorrect system configuration</li>
+            <li>Exposure to water, fire, or physical damage</li>
+            <li>Power conditions outside product rating</li>
+            <li>Unauthorized repairs or modifications</li>
+            <li>Normal wear and tear</li>
+          </ul>
+        </div>
+        <div>
+          <h4 className="text-neutral-950 font-semibold mb-2">Warranty Claims</h4>
+          <p className="text-sm mb-2">To make a claim:</p>
+          <ul className="list-disc pl-5 space-y-1 text-sm">
+            <li>Contact our support team</li>
+            <li>Provide proof of purchase</li>
+            <li>Allow product inspection</li>
+          </ul>
+          <p className="text-sm mt-2">Repairs or replacements will be handled at PRAG's discretion.</p>
+        </div>
+      </div>
+    ),
+  },
+  {
+    heading: 'General Disclaimer',
+    body: 'PRAG products operate within defined specifications. Performance may vary depending on installation, usage, and environmental conditions.',
+  },
+  {
+    heading: 'Contact Us',
+    body: (
+      <p>
+        If you have any questions about our terms of use, please contact our customer support team at{' '}
+        <a href="mailto:sales@prag.global" className="text-sky-700 underline">sales@prag.global</a>
+        {' '}or call us at{' '}
+        <a href="tel:+2348032170129" className="text-sky-700 underline">+2348032170129</a>.
+      </p>
+    ),
+  },
 ];
 
 export default async function TermsPage() {
@@ -27,7 +153,7 @@ export default async function TermsPage() {
             <span className="text-zinc-500 text-xs md:text-base font-medium font-['Onest'] mx-1">/</span>
             <span className="text-zinc-500 text-xs md:text-base font-medium font-['Onest']">Terms of use</span>
           </div>
-          <h1 className="text-black text-2xl md:text-4xl font-medium font-['Onest']" dangerouslySetInnerHTML={{ __html: wpPage.title.rendered }} />
+          <h1 className="text-black text-2xl md:text-3xl font-medium font-['Onest']" dangerouslySetInnerHTML={{ __html: wpPage.title.rendered }} />
         </div>
         <div className="w-full px-4 md:px-20 py-6 md:py-10 flex justify-center">
           <div className="w-full max-w-[997px] p-4 md:p-8 bg-white rounded-2xl outline outline-1 outline-zinc-100 wp-content"

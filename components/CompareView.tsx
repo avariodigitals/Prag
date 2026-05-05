@@ -104,7 +104,7 @@ export default function CompareView({ initialProducts }: Props) {
         <div className="flex gap-6">
           {[0, 1].map((idx) => (
             <div key={idx} className="flex-1 flex flex-col gap-5">
-              <h2 className="text-black text-3xl font-bold font-['Onest'] leading-[48px]">Product {idx + 1}</h2>
+              <h2 className="text-black text-2xl md:text-3xl font-bold font-['Onest'] leading-[40px]">Product {idx + 1}</h2>
               <div className="relative">
                 <input
                   type="text"

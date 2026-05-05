@@ -14,7 +14,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'Prag – Nigeria\'s Leading Power Engineering Company',
+  title: 'PRAG – Nigeria\'s Leading Power Engineering Company',
   description: 'Shop inverters, stabilizers, solar panels and batteries. Engineered for real-world loads.',
   icons: {
     icon: [{ url: '/favicon.png', type: 'image/png' }],
@@ -22,23 +22,23 @@ export const metadata: Metadata = {
     apple: '/favicon.png',
   },
   openGraph: {
-    title: 'Prag – Nigeria\'s Leading Power Engineering Company',
+    title: 'PRAG – Nigeria\'s Leading Power Engineering Company',
     description: 'Shop inverters, stabilizers, solar panels and batteries. Engineered for real-world loads.',
     url: 'https://prag.global',
-    siteName: 'Prag',
+    siteName: 'PRAG',
     images: [
       {
         url: 'https://central.prag.global/wp-content/uploads/2026/04/Prag-Logo.png',
         width: 1200,
         height: 630,
-        alt: 'Prag – Nigeria\'s Leading Power Engineering Company',
+        alt: 'PRAG – Nigeria\'s Leading Power Engineering Company',
       },
     ],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Prag – Nigeria\'s Leading Power Engineering Company',
+    title: 'PRAG – Nigeria\'s Leading Power Engineering Company',
     description: 'Shop inverters, stabilizers, solar panels and batteries. Engineered for real-world loads.',
     images: ['https://central.prag.global/wp-content/uploads/2026/04/Prag-Logo.png'],
   },

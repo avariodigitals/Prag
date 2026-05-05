@@ -47,8 +47,22 @@ export async function getCategories(): Promise<Category[]> {
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
-  const products = await wcFetch<Product[]>(`/products?slug=${slug}&_fields=id,name,slug,price,regular_price,sale_price,on_sale,status,stock_status,short_description,description,images,categories,tags,featured,date_created,attributes,dimensions,weight`, []);
-  return products[0] ?? null;
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    const res = await fetch(
+      `${baseUrl()}/products?slug=${slug}&_fields=id,name,slug,price,regular_price,sale_price,on_sale,status,stock_status,short_description,description,images,categories,tags,featured,date_created,attributes,dimensions,weight&${authParams()}`,
+      { cache: 'no-store', signal: controller.signal }
+    );
+    clearTimeout(timeout);
+    if (!res.ok) return null;
+    const text = await res.text();
+    if (!text.startsWith('[')) return null;
+    const products = JSON.parse(text) as Product[];
+    return products[0] ?? null;
+  } catch {
+    return null;
+  }
 }
 
 export interface ProductsResult {
@@ -124,7 +138,18 @@ export interface ProductReview {
 }
 
 export async function getProductReviews(productId: number): Promise<ProductReview[]> {
-  return wcFetch<ProductReview[]>(`/products/reviews?product=${productId}&per_page=10&status=approved`, []);
+  try {
+    const res = await fetch(
+      `${baseUrl()}/products/reviews?product=${productId}&per_page=10&status=approved&${authParams()}`,
+      { cache: 'no-store' }
+    );
+    if (!res.ok) return [];
+    const text = await res.text();
+    if (!text.startsWith('[')) return [];
+    return JSON.parse(text) as ProductReview[];
+  } catch {
+    return [];
+  }
 }
 
 export async function getProductTags(): Promise<Tag[]> {

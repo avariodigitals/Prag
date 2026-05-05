@@ -15,8 +15,8 @@ export async function POST(req: NextRequest) {
   if (!file.type.startsWith('image/')) {
     return NextResponse.json({ error: 'File must be an image' }, { status: 400 });
   }
-  if (file.size > 2 * 1024 * 1024) {
-    return NextResponse.json({ error: 'Image must be under 2MB' }, { status: 400 });
+  if (file.size > 200 * 1024) {
+    return NextResponse.json({ error: 'Image must be under 200KB after resizing' }, { status: 400 });
   }
 
   const bytes = await file.arrayBuffer();

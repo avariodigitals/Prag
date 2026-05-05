@@ -94,8 +94,26 @@ export default function PersonalInfoPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     setAvatarUploading(true);
+
+    // Resize to max 200x200 before uploading to avoid WP 400 on large base64
+    const resized = await new Promise<Blob>((resolve) => {
+      const img = new window.Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        const MAX = 200;
+        const scale = Math.min(MAX / img.width, MAX / img.height, 1);
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
+        URL.revokeObjectURL(url);
+        canvas.toBlob((blob) => resolve(blob!), 'image/jpeg', 0.85);
+      };
+      img.src = url;
+    });
+
     const fd = new FormData();
-    fd.append('file', file);
+    fd.append('file', resized, 'avatar.jpg');
     const res = await fetch('/api/account/avatar', { method: 'POST', body: fd });
     const data = await res.json();
     if (data.url) setAvatarUrl(data.url);

@@ -117,7 +117,7 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
               </span>
             )}
             {hasValidPrice ? (
-              <span className="text-base font-medium font-['Onest'] text-zinc-900" style={priceColor ? { color: priceColor } : undefined}>
+              <span className="text-base font-normal md:font-medium font-['Onest'] text-zinc-900" style={priceColor ? { color: priceColor } : undefined}>
                 {formatPrice(product.price)}
               </span>
             ) : (

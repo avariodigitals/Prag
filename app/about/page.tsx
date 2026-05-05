@@ -58,7 +58,7 @@ export default function AboutPage() {
             </div>
 
             {/* Stats */}
-            <div className="flex flex-col md:flex-row md:justify-between items-center gap-10 md:gap-0">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-0 w-full">
               {STATS.map((stat) => (
                 <div key={stat.label} className="flex flex-col items-center gap-0.5 w-full">
                   <span className="text-sky-700 text-3xl md:text-4xl font-bold font-['Onest'] text-center">

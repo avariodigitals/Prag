@@ -430,7 +430,7 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
       {relatedProducts.length > 0 && (
         <div className="flex flex-col gap-6">
           <h2 className="text-neutral-700 text-lg md:text-2xl font-semibold font-['Onest']">Related Products</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-9 md:gap-x-6 md:gap-y-11">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-9 md:gap-x-6 md:gap-y-11">
             {relatedProducts.map((p) => (
               <ProductCard key={p.id} product={p} bg="bg-white" />
             ))}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ProductCard from './ProductCard';
 import type { Product } from '@/lib/types';
@@ -9,34 +9,38 @@ interface FlashSalesProps {
   products: Product[];
 }
 
-const VISIBLE_DESKTOP = 4;
 const LISTING_PRICE_COLOR = 'lab(26.8019 1.35387 -4.68303)';
 
 export default function FlashSales({ products }: FlashSalesProps) {
+  const trackRef = useRef<HTMLDivElement>(null);
   const [current, setCurrent] = useState(0);
-  const touchStartX = useRef<number | null>(null);
 
   if (products.length === 0) return null;
 
-  const maxIndex = Math.max(0, products.length - VISIBLE_DESKTOP);
-
-  function prev() { setCurrent((c) => Math.max(0, c - 1)); }
-  function next() { setCurrent((c) => Math.min(maxIndex, c + 1)); }
-
-  function onTouchStart(e: React.TouchEvent) {
-    touchStartX.current = e.touches[0].clientX;
+  function scrollToIndex(index: number) {
+    const track = trackRef.current;
+    if (!track) return;
+    const card = track.children[index] as HTMLElement;
+    if (!card) return;
+    track.scrollTo({ left: card.offsetLeft, behavior: 'smooth' });
+    setCurrent(index);
   }
 
-  function onTouchEnd(e: React.TouchEvent) {
-    if (touchStartX.current === null) return;
-    const diff = touchStartX.current - e.changedTouches[0].clientX;
-    if (diff > 50) next();
-    else if (diff < -50) prev();
-    touchStartX.current = null;
-  }
+  const handleScroll = useCallback(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    const firstCard = track.children[0] as HTMLElement;
+    if (!firstCard) return;
+    const cardWidth = firstCard.offsetWidth + 16; // gap-4 = 16px
+    const idx = Math.round(track.scrollLeft / cardWidth);
+    setCurrent(Math.max(0, Math.min(idx, products.length - 1)));
+  }, [products.length]);
+
+  function prev() { scrollToIndex(Math.max(0, current - 1)); }
+  function next() { scrollToIndex(Math.min(products.length - 1, current + 1)); }
 
   return (
-    <section className="w-full px-4 md:px-20 py-8 pb-12 flex flex-col items-center gap-8 overflow-hidden">
+    <section className="w-full px-4 md:px-20 py-8 pb-12 flex flex-col items-center gap-8">
       <div className="w-full max-w-[1229px] flex flex-col gap-8">
 
         {/* Header */}
@@ -49,7 +53,7 @@ export default function FlashSales({ products }: FlashSalesProps) {
             <h2 className="text-black text-base md:text-2xl font-bold font-['Onest']">Flash Sales</h2>
           </div>
 
-          <div className="hidden md:flex items-center gap-3">
+          <div className="flex items-center gap-3">
             <button
               onClick={prev}
               disabled={current === 0}
@@ -59,7 +63,7 @@ export default function FlashSales({ products }: FlashSalesProps) {
             </button>
             <button
               onClick={next}
-              disabled={current >= maxIndex}
+              disabled={current >= products.length - 1}
               className="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center hover:bg-sky-50 disabled:opacity-30 transition-colors"
             >
               <ChevronRight className="w-5 h-5 text-zinc-700" />
@@ -67,34 +71,30 @@ export default function FlashSales({ products }: FlashSalesProps) {
           </div>
         </div>
 
-        {/* Carousel track */}
+        {/* Carousel track — CSS scroll-snap for native swipe on mobile */}
         <div
-          className="w-full overflow-hidden"
-          onTouchStart={onTouchStart}
-          onTouchEnd={onTouchEnd}
+          ref={trackRef}
+          onScroll={handleScroll}
+          className="w-full flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide"
         >
-          <div
-            className="flex gap-4 transition-transform duration-300 ease-in-out"
-            style={{ transform: `translateX(calc(-${current} * (100% + 16px)))` }}
-          >
-            {products.map((product) => (
-              <div
-                key={product.id}
-                className="flex-shrink-0 w-full sm:w-[calc((100%-16px)/2)] md:w-[calc((100%-48px)/4)]"
-              >
-                <ProductCard product={product} bg="bg-white" priceColor={LISTING_PRICE_COLOR} />
-              </div>
-            ))}
-          </div>
+          {products.map((product) => (
+            <div
+              key={product.id}
+              className="snap-start shrink-0 w-full sm:w-[calc((100%-16px)/2)] md:w-[calc((100%-48px)/4)]"
+            >
+              <ProductCard product={product} bg="bg-white" priceColor={LISTING_PRICE_COLOR} />
+            </div>
+          ))}
         </div>
 
         {/* Dots */}
-        {maxIndex > 0 && (
+        {products.length > 1 && (
           <div className="flex justify-center items-center gap-2">
-            {Array.from({ length: maxIndex + 1 }).map((_, i) => (
+            {products.map((_, i) => (
               <button
                 key={i}
-                onClick={() => setCurrent(i)}
+                onClick={() => scrollToIndex(i)}
+                aria-label={`Go to slide ${i + 1}`}
                 className={`rounded-full transition-all duration-300 ${
                   i === current ? 'w-10 h-2.5 bg-sky-700' : 'w-2.5 h-2.5 bg-zinc-300'
                 }`}

@@ -18,7 +18,7 @@ export default function FeaturedProducts({ products }: FeaturedProductsProps) {
           Featured Products
         </h2>
 
-        <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-9 md:gap-x-6 md:gap-y-11">
+        <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-9 md:gap-x-6 md:gap-y-11">
           {products.slice(0, 6).map((product, idx) => {
             const isNew = product.tags?.some((tag) => tag.slug === 'new' || tag.name.toLowerCase().includes('new')) ?? false;
             return <ProductCard key={product.id} product={product} isNew={isNew} priority={idx === 0} priceColor={LISTING_PRICE_COLOR} />;

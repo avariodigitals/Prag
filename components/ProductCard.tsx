@@ -69,7 +69,7 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
               sizes="(min-width: 768px) 500px, 100vw"
               priority={priority}
               loading={priority ? 'eager' : 'lazy'}
-              className="w-full h-full object-contain p-1 md:p-1 group-hover:scale-105 transition-transform duration-300"
+              className="w-full h-full object-contain p-1 md:p-1 group-hover:scale-105 transition-transform duration-300 mix-blend-multiply"
             />
 
             <div className="absolute left-2 md:left-3 top-2 md:top-14 z-10 flex flex-col gap-1">

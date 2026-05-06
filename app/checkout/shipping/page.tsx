@@ -2,7 +2,7 @@ import Link from 'next/link';
 import ShippingView from '@/components/ShippingView';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Shipping – Checkout – Prag' };
+export const metadata = { title: 'Shipping – Checkout – PRAG' };
 
 export default function ShippingPage() {
   return (

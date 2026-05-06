@@ -23,9 +23,9 @@ function sanitize(html: string) {
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
-  if (!post) return { title: 'Article – Prag' };
+  if (!post) return { title: 'Article – PRAG' };
   return {
-    title: `${post.title.rendered.replace(/<[^>]+>/g, '')} – Prag`,
+    title: `${post.title.rendered.replace(/<[^>]+>/g, '')} – PRAG`,
     description: post.excerpt.rendered.replace(/<[^>]+>/g, '').trim().slice(0, 160),
   };
 }

@@ -12,7 +12,7 @@ interface Props {
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
-  return { title: product ? `${product.name} – Prag` : 'Product – Prag' };
+  return { title: product ? `${product.name} – PRAG` : 'Product – PRAG' };
 }
 
 export default async function ProductDetailPage({ params }: Props) {

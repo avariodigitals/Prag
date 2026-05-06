@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props) {
   };
   const name = DISPLAY_NAMES[category] ?? (await getCategoryBySlug(category))?.name ?? category;
   return {
-    title: `${name} – Prag`,
+    title: `${name} – PRAG`,
     description: '',
   };
 }

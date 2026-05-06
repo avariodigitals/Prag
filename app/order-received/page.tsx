@@ -4,7 +4,7 @@ interface Props {
   searchParams: Promise<{ order_id?: string; order_date?: string }>;
 }
 
-export const metadata = { title: 'Order Received – Prag' };
+export const metadata = { title: 'Order Received – PRAG' };
 
 export default async function OrderReceivedPage({ searchParams }: Props) {
   const { order_id, order_date } = await searchParams;

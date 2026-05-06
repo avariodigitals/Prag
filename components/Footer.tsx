@@ -26,7 +26,7 @@ export default function Footer({ settings }: { settings?: SiteSettings }) {
           <Link href="/"> 
             <Image 
               src="https://central.prag.global/wp-content/uploads/2026/04/prag-inverter-stabilizer-white-logo.png" 
-              alt="Prag"
+              alt="PRAG"
               width={110}
               height={26}
               style={{ height: 'auto', width: 'auto' }}

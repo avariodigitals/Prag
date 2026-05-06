@@ -127,7 +127,7 @@ export default function RegisterModal() {
         {/* header: logo + close */}
         <div className="flex items-center justify-between mb-5">
           <Link href="/" aria-label="Go to homepage" className="inline-flex">
-            <Image src="/Prag Logo.png" alt="Prag" width={100} height={24} style={{ height: 'auto', width: 'auto' }} />
+            <Image src="/Prag Logo.png" alt="PRAG" width={100} height={24} style={{ height: 'auto', width: 'auto' }} />
           </Link>
           <button type="button" onClick={closeModal} aria-label="Close"
             className="w-8 h-8 rounded-full bg-zinc-100 text-zinc-500 flex items-center justify-center hover:bg-zinc-200 transition-colors">

@@ -187,7 +187,7 @@ export default function TopBar({ initialUser = null, phone = '+2348032170129', w
       {/* ── Desktop top bar ── */}
       <div className="hidden md:flex w-full px-20 py-5 bg-white justify-between items-center">
         <Link href="/" className="shrink-0">
-          <Image src="/Prag Logo.png" alt="Prag" width={140} height={40} priority className="h-10 w-auto" style={{ width: 'auto' }} />
+          <Image src="/Prag Logo.png" alt="PRAG" width={140} height={40} priority className="h-10 w-auto" style={{ width: 'auto' }} />
         </Link>
 
         <SearchBox />
@@ -273,7 +273,7 @@ export default function TopBar({ initialUser = null, phone = '+2348032170129', w
       <div className="md:hidden sticky top-0 z-50 w-full bg-white/95 backdrop-blur-sm shadow-[0_1px_0_rgba(15,23,42,0.08)]">
         <div className="w-full px-4 h-[78px] bg-white flex items-center justify-between gap-4">
           <Link href="/" className="shrink-0">
-            <Image src="/Prag Logo.png" alt="Prag" width={150} height={44} priority className="h-10 sm:h-11 w-auto" style={{ width: 'auto' }} />
+            <Image src="/Prag Logo.png" alt="PRAG" width={150} height={44} priority className="h-10 sm:h-11 w-auto" style={{ width: 'auto' }} />
           </Link>
 
           <div className="flex items-center gap-2 shrink-0">

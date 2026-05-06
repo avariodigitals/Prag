@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-export const metadata = { title: 'Sitemap - Prag' };
+export const metadata = { title: 'Sitemap - PRAG' };
 
 const SECTIONS = [
   {
@@ -57,7 +57,7 @@ export default function SitemapPage() {
       <section className="w-full px-4 md:px-20 py-16 bg-stone-50 flex flex-col items-center gap-4">
         <h1 className="text-sky-700 text-2xl md:text-3xl font-bold font-['Onest'] text-center">Sitemap</h1>
         <p className="max-w-xl text-center text-sky-700 text-base md:text-lg font-normal font-['Space_Grotesk']">
-          Find the main pages and product sections across Prag.
+          Find the main pages and product sections across PRAG.
         </p>
       </section>
 

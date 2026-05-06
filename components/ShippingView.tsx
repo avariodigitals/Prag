@@ -1,23 +1,56 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import CheckoutStepper from './CheckoutStepper';
 import CheckoutSummary from './CheckoutSummary';
 
-const METHODS = [
-  { id: 'local_pickup', label: 'Local Pickup', description: 'Pickup your products from our store.' },
-  { id: 'custom_shipping', label: 'Custom Shipping', description: 'Chat with support for your custom shipping arrangement' },
-];
+interface ShippingMethod {
+  id: string;
+  method_id: string;
+  title: string;
+  description: string;
+}
 
 export default function ShippingView() {
   const router = useRouter();
-  const [selected, setSelected] = useState('custom_shipping');
+  const searchParams = useSearchParams();
+  const [methods, setMethods] = useState<ShippingMethod[]>([]);
+  const [selected, setSelected] = useState('');
   const [note, setNote] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    async function loadMethods() {
+      try {
+        const res = await fetch('/api/checkout/options', { cache: 'no-store' });
+        const data = await res.json() as { shippingMethods?: ShippingMethod[] };
+        const nextMethods = data.shippingMethods ?? [];
+        if (!mounted) return;
+        setMethods(nextMethods);
+        setSelected(nextMethods[0]?.id ?? '');
+      } catch {
+        if (!mounted) return;
+        setMethods([]);
+        setSelected('');
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+    void loadMethods();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   function proceed() {
-    const params = new URLSearchParams();
-    params.set('shipping_method', selected);
+    const method = methods.find((m) => m.id === selected);
+    const params = new URLSearchParams(searchParams.toString());
+    if (method) {
+      params.set('shipping_method', method.method_id);
+      params.set('shipping_method_title', method.title);
+    }
     if (note) params.set('shipping_note', note);
     router.push(`/checkout/payment?${params.toString()}`);
   }
@@ -31,7 +64,11 @@ export default function ShippingView() {
           <h2 className="text-zinc-900 text-lg md:text-xl font-bold font-['Space_Grotesk']">Shipping Method</h2>
 
           <div className="flex flex-col gap-3">
-            {METHODS.map((method) => {
+            {loading && <p className="text-sm text-zinc-500 font-['Space_Grotesk']">Loading shipping methods...</p>}
+            {!loading && methods.length === 0 && (
+              <p className="text-sm text-rose-600 font-['Space_Grotesk']">No WooCommerce shipping methods available.</p>
+            )}
+            {methods.map((method) => {
               const active = selected === method.id;
               return (
                 <button
@@ -43,10 +80,10 @@ export default function ShippingView() {
                   }`}
                 >
                   <p className={`text-base font-bold font-['Space_Grotesk'] ${active ? 'text-sky-700' : 'text-zinc-500'}`}>
-                    {method.label}
+                    {method.title}
                   </p>
                   <p className={`text-sm font-normal font-['Space_Grotesk'] ${active ? 'text-sky-700' : 'text-zinc-500'}`}>
-                    {method.description}
+                    {method.description || 'Shipping option from WooCommerce'}
                   </p>
                 </button>
               );
@@ -65,6 +102,7 @@ export default function ShippingView() {
 
           <button
             onClick={proceed}
+            disabled={loading || !selected}
             className="hidden md:block w-full p-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Space_Grotesk'] hover:bg-sky-800 transition-colors"
           >
             Proceed to Payment
@@ -72,7 +110,7 @@ export default function ShippingView() {
         </div>
 
         <div className="w-full md:w-80 lg:w-96 shrink-0">
-          <CheckoutSummary ctaLabel="Proceed to Payment" onCta={proceed} />
+          <CheckoutSummary ctaLabel="Proceed to Payment" onCta={proceed} ctaDisabled={loading || !selected} />
         </div>
       </div>
     </div>

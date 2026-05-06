@@ -10,9 +10,10 @@ interface Props {
   ctaLabel: string;
   onCta: () => void;
   shippingCost?: number;
+  ctaDisabled?: boolean;
 }
 
-export default function CheckoutSummary({ ctaLabel, onCta, shippingCost }: Props) {
+export default function CheckoutSummary({ ctaLabel, onCta, shippingCost, ctaDisabled }: Props) {
   const { items, total } = useCart();
   const grandTotal = total + (shippingCost ?? 0);
 
@@ -61,7 +62,8 @@ export default function CheckoutSummary({ ctaLabel, onCta, shippingCost }: Props
 
       <button
         onClick={onCta}
-        className="md:hidden w-full p-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Space_Grotesk'] hover:bg-sky-800 transition-colors"
+        disabled={ctaDisabled}
+        className="md:hidden w-full p-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Space_Grotesk'] hover:bg-sky-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
       >
         {ctaLabel}
       </button>

@@ -309,16 +309,16 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
         )}
 
         {activeTab === 'Technical Resources' && (
-          <div className="rounded-2xl border border-zinc-200 p-4 md:p-6 bg-white flex flex-col gap-4 md:gap-5">
+          <div className="p-2 md:p-3 bg-white flex flex-col gap-3 md:gap-4">
             {techDocs.length > 0 ? (
               techDocs.map((doc) => (
-                <div key={doc.id} className="w-full rounded-2xl border border-zinc-200 px-4 py-4 md:px-5 md:py-6 flex items-center justify-between gap-4 bg-white">
-                  <span className="text-zinc-800 text-lg md:text-2xl font-medium font-['Onest']">{doc.title}</span>
+                <div key={doc.id} className="w-full rounded-2xl border border-zinc-200 px-4 py-3 md:px-5 md:py-4 flex items-center justify-between gap-4 bg-white">
+                  <span className="text-zinc-800 text-base md:text-lg font-medium font-['Onest']">{doc.title}</span>
                   <a
                     href={doc.file_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="h-11 px-5 rounded-2xl bg-sky-100 text-sky-700 text-sm md:text-lg font-medium font-['Space_Grotesk'] inline-flex items-center justify-center hover:bg-sky-200 transition-colors shrink-0"
+                    className="h-10 px-4 rounded-xl bg-sky-100 text-sky-700 text-sm font-medium font-['Space_Grotesk'] inline-flex items-center justify-center hover:bg-sky-200 transition-colors shrink-0"
                   >
                     Download
                   </a>

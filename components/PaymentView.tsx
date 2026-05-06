@@ -157,7 +157,15 @@ export default function PaymentView() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      const data = await res.json() as {
+      const raw = await res.text();
+      const parsed = (() => {
+        try {
+          return JSON.parse(raw) as { error?: string };
+        } catch {
+          return null;
+        }
+      })();
+      const data = parsed as {
         orderId?: number;
         orderDate?: string;
         orderStatus?: string;
@@ -166,7 +174,8 @@ export default function PaymentView() {
       };
 
       if (!res.ok || !data.orderId) {
-        setError(data.error ?? 'Could not create order. Please try again.');
+        const fallback = raw && raw.length < 300 ? raw : `Could not create order (HTTP ${res.status}). Please try again.`;
+        setError(data?.error ?? fallback);
         return;
       }
 

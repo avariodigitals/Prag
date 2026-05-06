@@ -18,16 +18,20 @@ interface VerifyRequest {
 }
 
 function wcBase() {
-  const url = process.env.NEXT_PUBLIC_WP_API_URL ?? '';
+  const url = process.env.NEXT_PUBLIC_WP_API_URL || 'https://central.prag.global/wp-json';
   return url.replace('/wp-json', '/wp-json/wc/v3');
 }
 
 function authQuery() {
-  return `consumer_key=${process.env.WC_CONSUMER_KEY}&consumer_secret=${process.env.WC_CONSUMER_SECRET}`;
+  return `consumer_key=${process.env.WC_CONSUMER_KEY ?? ''}&consumer_secret=${process.env.WC_CONSUMER_SECRET ?? ''}`;
 }
 
 export async function POST(req: NextRequest) {
   try {
+    if (!process.env.WC_CONSUMER_KEY || !process.env.WC_CONSUMER_SECRET) {
+      return NextResponse.json({ error: 'Verification is not configured: missing WooCommerce API keys' }, { status: 500 });
+    }
+
     const body = await req.json() as VerifyRequest;
     const { reference, order_id } = body;
 

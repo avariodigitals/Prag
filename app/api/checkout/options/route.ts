@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-const WP_API_URL = process.env.NEXT_PUBLIC_WP_API_URL ?? '';
+const WP_API_URL = process.env.NEXT_PUBLIC_WP_API_URL || 'https://central.prag.global/wp-json';
 
 interface WooPaymentGateway {
   id: string;
@@ -26,7 +26,7 @@ interface WooZoneMethod {
 }
 
 function wcBase() {
-  const url = process.env.NEXT_PUBLIC_WP_API_URL ?? '';
+  const url = process.env.NEXT_PUBLIC_WP_API_URL || 'https://central.prag.global/wp-json';
   return url.replace('/wp-json', '/wp-json/wc/v3');
 }
 

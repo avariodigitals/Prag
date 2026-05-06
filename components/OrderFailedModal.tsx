@@ -3,9 +3,12 @@ import { XCircle } from 'lucide-react';
 
 interface Props {
   orderId: string;
+  retryQuery: string;
 }
 
-export default function OrderFailedModal({ orderId }: Props) {
+export default function OrderFailedModal({ orderId, retryQuery }: Props) {
+  const retryHref = retryQuery ? `/checkout/payment?${retryQuery}` : '/checkout/payment';
+
   return (
     <div className="relative z-20 w-full max-w-[762px] pb-4 md:pb-6 bg-white rounded-2xl md:rounded-3xl shadow-lg outline outline-1 outline-zinc-100 flex flex-col items-center gap-4 md:gap-5 overflow-hidden">
       <div className="w-full h-14 md:h-20 px-4 md:px-6 py-4 md:py-6 bg-white border-b border-stone-50" />
@@ -43,7 +46,7 @@ export default function OrderFailedModal({ orderId }: Props) {
 
           <div className="w-full flex flex-col sm:flex-row gap-3">
             <Link
-              href="/checkout/payment"
+              href={retryHref}
               className="flex-1 h-12 md:h-16 px-6 py-3 md:py-4 bg-sky-700 rounded-[30px] flex justify-center items-center hover:bg-sky-800 transition-colors"
             >
               <span className="text-white text-base md:text-lg font-medium font-['Space_Grotesk'] leading-7">

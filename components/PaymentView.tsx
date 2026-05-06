@@ -125,6 +125,14 @@ export default function PaymentView() {
     return () => { mounted = false; };
   }, []);
 
+  useEffect(() => {
+    if (!paystackPublicKey) return;
+    if (!methods.some((m) => isPaystackGateway(m.id))) return;
+    void loadPaystackScript().catch(() => {
+      // Best-effort preload only; actual proceed flow handles errors.
+    });
+  }, [methods, paystackPublicKey]);
+
   async function proceed() {
     if (!selected || lineItems.length === 0) return;
     setSubmitting(true);
@@ -245,7 +253,9 @@ export default function PaymentView() {
           onClose: function () {
             if (paymentCompleted) return;
             setSubmitting(false);
-            router.push(`/order-failed?order_id=${orderId}`);
+            const retryQuery = searchParams.toString();
+            const retry = retryQuery ? `&retry=${encodeURIComponent(retryQuery)}` : '';
+            router.push(`/order-failed?order_id=${orderId}${retry}`);
           },
         });
 

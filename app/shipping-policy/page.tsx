@@ -2,7 +2,7 @@ import { getPage } from '@/lib/woocommerce';
 import PolicyPageLayout from '@/components/PolicyPageLayout';
 import Link from 'next/link';
 
-export const metadata = { title: 'Shipping Policy – Prag' };
+export const metadata = { title: 'Shipping Policy - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more' };
 
 const DELIVERY_TIMEFRAMES = [
   { area: 'Lagos & Environs', time: '1-2 business days for standard delivery' },

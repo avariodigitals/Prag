@@ -4,7 +4,7 @@ import { getPage } from '@/lib/woocommerce';
 import PolicyPageLayout from '@/components/PolicyPageLayout';
 import Link from 'next/link';
 
-export const metadata = { title: 'Privacy Policy – Prag' };
+export const metadata = { title: 'Privacy Policy - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more' };
 
 const SECTIONS = [
   {

@@ -2,7 +2,7 @@ import CompareView from '@/components/CompareView';
 import { getProductsForCompare } from '@/lib/woocommerce';
 import Link from 'next/link';
 
-export const metadata = { title: 'Product Comparison – Prag' };
+export const metadata = { title: 'Product Comparison - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more' };
 
 interface Props {
   searchParams: Promise<{ p1?: string; p2?: string }>;

@@ -1,6 +1,6 @@
 import PowerCalculatorTool from '@/components/PowerCalculatorTool';
 
-export const metadata = { title: 'Power Calculator – Prag' };
+export const metadata = { title: 'Power Calculator - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more' };
 
 export default function PowerCalculatorPage() {
   return (

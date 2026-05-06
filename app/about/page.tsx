@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import CountUp from '@/components/CountUp';
 
-export const metadata = { title: 'About Us – Prag' };
+export const metadata = { title: 'About Us - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more' };
 
 const STATS = [
   { value: 50000, display: 50, suffix: 'K+', label: 'Systems Installed' },

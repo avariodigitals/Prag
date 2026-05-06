@@ -6,7 +6,7 @@ import { getStores, getSiteSettings } from '@/lib/woocommerce';
 import { Mail, Phone, MapPin, Clock } from 'lucide-react';
 import Link from 'next/link';
 
-export const metadata = { title: 'Customer Support – Prag' };
+export const metadata = { title: 'Customer Support - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more' };
 
 function SocialIcon({ network }: { network: 'facebook' | 'instagram' | 'linkedin' | 'twitter' | 'whatsapp' }) {
   if (network === 'facebook') {

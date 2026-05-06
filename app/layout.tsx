@@ -17,7 +17,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'PRAG – Nigeria\'s Leading Power Engineering Company',
+  title: 'PRAG - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more',
   description: 'Shop inverters, stabilizers, solar panels and batteries. Engineered for real-world loads.',
   icons: {
     icon: [{ url: '/favicon.png', type: 'image/png' }],

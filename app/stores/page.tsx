@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 import StoresGrid from '@/components/StoresGrid';
 import { getStores } from '@/lib/woocommerce';
 
-export const metadata = { title: 'Prag Stores – Prag' };
+export const metadata = { title: 'Prag Stores - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more' };
 
 export default async function StoresPage() {
   const stores = await getStores();

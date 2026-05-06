@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import CartView from '@/components/CartView';
 
-export const metadata = { title: 'My Cart – Prag' };
+export const metadata = { title: 'My Cart - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more' };
 
 export default function CartPage() {
   return (

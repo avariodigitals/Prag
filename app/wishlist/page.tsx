@@ -3,7 +3,7 @@ import { getSession } from '@/lib/auth';
 import WishlistView from '@/components/WishlistView';
 import Link from 'next/link';
 
-export const metadata = { title: 'Saved Items – Prag' };
+export const metadata = { title: 'Saved Items - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more' };
 
 export default async function WishlistPage() {
   const session = await getSession();

@@ -1,6 +1,6 @@
 import DistributorForm from '@/components/DistributorForm';
 
-export const metadata = { title: 'Become a Distributor – Prag' };
+export const metadata = { title: 'Become a Distributor - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more' };
 
 const BENEFITS = [
   { title: 'High-Margin Products', body: 'PRAG distributors earn industry-leading margins on our full product range — stabilizers, inverters, batteries, and solar.' },

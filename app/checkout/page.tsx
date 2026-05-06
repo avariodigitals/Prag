@@ -2,7 +2,7 @@ import Link from 'next/link';
 import CheckoutView from '@/components/CheckoutView';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Checkout – Prag' };
+export const metadata = { title: 'Checkout - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more' };
 
 export default function CheckoutPage() {
   return (

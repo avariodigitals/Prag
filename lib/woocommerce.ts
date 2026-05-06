@@ -207,7 +207,7 @@ export const getFlashSaleProducts = unstable_cache(
 );
 
 export async function getCategories(): Promise<Category[]> {
-  return wcFetch<Category[]>(`/products/categories?per_page=10&hide_empty=true&_fields=${CATEGORY_FIELDS}`, []);
+  return wcFetch<Category[]>(`/products/categories?per_page=100&hide_empty=true&_fields=${CATEGORY_FIELDS}`, []);
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
@@ -549,11 +549,9 @@ export interface TechDocument {
 
 export async function getTechDocuments(productId?: number): Promise<TechDocument[]> {
   try {
-    const path = productId
-      ? `/prag_document?per_page=20&meta_key=product_id&meta_value=${productId}&_fields=id,title,meta`
-      : '/prag_document?per_page=20&_fields=id,title,meta';
+    const path = '/prag_document?per_page=100&_fields=id,title,meta';
     const docs = await wpFetch<Array<{ id: number; title: { rendered: string }; meta: Record<string, string> }>>(path, []);
-    return docs.map((d) => ({
+    const normalized = docs.map((d) => ({
       id: d.id,
       title: d.title?.rendered ?? '',
       file_url: d.meta?.file_url ?? '',
@@ -562,6 +560,12 @@ export async function getTechDocuments(productId?: number): Promise<TechDocument
       pages: d.meta?.pages ?? '',
       product_id: Number(d.meta?.product_id ?? 0),
     })).filter((d) => d.file_url);
+
+    if (!productId) return normalized;
+
+    // Always enforce product-level filtering client-side to avoid shared/global docs
+    // when the WordPress endpoint ignores meta_key/meta_value query arguments.
+    return normalized.filter((d) => d.product_id === productId);
   } catch {
     return [];
   }

@@ -9,12 +9,27 @@ interface Props {
   tags: Tag[];
 }
 
-const FALLBACK_CATEGORIES = [
-  { id: 1, name: 'Inverters', slug: 'inverters', count: 20, image: null, description: '' },
-  { id: 2, name: 'Solar', slug: 'solar', count: 10, image: null, description: '' },
-  { id: 3, name: 'Batteries', slug: 'batteries', count: 8, image: null, description: '' },
-  { id: 4, name: 'Stabilizers', slug: 'voltage-stabilizers', count: 16, image: null, description: '' },
-];
+function dedupeCategories(input: Category[]): Category[] {
+  const bySlug = new Map<string, Category>();
+
+  for (const cat of input) {
+    const slug = (cat.slug ?? '').trim();
+    if (!slug) continue;
+
+    const existing = bySlug.get(slug);
+    if (!existing) {
+      bySlug.set(slug, { ...cat, count: Number(cat.count ?? 0) });
+      continue;
+    }
+
+    bySlug.set(slug, {
+      ...existing,
+      count: Number(existing.count ?? 0) + Number(cat.count ?? 0),
+    });
+  }
+
+  return Array.from(bySlug.values()).sort((a, b) => a.name.localeCompare(b.name));
+}
 
 export default function ProductsSidebar({ categories, tags }: Props) {
   const router = useRouter();
@@ -26,7 +41,7 @@ export default function ProductsSidebar({ categories, tags }: Props) {
   const [minPrice, setMinPrice] = useState(searchParams.get('min_price') ?? '');
   const [maxPrice, setMaxPrice] = useState(searchParams.get('max_price') ?? '');
 
-  const displayCategories = categories.length ? categories : FALLBACK_CATEGORIES;
+  const displayCategories = dedupeCategories(categories);
 
   function buildParams(overrides: Record<string, string | null>) {
     const params = new URLSearchParams(searchParams.toString());
@@ -92,6 +107,9 @@ export default function ProductsSidebar({ categories, tags }: Props) {
               <span className="text-sky-700 text-xs font-['Space_Grotesk']">({cat.count})</span>
             </button>
           ))}
+          {displayCategories.length === 0 && (
+            <p className="text-xs text-zinc-400 font-['Space_Grotesk']">No categories available.</p>
+          )}
         </div>
         <div className="w-full h-px bg-stone-100" />
       </div>

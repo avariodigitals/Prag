@@ -13,6 +13,28 @@ interface Props {
   tags?: Tag[];
 }
 
+function dedupeCategories(input: Category[]): Category[] {
+  const bySlug = new Map<string, Category>();
+
+  for (const cat of input) {
+    const slug = (cat.slug ?? '').trim();
+    if (!slug) continue;
+
+    const existing = bySlug.get(slug);
+    if (!existing) {
+      bySlug.set(slug, { ...cat, count: Number(cat.count ?? 0) });
+      continue;
+    }
+
+    bySlug.set(slug, {
+      ...existing,
+      count: Number(existing.count ?? 0) + Number(cat.count ?? 0),
+    });
+  }
+
+  return Array.from(bySlug.values()).sort((a, b) => a.name.localeCompare(b.name));
+}
+
 const SORT_OPTIONS = [
   { label: 'Default: Size + Price (Low to High)', value: '' },
   { label: 'Price: Low to High', value: 'price' },
@@ -48,6 +70,7 @@ function ProductsGridContent({ products, total, categories = [], tags = [] }: Pr
 
   const activeCategory = searchParams.get('category') ?? '';
   const activeTag = searchParams.get('tag') ?? '';
+  const displayCategories = dedupeCategories(categories);
 
   const loadMore = useEffectEvent(async () => {
     setLoadingMore(true);
@@ -221,11 +244,11 @@ function ProductsGridContent({ products, total, categories = [], tags = [] }: Pr
             )}
 
             {/* Categories */}
-            {categories.length > 0 && (
+            {displayCategories.length > 0 && (
               <div className="flex flex-col gap-3">
                 <span className="text-gray-900 text-base font-semibold font-['Space_Grotesk']">Categories</span>
                 <div className="flex flex-col gap-2">
-                  {categories.map((cat) => (
+                  {displayCategories.map((cat) => (
                     <button
                       key={cat.id}
                       onClick={() => toggleCategory(cat.slug)}

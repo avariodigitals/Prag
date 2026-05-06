@@ -53,7 +53,7 @@ export default function ShippingView() {
         const nextMethods = data.shippingMethods ?? [];
         if (!mounted) return;
         setMethods(nextMethods);
-        setSelected(nextMethods[0]?.id ?? '');
+        setSelected('');
       } catch {
         if (!mounted) return;
         setMethods([]);
@@ -69,12 +69,12 @@ export default function ShippingView() {
   }, []);
 
   function proceed() {
+    if (!selected) return;
     const method = methods.find((m) => m.id === selected);
+    if (!method) return;
     const params = new URLSearchParams(searchParams.toString());
-    if (method) {
-      params.set('shipping_method', method.method_id);
-      params.set('shipping_method_title', method.title);
-    }
+    params.set('shipping_method', method.id);
+    params.set('shipping_method_title', method.title);
     if (note) params.set('shipping_note', note);
     router.push(`/checkout/payment?${params.toString()}`);
   }

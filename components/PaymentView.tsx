@@ -190,6 +190,18 @@ export default function PaymentView() {
       const orderId = data.orderId;
       const orderDate = data.orderDate ?? '';
       const email = (searchParams.get('email') ?? '').trim();
+      const firstName = (searchParams.get('firstName') ?? '').trim();
+      const lastName = (searchParams.get('lastName') ?? '').trim();
+      const phone = (searchParams.get('phone') ?? '').trim();
+
+      const successParams = new URLSearchParams({
+        order_id: String(orderId),
+        order_date: orderDate,
+      });
+      if (email) successParams.set('email', email);
+      if (firstName) successParams.set('first_name', firstName);
+      if (lastName) successParams.set('last_name', lastName);
+      if (phone) successParams.set('phone', phone);
 
       // Paystack inline popup — keep everything in Next.js
       if (isPaystackGateway(selected) && paystackPublicKey) {
@@ -247,7 +259,7 @@ export default function PaymentView() {
                 // non-blocking — payment went through regardless
               }
               clear();
-              router.push(`/order-received?order_id=${orderId}&order_date=${encodeURIComponent(orderDate)}`);
+              router.push(`/order-received?${successParams.toString()}`);
             })();
           },
           onClose: function () {
@@ -266,7 +278,7 @@ export default function PaymentView() {
 
       // Non-Paystack methods (bank transfer, etc.) — order is already created, go to received
       clear();
-      router.push(`/order-received?order_id=${orderId}&order_date=${encodeURIComponent(orderDate)}`);
+      router.push(`/order-received?${successParams.toString()}`);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Could not create order. Please try again.';
       setError(message || 'Could not create order. Please try again.');

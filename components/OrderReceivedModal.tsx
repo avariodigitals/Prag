@@ -1,12 +1,73 @@
+"use client";
+
 import Link from 'next/link';
 import { CheckCircle } from 'lucide-react';
+import { useState } from 'react';
 
 interface Props {
   orderId: string;
   orderDate: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
 }
 
-export default function OrderReceivedModal({ orderId, orderDate }: Props) {
+function buildPassword() {
+  const random = Math.random().toString(36).slice(2, 10);
+  return `Prag#${random}A1`;
+}
+
+export default function OrderReceivedModal({
+  orderId,
+  orderDate,
+  firstName = '',
+  lastName = '',
+  email = '',
+  phone = '',
+}: Props) {
+  const [creating, setCreating] = useState(false);
+  const [created, setCreated] = useState(false);
+  const [accountError, setAccountError] = useState('');
+
+  async function createAccount() {
+    if (!email) {
+      setAccountError('Missing order email. Please use the Register page instead.');
+      return;
+    }
+
+    setCreating(true);
+    setAccountError('');
+
+    try {
+      const payload = {
+        first_name: firstName || 'Valued',
+        last_name: lastName || 'Customer',
+        email,
+        phone,
+        password: buildPassword(),
+      };
+
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setAccountError(data?.message || 'Could not create account. Please try again.');
+        return;
+      }
+
+      setCreated(true);
+    } catch {
+      setAccountError('Could not create account. Please try again.');
+    } finally {
+      setCreating(false);
+    }
+  }
+
   return (
     <div className="relative z-20 w-full max-w-[762px] pb-4 md:pb-6 bg-white rounded-2xl md:rounded-3xl shadow-lg outline outline-1 outline-zinc-100 flex flex-col items-center gap-4 md:gap-5 overflow-hidden">
       {/* Header bar */}
@@ -58,14 +119,37 @@ export default function OrderReceivedModal({ orderId, orderDate }: Props) {
           </div>
 
           {/* CTA */}
-          <Link
-            href="/products"
-            className="w-full h-12 md:h-16 px-6 py-3 md:py-4 bg-sky-700 rounded-[30px] flex justify-center items-center hover:bg-sky-800 transition-colors"
-          >
-            <span className="text-white text-base md:text-lg font-medium font-['Space_Grotesk'] leading-7">
-              Continue Shopping
-            </span>
-          </Link>
+          <div className="w-full flex flex-col gap-3">
+            <Link
+              href="/products"
+              className="w-full h-12 md:h-16 px-6 py-3 md:py-4 bg-sky-700 rounded-[30px] flex justify-center items-center hover:bg-sky-800 transition-colors"
+            >
+              <span className="text-white text-base md:text-lg font-medium font-['Space_Grotesk'] leading-7">
+                Continue Shopping
+              </span>
+            </Link>
+
+            <button
+              type="button"
+              onClick={() => void createAccount()}
+              disabled={creating || created}
+              className="w-full h-12 md:h-16 px-6 py-3 md:py-4 rounded-[30px] border border-sky-700 text-sky-700 text-base md:text-lg font-medium font-['Space_Grotesk'] leading-7 hover:bg-sky-50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {created ? 'Account Created' : creating ? 'Creating Account...' : 'Create an Account'}
+            </button>
+
+            {created && (
+              <p className="text-center text-emerald-700 text-sm font-medium font-['Space_Grotesk']">
+                Account created successfully. Please check your email for OTP verification.
+              </p>
+            )}
+
+            {accountError && (
+              <p className="text-center text-rose-600 text-sm font-medium font-['Space_Grotesk']">
+                {accountError}
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -1,13 +1,20 @@
 import OrderReceivedModal from '@/components/OrderReceivedModal';
 
 interface Props {
-  searchParams: Promise<{ order_id?: string; order_date?: string }>;
+  searchParams: Promise<{
+    order_id?: string;
+    order_date?: string;
+    first_name?: string;
+    last_name?: string;
+    email?: string;
+    phone?: string;
+  }>;
 }
 
 export const metadata = { title: 'Order Received – PRAG' };
 
 export default async function OrderReceivedPage({ searchParams }: Props) {
-  const { order_id, order_date } = await searchParams;
+  const { order_id, order_date, first_name, last_name, email, phone } = await searchParams;
 
   return (
     <main className="w-full min-h-screen bg-white flex flex-col">
@@ -18,6 +25,10 @@ export default async function OrderReceivedPage({ searchParams }: Props) {
         <OrderReceivedModal
           orderId={order_id ?? ''}
           orderDate={order_date ?? new Date().toLocaleDateString('en-GB')}
+          firstName={first_name ?? ''}
+          lastName={last_name ?? ''}
+          email={email ?? ''}
+          phone={phone ?? ''}
         />
       </div>
     </main>

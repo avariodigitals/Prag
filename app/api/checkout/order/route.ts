@@ -27,6 +27,7 @@ interface WooOrderResponse {
   order_key?: string;
   payment_url?: string;
   status?: string;
+  total?: string;
 }
 
 function wcBase() {
@@ -128,6 +129,7 @@ export async function POST(req: NextRequest) {
       orderId: order.id,
       orderDate: order.date_created,
       orderStatus: order.status ?? 'pending',
+      orderTotal: order.total ?? '0',
       paymentUrl,
       successUrl,
       failedUrl,

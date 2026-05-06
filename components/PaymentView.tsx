@@ -12,13 +12,49 @@ interface PaymentMethod {
   description: string;
 }
 
+// Paystack inline JS types
+declare global {
+  interface Window {
+    PaystackPop?: {
+      setup: (options: {
+        key: string;
+        email: string;
+        amount: number;
+        currency?: string;
+        ref: string;
+        onSuccess: (response: { reference: string }) => void;
+        onCancel: () => void;
+      }) => { openIframe: () => void };
+    };
+  }
+}
+
 const SHIPPING_COST = 0;
+
+function isPaystackGateway(id: string) {
+  return id.toLowerCase().includes('paystack');
+}
+
+function loadPaystackScript(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (window.PaystackPop) { resolve(); return; }
+    const existing = document.getElementById('paystack-js');
+    if (existing) { existing.addEventListener('load', () => resolve()); return; }
+    const script = document.createElement('script');
+    script.id = 'paystack-js';
+    script.src = 'https://js.paystack.co/v1/inline.js';
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error('Failed to load Paystack SDK'));
+    document.head.appendChild(script);
+  });
+}
 
 export default function PaymentView() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { items, clear } = useCart();
   const [methods, setMethods] = useState<PaymentMethod[]>([]);
+  const [paystackPublicKey, setPaystackPublicKey] = useState('');
   const [selected, setSelected] = useState('');
   const [loadingMethods, setLoadingMethods] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -71,11 +107,12 @@ export default function PaymentView() {
     async function loadMethods() {
       try {
         const res = await fetch('/api/checkout/options', { cache: 'no-store' });
-        const data = await res.json() as { paymentMethods?: PaymentMethod[] };
+        const data = await res.json() as { paymentMethods?: PaymentMethod[]; paystackPublicKey?: string };
         const nextMethods = data.paymentMethods ?? [];
         if (!mounted) return;
         setMethods(nextMethods);
         setSelected(nextMethods[0]?.id ?? '');
+        setPaystackPublicKey(data.paystackPublicKey ?? '');
       } catch {
         if (!mounted) return;
         setMethods([]);
@@ -85,9 +122,7 @@ export default function PaymentView() {
       }
     }
     void loadMethods();
-    return () => {
-      mounted = false;
-    };
+    return () => { mounted = false; };
   }, []);
 
   async function proceed() {
@@ -95,6 +130,7 @@ export default function PaymentView() {
     setSubmitting(true);
     setError('');
     try {
+      // Create the WooCommerce order first (as pending)
       const payload = {
         payment_method: selected,
         payment_method_title: methods.find((m) => m.id === selected)?.title ?? selected,
@@ -125,32 +161,73 @@ export default function PaymentView() {
         orderId?: number;
         orderDate?: string;
         orderStatus?: string;
-        paymentUrl?: string;
-        successUrl?: string;
-        failedUrl?: string;
+        orderTotal?: string;
         error?: string;
       };
+
       if (!res.ok || !data.orderId) {
-        setError(data.error ?? 'Could not create order in WooCommerce.');
+        setError(data.error ?? 'Could not create order. Please try again.');
         return;
       }
 
-      const successUrl = data.successUrl ?? `${window.location.origin}/checkout/result?order_id=${data.orderId}`;
-      const failedUrl = data.failedUrl ?? `${window.location.origin}/checkout/result?order_id=${data.orderId}&failed=1`;
+      const orderId = data.orderId;
+      const orderDate = data.orderDate ?? '';
+      const email = searchParams.get('email') ?? '';
 
-      if (data.paymentUrl && /^https?:\/\//i.test(data.paymentUrl)) {
-        clear();
-        window.location.href = data.paymentUrl;
+      // Paystack inline popup — keep everything in Next.js
+      if (isPaystackGateway(selected) && paystackPublicKey) {
+        await loadPaystackScript();
+
+        if (!window.PaystackPop) {
+          setError('Payment SDK failed to load. Please refresh and try again.');
+          return;
+        }
+
+        // Amount from the actual WC order total (in kobo)
+        const orderTotalNaira = parseFloat((data.orderTotal ?? '0').replace(/[^0-9.]/g, ''));
+        const amountKobo = Math.round((Number.isFinite(orderTotalNaira) && orderTotalNaira > 0 ? orderTotalNaira : summaryTotal) * 100);
+
+        const ref = `PRAG-${orderId}-${Date.now()}`;
+
+        const handler = window.PaystackPop.setup({
+          key: paystackPublicKey,
+          email,
+          amount: amountKobo,
+          currency: 'NGN',
+          ref,
+          onSuccess: async (response) => {
+            setSubmitting(true);
+            try {
+              await fetch('/api/checkout/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reference: response.reference, order_id: orderId }),
+              });
+            } catch { /* non-blocking — payment went through regardless */ }
+            clear();
+            router.push(`/order-received?order_id=${orderId}&order_date=${encodeURIComponent(orderDate)}`);
+          },
+          onCancel: () => {
+            setSubmitting(false);
+            router.push(`/order-failed?order_id=${orderId}`);
+          },
+        });
+
+        handler.openIframe();
+        // Don't setSubmitting(false) here — wait for onSuccess/onCancel
         return;
       }
 
+      // Non-Paystack methods (bank transfer, etc.) — order is already created, go to received
       clear();
-      const failed = data.orderStatus === 'failed' || data.orderStatus === 'cancelled';
-      router.push(failed ? failedUrl : successUrl);
+      router.push(`/order-received?order_id=${orderId}&order_date=${encodeURIComponent(orderDate)}`);
     } catch {
-      setError('Could not create order in WooCommerce. Please try again.');
+      setError('Could not create order. Please try again.');
     } finally {
-      setSubmitting(false);
+      // Only reset if we didn't open Paystack popup (which manages its own flow)
+      if (!isPaystackGateway(selected) || !paystackPublicKey) {
+        setSubmitting(false);
+      }
     }
   }
 
@@ -165,7 +242,7 @@ export default function PaymentView() {
           <div className="flex flex-col gap-1">
             {loadingMethods && <p className="text-sm text-zinc-500 font-['Space_Grotesk']">Loading payment methods...</p>}
             {!loadingMethods && methods.length === 0 && (
-              <p className="text-sm text-rose-600 font-['Space_Grotesk']">No WooCommerce payment methods available.</p>
+              <p className="text-sm text-rose-600 font-['Space_Grotesk']">No payment methods available.</p>
             )}
             {methods.map((method, idx) => {
               const active = selected === method.id;
@@ -183,7 +260,7 @@ export default function PaymentView() {
                   </div>
                   <div className="flex flex-col gap-0.5">
                     <span className="text-black text-sm md:text-base font-normal font-['Space_Grotesk']">{method.title}</span>
-                    <span className="text-slate-500 text-xs font-normal font-['Space_Grotesk']">{method.description || 'Payment option from WooCommerce'}</span>
+                    <span className="text-slate-500 text-xs font-normal font-['Space_Grotesk']">{method.description || 'Payment option'}</span>
                   </div>
                 </button>
               );
@@ -215,3 +292,4 @@ export default function PaymentView() {
     </div>
   );
 }
+

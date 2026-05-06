@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+const WP_API_URL = process.env.NEXT_PUBLIC_WP_API_URL ?? '';
+
 interface WooPaymentGateway {
   id: string;
   title?: string;
@@ -80,8 +82,19 @@ export async function GET() {
 
   const shippingMethods = Array.from(deduped.values());
 
+  // Fetch Paystack public key from WP settings
+  let paystackPublicKey = '';
+  try {
+    const settingsRes = await fetch(`${WP_API_URL}/prag-core/v1/settings`, { cache: 'no-store' });
+    if (settingsRes.ok) {
+      const settings = await settingsRes.json() as { paystack_public_key?: string };
+      paystackPublicKey = settings.paystack_public_key ?? '';
+    }
+  } catch { /* ignore */ }
+
   return NextResponse.json({
     paymentMethods,
     shippingMethods,
+    paystackPublicKey,
   });
 }

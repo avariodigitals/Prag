@@ -44,7 +44,6 @@ export default function SiteShellClient({ children, user, settings }: Props) {
               priority
             />
           </div>
-          <p className="text-xs uppercase tracking-[0.25em] text-sky-700 font-semibold">PRAG B2C Store</p>
           <h1 className="text-3xl md:text-4xl font-bold text-slate-900">{settings.under_construction_title || 'We are coming back soon'}</h1>
           <p className="text-slate-600 text-base md:text-lg leading-relaxed">
             {settings.under_construction_message || 'We are currently making improvements to serve you better. Please check back shortly.'}

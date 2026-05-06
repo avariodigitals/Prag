@@ -118,6 +118,7 @@ export async function POST(req: NextRequest) {
     const fallbackPaymentUrl = order.order_key && shopBase
       ? `${shopBase.replace(/\/$/, '')}/checkout/order-pay/${order.id}/?pay_for_order=true&key=${order.order_key}`
       : '';
+    const paymentUrl = fallbackPaymentUrl || order.payment_url || '';
 
     const origin = req.nextUrl.origin;
     const successUrl = `${origin}/checkout/result?order_id=${order.id}`;
@@ -127,7 +128,7 @@ export async function POST(req: NextRequest) {
       orderId: order.id,
       orderDate: order.date_created,
       orderStatus: order.status ?? 'pending',
-      paymentUrl: order.payment_url ?? fallbackPaymentUrl,
+      paymentUrl,
       successUrl,
       failedUrl,
     });

@@ -169,6 +169,21 @@ class Prag_Core_Bridge {
                 'permission_callback' => [$this, 'check_admin_permissions'],
             ]
         ]);
+
+        // Admin config endpoint — persists adminStore data (user states, tracking, SMTP, forms)
+        // Authenticated via WordPress Application Password (Basic Auth) from Prag-Admin server
+        register_rest_route($namespace, '/admin-config', [
+            [
+                'methods' => 'GET',
+                'callback' => [$this, 'get_admin_config'],
+                'permission_callback' => [$this, 'check_admin_permissions'],
+            ],
+            [
+                'methods' => 'POST',
+                'callback' => [$this, 'update_admin_config'],
+                'permission_callback' => [$this, 'check_admin_permissions'],
+            ]
+        ]);
     }
 
     /**
@@ -460,6 +475,33 @@ class Prag_Core_Bridge {
             'message' => 'Settings updated successfully',
             'data' => $new_settings
         ];
+    }
+
+    /**
+     * Get Admin Config (persisted adminStore data)
+     */
+    public function get_admin_config() {
+        $raw = get_option('prag_admin_config', '');
+        if (empty($raw)) {
+            return new WP_REST_Response(null, 204);
+        }
+        $decoded = json_decode($raw, true);
+        if (json_last_error() !== JSON_ERROR_NONE || !is_array($decoded)) {
+            return new WP_REST_Response(null, 204);
+        }
+        return rest_ensure_response($decoded);
+    }
+
+    /**
+     * Update Admin Config (persists adminStore data)
+     */
+    public function update_admin_config($request) {
+        $params = $request->get_json_params();
+        if (empty($params) || !is_array($params)) {
+            return new WP_Error('empty_body', 'Request body is required', ['status' => 400]);
+        }
+        update_option('prag_admin_config', wp_json_encode($params), false);
+        return ['success' => true, 'message' => 'Admin config saved'];
     }
 
     /**

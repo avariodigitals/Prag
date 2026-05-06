@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
+import Image from 'next/image';
 import TopBar from './TopBar';
 import NavBar from './NavBar';
 import Footer from './Footer';
@@ -33,6 +34,16 @@ export default function SiteShellClient({ children, user, settings }: Props) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center px-6">
         <div className="w-full max-w-2xl rounded-3xl border border-slate-200 bg-white shadow-sm p-10 text-center space-y-5">
+          <div className="flex justify-center mb-6">
+            <Image
+              src="https://central.prag.global/wp-content/uploads/2026/04/Prag-Logo.png"
+              alt="PRAG Logo"
+              width={120}
+              height={40}
+              className="object-contain"
+              priority
+            />
+          </div>
           <p className="text-xs uppercase tracking-[0.25em] text-sky-700 font-semibold">PRAG B2C Store</p>
           <h1 className="text-3xl md:text-4xl font-bold text-slate-900">{settings.under_construction_title || 'We are coming back soon'}</h1>
           <p className="text-slate-600 text-base md:text-lg leading-relaxed">

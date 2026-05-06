@@ -73,6 +73,7 @@ export default function PaymentView() {
     try {
       const payload = {
         payment_method: selected,
+        payment_method_title: methods.find((m) => m.id === selected)?.title ?? selected,
         shipping_method: searchParams.get('shipping_method') ?? '',
         shipping_method_title: searchParams.get('shipping_method_title') ?? '',
         shipping_note: searchParams.get('shipping_note') ?? '',
@@ -96,9 +97,14 @@ export default function PaymentView() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      const data = await res.json() as { orderId?: number; orderDate?: string; error?: string };
+      const data = await res.json() as { orderId?: number; orderDate?: string; paymentUrl?: string; error?: string };
       if (!res.ok || !data.orderId) {
         setError(data.error ?? 'Could not create order in WooCommerce.');
+        return;
+      }
+
+      if (data.paymentUrl) {
+        window.location.href = data.paymentUrl;
         return;
       }
 

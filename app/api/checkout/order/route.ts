@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 interface CheckoutOrderRequest {
   payment_method?: string;
+  payment_method_title?: string;
   shipping_method?: string;
   shipping_method_title?: string;
   shipping_note?: string;
@@ -23,6 +24,8 @@ interface CheckoutOrderRequest {
 interface WooOrderResponse {
   id: number;
   date_created: string;
+  order_key?: string;
+  payment_url?: string;
 }
 
 function wcBase() {
@@ -61,6 +64,8 @@ export async function POST(req: NextRequest) {
 
     const payload = {
       payment_method: body.payment_method,
+      payment_method_title: body.payment_method_title ?? body.payment_method,
+      status: 'pending',
       set_paid: false,
       billing: {
         first_name: billing.firstName ?? '',
@@ -108,9 +113,15 @@ export async function POST(req: NextRequest) {
     }
 
     const order = await res.json() as WooOrderResponse;
+    const shopBase = process.env.NEXT_PUBLIC_SHOP_URL ?? '';
+    const fallbackPaymentUrl = order.order_key && shopBase
+      ? `${shopBase.replace(/\/$/, '')}/checkout/order-pay/${order.id}/?pay_for_order=true&key=${order.order_key}`
+      : '';
+
     return NextResponse.json({
       orderId: order.id,
       orderDate: order.date_created,
+      paymentUrl: order.payment_url ?? fallbackPaymentUrl,
     });
   } catch {
     return NextResponse.json({ error: 'Could not create order' }, { status: 500 });

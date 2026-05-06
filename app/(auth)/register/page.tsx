@@ -114,12 +114,6 @@ export default function RegisterPage() {
   }
 
   function handleCancel() {
-    const returnTo = sessionStorage.getItem('prag:returnTo');
-    if (returnTo && !returnTo.startsWith('/login') && !returnTo.startsWith('/register')) {
-      router.push(returnTo);
-      return;
-    }
-
     if (window.history.length > 1) {
       router.back();
       return;
@@ -136,8 +130,126 @@ export default function RegisterPage() {
       />
 
       <div className="flex-1 lg:flex lg:flex-col lg:items-center lg:justify-start lg:px-16 lg:py-10 lg:overflow-y-auto">
+        {/* Desktop form */}
+        <div className="hidden lg:flex w-full flex-1 items-center justify-center">
+          <div className="w-full max-w-[560px] flex flex-col gap-8">
+            {/* Step 1: Registration form */}
+            {step === 'form' && (
+              <>
+                <div className="flex flex-col gap-2">
+                  <h2 className="text-stone-900 text-xl md:text-2xl font-semibold font-['Onest'] leading-tight">Get Started</h2>
+                  <div className="flex items-center gap-1">
+                    <span className="text-neutral-500 text-sm font-normal font-['Space_Grotesk']">Already have an account?</span>
+                    <Link href="/login" className="text-sky-700 text-sm font-medium font-['Space_Grotesk'] hover:underline">Login</Link>
+                  </div>
+                </div>
+
+                {error && (
+                  <div className="p-4 bg-red-50 text-red-600 text-sm rounded-xl border border-red-100 font-['Space_Grotesk']">
+                    {error}
+                  </div>
+                )}
+
+                <form onSubmit={handleRegister} className="flex flex-col gap-5">
+                  <div className="flex gap-3">
+                    <div className="flex-1 flex flex-col gap-1.5">
+                      <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk']">First Name</label>
+                      <input name="first_name" type="text" placeholder="John" required className={inputCls} />
+                    </div>
+                    <div className="flex-1 flex flex-col gap-1.5">
+                      <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk']">Last Name</label>
+                      <input name="last_name" type="text" placeholder="Doe" required className={inputCls} />
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk']">Email Address</label>
+                    <input name="email" type="email" placeholder="you@company.com" required className={inputCls} />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk']">Phone Number</label>
+                    <input name="phone" type="tel" placeholder="+234 9052177845" className={inputCls} />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk']">Password</label>
+                    <input name="password" type="password" placeholder="Enter password" required value={password} onChange={e => setPassword(e.target.value)} className={inputCls} />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk']">Confirm Password</label>
+                    <input name="confirm_password" type="password" placeholder="Confirm password" required className={inputCls} />
+                  </div>
+
+                  <button type="submit" disabled={loading}
+                    className="w-full h-12 bg-sky-700 rounded-2xl text-white text-sm font-semibold font-['Space_Grotesk'] hover:bg-sky-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                    {loading ? 'Creating account...' : 'Sign up'}
+                  </button>
+                </form>
+              </>
+            )}
+
+            {/* Step 2: OTP */}
+            {step === 'otp' && (
+              <>
+                <div className="flex flex-col gap-2">
+                  <h2 className="text-stone-900 text-xl md:text-2xl font-semibold font-['Onest'] leading-tight">Verify your email</h2>
+                  <p className="text-neutral-500 text-sm font-['Space_Grotesk']">
+                    We sent a 6-digit code to <span className="text-zinc-900 font-medium">{email}</span>.
+                  </p>
+                </div>
+
+                {error && <div className="p-4 bg-red-50 text-red-600 text-sm rounded-xl border border-red-100 font-['Space_Grotesk']">{error}</div>}
+
+                <form onSubmit={handleVerify} className="flex flex-col gap-5">
+                  <div onPaste={handleOtpPaste} className="flex justify-between gap-2">
+                    {otp.map((digit, idx) => (
+                      <input
+                        key={idx}
+                        ref={el => { otpRefs.current[idx] = el; }}
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={1}
+                        value={digit}
+                        onChange={e => handleOtpChange(idx, e.target.value)}
+                        onKeyDown={e => handleOtpKeyDown(idx, e)}
+                        className="w-full h-12 text-center text-xl font-bold text-zinc-900 bg-white rounded-xl border border-gray-200 focus:border-sky-700 focus:outline-none transition-colors font-['Space_Grotesk']"
+                      />
+                    ))}
+                  </div>
+
+                  <button type="submit" disabled={loading || otp.join('').length < 6}
+                    className="w-full h-12 bg-sky-700 rounded-2xl text-white text-sm font-semibold font-['Space_Grotesk'] hover:bg-sky-800 transition-colors disabled:opacity-50">
+                    {loading ? 'Verifying...' : 'Verify & Continue'}
+                  </button>
+
+                  <p className="text-center text-sm text-neutral-500 font-['Space_Grotesk']">
+                    Didn&apos;t receive a code?{' '}
+                    <button type="button" onClick={resendOtp} className="text-sky-700 font-medium hover:underline">
+                      Resend
+                    </button>
+                  </p>
+                </form>
+              </>
+            )}
+
+            {/* Step 3: Success */}
+            {step === 'success' && (
+              <div className="flex flex-col items-center gap-4 py-6 text-center">
+                <div className="w-16 h-16 bg-sky-50 rounded-full flex items-center justify-center">
+                  <CheckCircle className="w-8 h-8 text-sky-700" />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <h2 className="text-stone-900 text-xl font-semibold font-['Onest']">Account created!</h2>
+                  <p className="text-neutral-500 text-sm font-['Space_Grotesk']">Your email has been verified. Redirecting you now...</p>
+                </div>
+                <Link href="/account" className="w-full h-12 bg-sky-700 rounded-2xl text-white text-sm font-semibold font-['Space_Grotesk'] hover:bg-sky-800 transition-colors flex items-center justify-center">
+                  Go to my account
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Mobile bottom sheet overlay */}
-        <div className="fixed inset-0 bg-black/40 flex items-end justify-center z-50">
+        <div className="lg:hidden fixed inset-0 bg-black/40 flex items-end justify-center z-50">
           <div className="w-full max-h-[92dvh] overflow-y-auto bg-white rounded-t-3xl shadow-2xl px-5 pt-5 pb-8">
             {/* drag handle */}
             <div className="w-10 h-1 bg-zinc-200 rounded-full mx-auto mb-4" />

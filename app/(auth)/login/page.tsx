@@ -36,12 +36,6 @@ export default function LoginPage() {
   }
 
   function handleCancel() {
-    const returnTo = sessionStorage.getItem('prag:returnTo');
-    if (returnTo && !returnTo.startsWith('/login') && !returnTo.startsWith('/register')) {
-      router.push(returnTo);
-      return;
-    }
-
     if (window.history.length > 1) {
       router.back();
       return;

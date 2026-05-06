@@ -26,6 +26,7 @@ interface WooOrderResponse {
   date_created: string;
   order_key?: string;
   payment_url?: string;
+  status?: string;
 }
 
 function wcBase() {
@@ -118,10 +119,17 @@ export async function POST(req: NextRequest) {
       ? `${shopBase.replace(/\/$/, '')}/checkout/order-pay/${order.id}/?pay_for_order=true&key=${order.order_key}`
       : '';
 
+    const origin = req.nextUrl.origin;
+    const successUrl = `${origin}/checkout/result?order_id=${order.id}`;
+    const failedUrl = `${origin}/checkout/result?order_id=${order.id}&failed=1`;
+
     return NextResponse.json({
       orderId: order.id,
       orderDate: order.date_created,
+      orderStatus: order.status ?? 'pending',
       paymentUrl: order.payment_url ?? fallbackPaymentUrl,
+      successUrl,
+      failedUrl,
     });
   } catch {
     return NextResponse.json({ error: 'Could not create order' }, { status: 500 });

@@ -97,22 +97,34 @@ export default function PaymentView() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      const data = await res.json() as { orderId?: number; orderDate?: string; paymentUrl?: string; error?: string };
+      const data = await res.json() as {
+        orderId?: number;
+        orderDate?: string;
+        orderStatus?: string;
+        paymentUrl?: string;
+        successUrl?: string;
+        failedUrl?: string;
+        error?: string;
+      };
       if (!res.ok || !data.orderId) {
         setError(data.error ?? 'Could not create order in WooCommerce.');
         return;
       }
 
-      if (data.paymentUrl) {
-        window.location.href = data.paymentUrl;
+      const successUrl = data.successUrl ?? `${window.location.origin}/checkout/result?order_id=${data.orderId}`;
+      const failedUrl = data.failedUrl ?? `${window.location.origin}/checkout/result?order_id=${data.orderId}&failed=1`;
+
+      if (data.paymentUrl && /^https?:\/\//i.test(data.paymentUrl)) {
+        const separator = data.paymentUrl.includes('?') ? '&' : '?';
+        const redirectingUrl = `${data.paymentUrl}${separator}redirect_url=${encodeURIComponent(successUrl)}&return_url=${encodeURIComponent(successUrl)}&cancel_url=${encodeURIComponent(failedUrl)}`;
+        clear();
+        window.location.href = redirectingUrl;
         return;
       }
 
       clear();
-      const params = new URLSearchParams();
-      params.set('order_id', String(data.orderId));
-      if (data.orderDate) params.set('order_date', new Date(data.orderDate).toLocaleDateString('en-GB'));
-      router.push(`/order-received?${params.toString()}`);
+      const failed = data.orderStatus === 'failed' || data.orderStatus === 'cancelled';
+      router.push(failed ? failedUrl : successUrl);
     } catch {
       setError('Could not create order in WooCommerce. Please try again.');
     } finally {

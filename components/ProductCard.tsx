@@ -23,8 +23,14 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
   const router = useRouter();
   const image = product.images?.[0];
 
+  function normalizedPrice(value: string): number {
+    const n = Number(String(value ?? '').replace(/[^0-9.-]/g, ''));
+    return Number.isFinite(n) ? n : 0;
+  }
+
   function handleBuyNow() {
-    router.push(`/checkout?id=${product.id}&name=${encodeURIComponent(product.name)}&price=${product.price}&slug=${product.slug}&image=${encodeURIComponent(image?.src ?? '')}`);
+    const price = normalizedPrice(product.price);
+    router.push(`/checkout?id=${product.id}&name=${encodeURIComponent(product.name)}&price=${price}&slug=${product.slug}&image=${encodeURIComponent(image?.src ?? '')}`);
   }
 
   async function handleWishlist() {

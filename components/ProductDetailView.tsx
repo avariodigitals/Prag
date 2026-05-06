@@ -68,6 +68,11 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
   const [addedToCart, setAddedToCart] = useState(false);
   const [adding, setAdding] = useState(false);
 
+  function normalizedPrice(value: string): number {
+    const n = Number(String(value ?? '').replace(/[^0-9.-]/g, ''));
+    return Number.isFinite(n) ? n : 0;
+  }
+
   function handleAddToCart() {
     if (isOutOfStock) return;
     setAdding(true);
@@ -96,7 +101,8 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
 
   function handleBuyNow() {
     if (isOutOfStock) return;
-    router.push(`/checkout?id=${product.id}&name=${encodeURIComponent(product.name)}&price=${product.price}&slug=${product.slug}&image=${encodeURIComponent(product.images?.[0]?.src ?? '')}&qty=${qty}`);
+    const price = normalizedPrice(product.price);
+    router.push(`/checkout?id=${product.id}&name=${encodeURIComponent(product.name)}&price=${price}&slug=${product.slug}&image=${encodeURIComponent(product.images?.[0]?.src ?? '')}&qty=${qty}`);
   }
 
   async function handleSubmitReview(e: FormEvent<HTMLFormElement>) {

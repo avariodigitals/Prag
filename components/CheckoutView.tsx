@@ -30,6 +30,11 @@ function Field({ label, required, children }: { label: string; required?: boolea
 
 const inputCls = "w-full h-12 px-4 py-3 bg-white rounded-[10px] outline outline-[1.31px] outline-gray-200 text-zinc-500 text-sm font-normal font-['Space_Grotesk'] focus:outline-sky-700 focus:text-zinc-900 transition-colors";
 
+function parsePrice(value: string | null): number {
+  const n = Number(String(value ?? '').replace(/[^0-9.-]/g, ''));
+  return Number.isFinite(n) ? n : 0;
+}
+
 export default function CheckoutView() {
   const { items, total } = useCart();
   const router = useRouter();
@@ -41,7 +46,7 @@ export default function CheckoutView() {
     id: Number(buyNowId),
     name: searchParams.get('name') ?? '',
     slug: searchParams.get('slug') ?? '',
-    price: Number(searchParams.get('price') ?? 0),
+    price: parsePrice(searchParams.get('price')),
     image: searchParams.get('image') ?? '',
     quantity: Number(searchParams.get('qty') ?? 1),
   } : null;

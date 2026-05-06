@@ -181,7 +181,7 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
           </div>
 
           {/* CTAs */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+          <div className="flex gap-4">
             <button onClick={handleAddToCart} disabled={adding || addedToCart || isOutOfStock}
               className="flex-1 h-11 px-4 bg-sky-700 rounded-3xl flex justify-center items-center gap-2 hover:bg-sky-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
               {adding ? (

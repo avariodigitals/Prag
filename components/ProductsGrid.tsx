@@ -135,11 +135,11 @@ function ProductsGridContent({ products, total, categories = [], tags = [] }: Pr
     <div className="flex-1 flex flex-col gap-5 min-w-0">
 
       {/* Toolbar */}
-      <div className="flex justify-between items-center gap-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-4">
         <span className="text-black text-base md:text-2xl font-medium font-['Space_Grotesk']">
           {total} result{total !== 1 ? 's' : ''}
         </span>
-        <div className="flex items-center gap-3">
+        <div className="w-full sm:w-auto flex items-center justify-between sm:justify-start gap-2 sm:gap-3 min-w-0">
           {/* Mobile filter button */}
           <button
             onClick={() => setDrawerOpen(true)}
@@ -151,11 +151,11 @@ function ProductsGridContent({ products, total, categories = [], tags = [] }: Pr
           </button>
 
           {/* Sort */}
-          <div className="relative">
+          <div className="relative flex-1 sm:flex-none min-w-0">
             <select
               value={searchParams.get('sort') ?? ''}
               onChange={(e) => setSort(e.target.value)}
-              className="appearance-none px-3 py-2 pr-8 bg-white rounded-lg outline outline-[0.3px] outline-neutral-400 text-neutral-500 text-sm md:text-base font-medium font-['Space_Grotesk'] cursor-pointer"
+              className="appearance-none w-full sm:w-auto px-3 py-2 pr-8 bg-white rounded-lg outline outline-[0.3px] outline-neutral-400 text-neutral-500 text-sm md:text-base font-medium font-['Space_Grotesk'] cursor-pointer"
             >
               {SORT_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>{o.label}</option>

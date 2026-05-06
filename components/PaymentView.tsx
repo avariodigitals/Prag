@@ -165,7 +165,7 @@ export default function PaymentView() {
           return null;
         }
       })();
-      const data = parsed as {
+      const data = (parsed ?? {}) as {
         orderId?: number;
         orderDate?: string;
         orderStatus?: string;
@@ -242,8 +242,9 @@ export default function PaymentView() {
       // Non-Paystack methods (bank transfer, etc.) — order is already created, go to received
       clear();
       router.push(`/order-received?order_id=${orderId}&order_date=${encodeURIComponent(orderDate)}`);
-    } catch {
-      setError('Could not create order. Please try again.');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Could not create order. Please try again.';
+      setError(message || 'Could not create order. Please try again.');
     } finally {
       // Only reset if we didn't open Paystack popup (which manages its own flow)
       if (!isPaystackGateway(selected) || !paystackPublicKey) {

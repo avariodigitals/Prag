@@ -2,6 +2,9 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   devIndicators: false,
+  httpAgentOptions: {
+    keepAlive: true,
+  },
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'central.prag.global' },

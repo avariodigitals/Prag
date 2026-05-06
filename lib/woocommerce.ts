@@ -2,6 +2,7 @@ import { unstable_cache } from 'next/cache';
 import type { Product, Category, Tag, Store } from './types';
 
 const PRODUCTS_FETCH_PAGE_SIZE = 100;
+const FETCH_TIMEOUT_MS = 7000;
 
 function authParams() {
   return `consumer_key=${process.env.WC_CONSUMER_KEY}&consumer_secret=${process.env.WC_CONSUMER_SECRET}`;
@@ -12,18 +13,35 @@ function baseUrl() {
   return url.replace('/wp-json', '/wp-json/wc/v3');
 }
 
+async function fetchWithRetry(url: string, init: RequestInit, timeoutMs = FETCH_TIMEOUT_MS, retries = 1): Promise<Response | null> {
+  for (let attempt = 0; attempt <= retries; attempt += 1) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const res = await fetch(url, {
+        ...init,
+        signal: controller.signal,
+        keepalive: true,
+        headers: {
+          Connection: 'keep-alive',
+          ...(init.headers as Record<string, string> ?? {}),
+        },
+      });
+      clearTimeout(timeout);
+      if (res.ok || attempt === retries) return res;
+    } catch {
+      clearTimeout(timeout);
+    }
+  }
+  return null;
+}
+
 async function wcFetch<T>(path: string, fallback: T): Promise<T> {
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
-
-    const res = await fetch(`${baseUrl()}${path}${path.includes('?') ? '&' : '?'}${authParams()}`, {
+    const res = await fetchWithRetry(`${baseUrl()}${path}${path.includes('?') ? '&' : '?'}${authParams()}`, {
       next: { revalidate: 300 },
-      signal: controller.signal,
-      keepalive: true,
-      headers: { 'Connection': 'keep-alive', 'Accept-Encoding': 'gzip, deflate, br' },
-    });
-    clearTimeout(timeout);
+    }, FETCH_TIMEOUT_MS, 1);
+    if (!res) return fallback;
     if (!res.ok) return fallback;
     const text = await res.text();
     if (!text.startsWith('{') && !text.startsWith('[')) return fallback;
@@ -118,19 +136,15 @@ function sortProductsByCapacityThenPrice(products: Product[]): Product[] {
 }
 
 async function fetchProductsRaw(qs: URLSearchParams, revalidate = 300): Promise<{ products: Product[]; total: number }> {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 5000);
-  const res = await fetch(
+  const res = await fetchWithRetry(
     `${baseUrl()}/products?${qs}&${authParams()}`,
     {
       next: { revalidate },
-      signal: controller.signal,
-      keepalive: true,
-      headers: { 'Connection': 'keep-alive', 'Accept-Encoding': 'gzip, deflate, br' },
-    }
+    },
+    FETCH_TIMEOUT_MS,
+    1
   );
-  clearTimeout(timeout);
-
+  if (!res) return { products: [], total: 0 };
   if (!res.ok) return { products: [], total: 0 };
   const text = await res.text();
   if (!text.startsWith('[')) return { products: [], total: 0 };
@@ -190,13 +204,13 @@ export async function getCategories(): Promise<Category[]> {
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
-    const res = await fetch(
+    const res = await fetchWithRetry(
       `${baseUrl()}/products?slug=${slug}&_fields=id,name,slug,price,regular_price,sale_price,on_sale,status,stock_status,short_description,description,images,categories,tags,featured,date_created,attributes,dimensions,weight&${authParams()}`,
-      { cache: 'no-store', signal: controller.signal }
+      { next: { revalidate: 120 } },
+      FETCH_TIMEOUT_MS,
+      1
     );
-    clearTimeout(timeout);
+    if (!res) return null;
     if (!res.ok) return null;
     const text = await res.text();
     if (!text.startsWith('[')) return null;
@@ -286,10 +300,13 @@ export interface ProductReview {
 
 export async function getProductReviews(productId: number): Promise<ProductReview[]> {
   try {
-    const res = await fetch(
+    const res = await fetchWithRetry(
       `${baseUrl()}/products/reviews?product=${productId}&per_page=10&status=approved&${authParams()}`,
-      { cache: 'no-store' }
+      { next: { revalidate: 120 } },
+      FETCH_TIMEOUT_MS,
+      1
     );
+    if (!res) return [];
     if (!res.ok) return [];
     const text = await res.text();
     if (!text.startsWith('[')) return [];
@@ -368,15 +385,10 @@ function wpBase() {
 
 async function wpFetch<T>(path: string, fallback: T): Promise<T> {
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
-
-    const res = await fetch(`${wpBase()}${path}`, { 
+    const res = await fetchWithRetry(`${wpBase()}${path}`, {
       next: { revalidate: 300 },
-      signal: controller.signal,
-      headers: { 'Connection': 'keep-alive' },
-    });
-    clearTimeout(timeout);
+    }, 8000, 1);
+    if (!res) return fallback;
     if (!res.ok) return fallback;
     const text = await res.text();
     if (!text.startsWith('{') && !text.startsWith('[')) return fallback;

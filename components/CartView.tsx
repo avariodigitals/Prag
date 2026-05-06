@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Minus, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useCart } from '@/lib/CartContext';
 
 function formatPrice(n: number) {
@@ -11,7 +12,7 @@ function formatPrice(n: number) {
 }
 
 export default function CartView() {
-  const SHOP_URL = process.env.NEXT_PUBLIC_SHOP_URL ?? 'https://shop.xyz.com';
+  const router = useRouter();
   const { items, remove, update, total } = useCart();
   const [coupon, setCoupon] = useState('');
   const [discount, setDiscount] = useState(0);
@@ -20,17 +21,16 @@ export default function CartView() {
   const grandTotal = total - discount + vat;
 
   function applyCoupon() {
-    // Coupon validation happens server-side at checkout on shop.xyz.com
+    // Coupon validation happens in the checkout flow.
     // This is a UI placeholder
     setDiscount(0);
   }
 
   function proceedToCheckout() {
-    // Pass cart as query params or rely on shared session/cookie with shop subdomain
     const params = new URLSearchParams();
     items.forEach((item) => params.append('items', `${item.slug}:${item.quantity}`));
     if (coupon) params.set('coupon', coupon);
-    window.location.href = `${SHOP_URL}/checkout?${params.toString()}`;
+    router.push(`/checkout?${params.toString()}`);
   }
 
   if (items.length === 0) {

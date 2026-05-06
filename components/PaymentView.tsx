@@ -1,12 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useCart } from '@/lib/CartContext';
 import CheckoutStepper from './CheckoutStepper';
 import CheckoutSummary from './CheckoutSummary';
-
-const SHOP_URL = process.env.NEXT_PUBLIC_SHOP_URL ?? 'https://shop.xyz.com';
 
 const PAYMENT_METHODS = [
   { id: 'card', label: 'Pay with Card', description: 'Pay with credit or Debit Card' },
@@ -19,17 +17,17 @@ const PAYMENT_METHODS = [
 const SHIPPING_COST = 0;
 
 export default function PaymentView() {
-  const searchParams = useSearchParams();
+  const router = useRouter();
   const { items, clear } = useCart();
   const [selected, setSelected] = useState('card');
 
   function proceed() {
-    const params = new URLSearchParams(searchParams.toString());
-    items.forEach((item) => params.append('items', `${item.slug}:${item.quantity}`));
+    const params = new URLSearchParams();
     params.set('payment_method', selected);
-    params.set('return_url', `${window.location.origin}/order-received`);
+    params.set('order_date', new Date().toLocaleDateString('en-GB'));
+    if (items.length > 0) params.set('order_id', `PRAG-${Date.now()}`);
     clear();
-    window.location.href = `${SHOP_URL}/checkout?${params.toString()}`;
+    router.push(`/order-received?${params.toString()}`);
   }
 
   return (

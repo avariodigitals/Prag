@@ -152,7 +152,7 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
         </div>
 
         {/* Info */}
-        <div className="flex-1 flex flex-col gap-5 md:gap-6 max-w-[620px]">
+        <div className="flex-1 min-w-0 flex flex-col gap-5 md:gap-6 max-w-[620px]">
           <div className="flex flex-col gap-3 md:gap-4">
             <h1 className="text-black text-[30px] md:text-[38px] font-bold font-['Onest'] leading-[34px] md:leading-[38px]">{product.name}</h1>
             <div className="flex items-center gap-2">
@@ -181,7 +181,7 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
           </div>
 
           {/* CTAs */}
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <button onClick={handleAddToCart} disabled={adding || addedToCart || isOutOfStock}
               className="flex-1 h-11 px-4 bg-sky-700 rounded-3xl flex justify-center items-center gap-2 hover:bg-sky-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
               {adding ? (
@@ -280,28 +280,30 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
           <div className="flex flex-col gap-4">
             {/* Attributes from WooCommerce */}
             {product.attributes && product.attributes.length > 0 ? (
-              <table className="w-full text-sm font-['Space_Grotesk']">
-                <tbody>
+              <div className="w-full overflow-x-auto">
+                <table className="w-full text-sm font-['Space_Grotesk']">
+                  <tbody>
                   {(product.weight) && (
                     <tr className="border-b border-gray-100">
-                      <td className="py-3 pr-6 text-zinc-500 font-medium w-48">Weight</td>
-                      <td className="py-3 text-zinc-800">{product.weight} kg</td>
+                      <td className="py-3 pr-4 md:pr-6 text-zinc-500 font-medium w-28 md:w-48">Weight</td>
+                      <td className="py-3 text-zinc-800 break-words">{product.weight} kg</td>
                     </tr>
                   )}
                   {product.dimensions && (product.dimensions.length || product.dimensions.width || product.dimensions.height) && (
                     <tr className="border-b border-gray-100">
-                      <td className="py-3 pr-6 text-zinc-500 font-medium">Dimensions</td>
-                      <td className="py-3 text-zinc-800">{product.dimensions.length} × {product.dimensions.width} × {product.dimensions.height} cm</td>
+                      <td className="py-3 pr-4 md:pr-6 text-zinc-500 font-medium w-28 md:w-48">Dimensions</td>
+                      <td className="py-3 text-zinc-800 break-words">{product.dimensions.length} × {product.dimensions.width} × {product.dimensions.height} cm</td>
                     </tr>
                   )}
                   {product.attributes.map((attr) => (
                     <tr key={attr.id} className="border-b border-gray-100">
-                      <td className="py-3 pr-6 text-zinc-500 font-medium w-48">{attr.name}</td>
-                      <td className="py-3 text-zinc-800">{attr.options.join(', ')}</td>
+                      <td className="py-3 pr-4 md:pr-6 text-zinc-500 font-medium w-28 md:w-48">{attr.name}</td>
+                      <td className="py-3 text-zinc-800 break-words">{attr.options.join(', ')}</td>
                     </tr>
                   ))}
-                </tbody>
-              </table>
+                  </tbody>
+                </table>
+              </div>
             ) : (
               <p className="text-zinc-400 font-['Space_Grotesk']">No specifications available for this product.</p>
             )}

@@ -139,10 +139,8 @@ export default function PaymentView() {
       const failedUrl = data.failedUrl ?? `${window.location.origin}/checkout/result?order_id=${data.orderId}&failed=1`;
 
       if (data.paymentUrl && /^https?:\/\//i.test(data.paymentUrl)) {
-        const separator = data.paymentUrl.includes('?') ? '&' : '?';
-        const redirectingUrl = `${data.paymentUrl}${separator}redirect_url=${encodeURIComponent(successUrl)}&return_url=${encodeURIComponent(successUrl)}&cancel_url=${encodeURIComponent(failedUrl)}`;
         clear();
-        window.location.href = redirectingUrl;
+        window.location.href = data.paymentUrl;
         return;
       }
 

@@ -408,23 +408,24 @@ async function wpFetch<T>(path: string, fallback: T): Promise<T> {
 
 export async function getStores(): Promise<Store[]> {
   try {
-    const data = await wpFetch<Array<{ id: number; title: { rendered: string }; meta: Record<string, string> }>>(
-        '/prag_store?per_page=100&_fields=id,title,meta', []
-      );
-      return data.map((s) => ({
-        id: s.id,
-        name: s.title?.rendered ?? '',
-        city: s.meta?.city ?? '',
-        address: s.meta?.address ?? '',
-        phone: s.meta?.phone ?? '',
-        map_url: s.meta?.map_url ?? '',
-        type: (s.meta?.store_type as Store['type']) ?? 'prag',
-        logo: s.meta?.logo_url
-          ? {
-              src: s.meta.logo_url,
-              alt: s.meta?.logo_alt ?? s.title?.rendered ?? '',
-            }
-          : undefined,
+    const url = `${wpBase()}/prag_store?per_page=100&_fields=id,title,meta`;
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) return [];
+    const data = await res.json() as Array<{ id: number; title: { rendered: string }; meta: Record<string, string> }>;
+    return data.map((s) => ({
+      id: s.id,
+      name: s.title?.rendered ?? '',
+      city: s.meta?.city ?? '',
+      address: s.meta?.address ?? '',
+      phone: s.meta?.phone ?? '',
+      map_url: s.meta?.map_url ?? '',
+      type: (s.meta?.store_type as Store['type']) ?? 'prag',
+      logo: s.meta?.logo_url
+        ? {
+            src: s.meta.logo_url,
+            alt: s.meta?.logo_alt ?? s.title?.rendered ?? '',
+          }
+        : undefined,
     }));
   } catch {
     return [];

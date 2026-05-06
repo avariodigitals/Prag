@@ -18,6 +18,7 @@ class Prag_Core_Bridge {
     public function __construct() {
         // Register REST API routes
         add_action('rest_api_init', [$this, 'register_routes']);
+        add_filter('rest_pre_serve_request', [$this, 'add_rest_cors_headers'], 10, 4);
         // Register prag_wishlist user meta for REST API access
         add_action('init', [$this, 'register_user_meta']);
         // Register custom post types
@@ -184,6 +185,21 @@ class Prag_Core_Bridge {
                 'permission_callback' => [$this, 'check_admin_permissions'],
             ]
         ]);
+
+        register_rest_route($namespace, '/product-document', [
+            [
+                'methods' => 'POST',
+                'callback' => [$this, 'upload_product_document'],
+                'permission_callback' => [$this, 'check_admin_permissions'],
+            ],
+        ]);
+    }
+
+    public function add_rest_cors_headers($served, $result, $request, $server) {
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Methods: OPTIONS, GET, POST, PUT, DELETE');
+        header('Access-Control-Allow-Headers: Authorization, Content-Type, X-WP-Nonce');
+        return $served;
     }
 
     /**
@@ -502,6 +518,64 @@ class Prag_Core_Bridge {
         }
         update_option('prag_admin_config', wp_json_encode($params), false);
         return ['success' => true, 'message' => 'Admin config saved'];
+    }
+
+    /**
+     * Upload a technical product document directly in WordPress.
+     * This bypasses Vercel request body limits for larger PDFs.
+     */
+    public function upload_product_document($request) {
+        $files = $request->get_file_params();
+        if (empty($files['file'])) {
+            return new WP_Error('missing_file', 'File is required', ['status' => 400]);
+        }
+
+        $product_id = intval($request->get_param('product_id'));
+        if ($product_id <= 0) {
+            return new WP_Error('missing_product_id', 'Valid product_id is required', ['status' => 400]);
+        }
+
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+        require_once ABSPATH . 'wp-admin/includes/media.php';
+        require_once ABSPATH . 'wp-admin/includes/image.php';
+
+        $attachment_id = media_handle_upload('file', 0);
+        if (is_wp_error($attachment_id)) {
+            return new WP_Error('media_upload_failed', $attachment_id->get_error_message(), ['status' => 500]);
+        }
+
+        $file = $files['file'];
+        $title = sanitize_text_field($request->get_param('title') ?: pathinfo($file['name'], PATHINFO_FILENAME));
+        $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $file_size = size_format((int) $file['size'], 2);
+        $file_url = wp_get_attachment_url($attachment_id);
+
+        $doc_id = wp_insert_post([
+            'post_type' => 'prag_document',
+            'post_status' => 'publish',
+            'post_title' => $title,
+        ], true);
+
+        if (is_wp_error($doc_id)) {
+            wp_delete_attachment($attachment_id, true);
+            return new WP_Error('document_create_failed', $doc_id->get_error_message(), ['status' => 500]);
+        }
+
+        update_post_meta($doc_id, 'file_url', $file_url ?: '');
+        update_post_meta($doc_id, 'file_type', $extension ?: 'file');
+        update_post_meta($doc_id, 'file_size', $file_size ?: '');
+        update_post_meta($doc_id, 'pages', '');
+        update_post_meta($doc_id, 'product_id', $product_id);
+
+        return rest_ensure_response([
+            'id' => $doc_id,
+            'title' => $title,
+            'file_url' => $file_url ?: '',
+            'file_type' => $extension ?: 'file',
+            'file_size' => $file_size ?: '',
+            'pages' => '',
+            'product_id' => $product_id,
+        ]);
     }
 
     /**

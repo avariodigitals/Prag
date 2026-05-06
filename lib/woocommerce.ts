@@ -188,15 +188,23 @@ async function fetchAllProductsForDefaultSort(baseParams: URLSearchParams, reval
   };
 }
 
-export async function getFeaturedProducts(): Promise<Product[]> {
-  const products = await wcFetch<Product[]>(`/products?featured=true&per_page=6&status=publish&_fields=${PRODUCT_LIST_FIELDS}`, []);
-  return sortProductsByCapacityThenPrice(products);
-}
+export const getFeaturedProducts = unstable_cache(
+  async (): Promise<Product[]> => {
+    const products = await wcFetch<Product[]>(`/products?featured=true&per_page=6&status=publish&_fields=${PRODUCT_LIST_FIELDS}`, []);
+    return sortProductsByCapacityThenPrice(products);
+  },
+  ['featured-products'],
+  { revalidate: 300 }
+);
 
-export async function getFlashSaleProducts(): Promise<Product[]> {
-  const products = await wcFetch<Product[]>(`/products?on_sale=true&per_page=4&status=publish&_fields=${PRODUCT_LIST_FIELDS}`, []);
-  return sortProductsByCapacityThenPrice(products);
-}
+export const getFlashSaleProducts = unstable_cache(
+  async (): Promise<Product[]> => {
+    const products = await wcFetch<Product[]>(`/products?on_sale=true&per_page=4&status=publish&_fields=${PRODUCT_LIST_FIELDS}`, []);
+    return sortProductsByCapacityThenPrice(products);
+  },
+  ['flash-sale-products'],
+  { revalidate: 300 }
+);
 
 export async function getCategories(): Promise<Category[]> {
   return wcFetch<Category[]>(`/products/categories?per_page=10&hide_empty=true&_fields=${CATEGORY_FIELDS}`, []);
@@ -398,30 +406,34 @@ async function wpFetch<T>(path: string, fallback: T): Promise<T> {
   }
 }
 
-export async function getStores(): Promise<Store[]> {
-  try {
-    const data = await wpFetch<Array<{ id: number; title: { rendered: string }; meta: Record<string, string> }>>(
-      '/prag_store?per_page=100&_fields=id,title,meta', []
-    );
-    return data.map((s) => ({
-      id: s.id,
-      name: s.title?.rendered ?? '',
-      city: s.meta?.city ?? '',
-      address: s.meta?.address ?? '',
-      phone: s.meta?.phone ?? '',
-      map_url: s.meta?.map_url ?? '',
-      type: (s.meta?.store_type as Store['type']) ?? 'prag',
-      logo: s.meta?.logo_url
-        ? {
-            src: s.meta.logo_url,
-            alt: s.meta?.logo_alt ?? s.title?.rendered ?? '',
-          }
-        : undefined,
-    }));
-  } catch {
-    return [];
-  }
-}
+export const getStores = unstable_cache(
+  async (): Promise<Store[]> => {
+    try {
+      const data = await wpFetch<Array<{ id: number; title: { rendered: string }; meta: Record<string, string> }>>(
+        '/prag_store?per_page=100&_fields=id,title,meta', []
+      );
+      return data.map((s) => ({
+        id: s.id,
+        name: s.title?.rendered ?? '',
+        city: s.meta?.city ?? '',
+        address: s.meta?.address ?? '',
+        phone: s.meta?.phone ?? '',
+        map_url: s.meta?.map_url ?? '',
+        type: (s.meta?.store_type as Store['type']) ?? 'prag',
+        logo: s.meta?.logo_url
+          ? {
+              src: s.meta.logo_url,
+              alt: s.meta?.logo_alt ?? s.title?.rendered ?? '',
+            }
+          : undefined,
+      }));
+    } catch {
+      return [];
+    }
+  },
+  ['stores'],
+  { revalidate: 300 }
+);
 
 export async function getProductsForCompare(slugs: string[]): Promise<Product[]> {
   if (!slugs.length) return [];

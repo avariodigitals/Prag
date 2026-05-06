@@ -1,3 +1,5 @@
+export const revalidate = 300;
+
 import HeroBanner from '@/components/HeroBanner';
 import CategoryGrid from '@/components/CategoryGrid';
 import FeaturedProducts from '@/components/FeaturedProducts';

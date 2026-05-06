@@ -39,7 +39,7 @@ export default function CategoryGrid({ settings }: { settings?: SiteSettings }) 
               href={`/products/${cat.slug}`}
               className="h-96 md:h-[450px] relative bg-gradient-to-b from-stone-500/10 to-sky-700 rounded-3xl overflow-hidden group"
             >
-              <Image src={cat.image} alt={cat.name} fill sizes="220px" className="object-contain group-hover:scale-105 transition-transform duration-300 p-6" />
+              <Image src={cat.image} alt={cat.name} fill sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw" className="object-contain group-hover:scale-105 transition-transform duration-300 p-6" />
               <div className="absolute left-[23px] bottom-[24px]">
                 <span className="text-white text-base md:text-lg font-semibold font-['Onest']">{cat.name}</span>
               </div>

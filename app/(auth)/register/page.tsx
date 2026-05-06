@@ -137,7 +137,7 @@ export default function RegisterPage() {
 
       <div className="flex-1 lg:flex lg:flex-col lg:items-center lg:justify-start lg:px-16 lg:py-10 lg:overflow-y-auto">
         {/* Mobile bottom sheet overlay */}
-        <div className="lg:hidden fixed inset-0 bg-black/40 flex items-end justify-center z-50">
+        <div className="fixed inset-0 bg-black/40 flex items-end justify-center z-50">
           <div className="w-full max-h-[92dvh] overflow-y-auto bg-white rounded-t-3xl shadow-2xl px-5 pt-5 pb-8">
             {/* drag handle */}
             <div className="w-10 h-1 bg-zinc-200 rounded-full mx-auto mb-4" />

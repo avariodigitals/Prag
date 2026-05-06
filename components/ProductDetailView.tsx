@@ -2,13 +2,13 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { Minus, Plus } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import type { ProductReview, TechDocument } from '@/lib/woocommerce';
 import { formatPrice } from '@/lib/woocommerce';
 import { useCart } from '@/lib/CartContext';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import ProductCard from './ProductCard';
 
 function cleanWpContent(html: string): string {
@@ -51,23 +51,19 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
   const numericPrice = Number(String(product.price ?? '').replace(/,/g, ''));
   const hasValidPrice = Number.isFinite(numericPrice) && numericPrice > 0;
   const isOutOfStock = product.stock_status === 'outofstock' || !hasValidPrice;
-  const hasSpecs = (product.attributes && product.attributes.length > 0) || product.weight || (product.dimensions && (product.dimensions.length || product.dimensions.width || product.dimensions.height));
 
   const VISIBLE_TABS = ['Description', 'Specifications', 'Technical Resources', 'Reviews'];
   const [activeTab, setActiveTab] = useState('Description');
   const [qty, setQty] = useState(1);
-  const [pageUrl, setPageUrl] = useState('');
   const [reviewItems, setReviewItems] = useState<ProductReview[]>(reviews);
   const [reviewForm, setReviewForm] = useState({ reviewer: '', reviewer_email: '', rating: 5, review: '' });
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [reviewNotice, setReviewNotice] = useState('');
   const { add } = useCart();
   const router = useRouter();
+  const pathname = usePathname();
   const image = product.images?.[0];
-
-  useEffect(() => {
-    setPageUrl(window.location.href);
-  }, []);
+  const pageUrl = pathname ? `https://prag.global${pathname}` : '';
 
   const [addedToCart, setAddedToCart] = useState(false);
   const [adding, setAdding] = useState(false);

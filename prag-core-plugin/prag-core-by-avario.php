@@ -72,7 +72,7 @@ class Prag_Core_Bridge {
             'menu_icon'    => 'dashicons-store',
         ]);
 
-        foreach (['city', 'address', 'phone', 'map_url', 'store_type'] as $field) {
+        foreach (['city', 'address', 'phone', 'map_url', 'store_type', 'logo_url', 'logo_alt'] as $field) {
             register_post_meta('prag_store', $field, [
                 'type' => 'string', 'single' => true, 'show_in_rest' => true,
                 'auth_callback' => function() { return current_user_can('edit_posts'); },

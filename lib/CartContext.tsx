@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState, useSyncExternalStore } from 'react';
 import type { CartItem } from './cart';
 
 interface CartContextValue {
@@ -15,25 +15,46 @@ interface CartContextValue {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
-  const [hydrated, setHydrated] = useState(false);
+function subscribeToHydration() {
+  return () => {};
+}
 
-  useEffect(() => {
+function getServerSnapshot() {
+  return false;
+}
+
+function getClientSnapshot() {
+  return true;
+}
+
+export function CartProvider({ children }: { children: React.ReactNode }) {
+  const hydrated = useSyncExternalStore(subscribeToHydration, getClientSnapshot, getServerSnapshot);
+
+  if (!hydrated) {
+    return (
+      <CartContext.Provider value={{ items: [], add: () => {}, remove: () => {}, update: () => {}, clear: () => {}, total: 0, count: 0 }}>
+        {children}
+      </CartContext.Provider>
+    );
+  }
+
+  return <HydratedCartProvider>{children}</HydratedCartProvider>;
+}
+
+function HydratedCartProvider({ children }: { children: React.ReactNode }) {
+  const [items, setItems] = useState<CartItem[]>(() => {
     try {
       const stored = localStorage.getItem('prag_cart');
       if (stored) {
-        const parsed = JSON.parse(stored);
-        setItems(parsed);
+        return JSON.parse(stored) as CartItem[];
       }
     } catch {}
-    setHydrated(true);
-  }, []);
+    return [];
+  });
 
   useEffect(() => {
-    if (!hydrated) return;
     localStorage.setItem('prag_cart', JSON.stringify(items));
-  }, [items, hydrated]);
+  }, [items]);
 
   const add = useCallback((item: Omit<CartItem, 'quantity'>) => {
     setItems((prev) => {
@@ -54,8 +75,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const clear = useCallback(() => setItems([]), []);
 
-  const total = hydrated ? items.reduce((sum, i) => sum + i.price * i.quantity, 0) : 0;
-  const count = hydrated ? items.reduce((sum, i) => sum + i.quantity, 0) : 0;
+  const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  const count = items.reduce((sum, i) => sum + i.quantity, 0);
 
   return (
     <CartContext.Provider value={{ items, add, remove, update, clear, total, count }}>

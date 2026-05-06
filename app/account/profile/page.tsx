@@ -33,7 +33,6 @@ interface Profile {
 }
 
 export default function PersonalInfoPage() {
-  const [profile, setProfile] = useState<Profile | null>(null);
   const [form, setForm] = useState({
     first_name: '', last_name: '', email: '', phone: '',
     address: '', city: '', state: '', postcode: '',
@@ -50,7 +49,6 @@ export default function PersonalInfoPage() {
     fetch('/api/account/profile')
       .then(r => r.json())
       .then((data: Profile) => {
-        setProfile(data);
         setForm({
           first_name: data.first_name ?? '',
           last_name: data.last_name ?? '',

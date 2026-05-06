@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import ProductCard from './ProductCard';
 import type { Product } from '@/lib/types';
 import { ChevronDown } from 'lucide-react';
@@ -22,19 +22,49 @@ const SORT_OPTIONS = [
 const PER_PAGE = 16;
 
 export default function SearchResultsGrid({ products, total, query }: Props) {
+  const searchParams = useSearchParams();
+  const resetKey = [
+    query,
+    String(total),
+    products.map((product) => product.id).join(','),
+    searchParams.toString(),
+  ].join('::');
+
+  return <SearchResultsGridContent key={resetKey} products={products} total={total} query={query} />;
+}
+
+function SearchResultsGridContent({ products, total, query }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const searchKey = searchParams.toString();
   const [items, setItems] = useState<Product[]>(products);
   const [page, setPage] = useState(2);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(products.length < total);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    setItems(products);
-    setPage(2);
-    setHasMore(products.length < total);
-  }, [products, total]);
+  const loadMore = useEffectEvent(async () => {
+    setLoadingMore(true);
+    try {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('q', query);
+      params.set('page', String(page));
+      params.set('per_page', String(PER_PAGE));
+      const res = await fetch(`/api/products/search?${params.toString()}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      const newProducts: Product[] = data.products ?? [];
+
+      setItems((prev) => {
+        const ids = new Set(prev.map((product) => product.id));
+        return [...prev, ...newProducts.filter((product) => !ids.has(product.id))];
+      });
+      setPage((currentPage) => currentPage + 1);
+      setHasMore(Boolean(data.hasMore));
+    } finally {
+      setLoadingMore(false);
+    }
+  });
 
   useEffect(() => {
     if (!hasMore || loadingMore || !query) return;
@@ -49,31 +79,7 @@ export default function SearchResultsGrid({ products, total, query }: Props) {
     );
     observer.observe(sentinel);
     return () => observer.disconnect();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasMore, loadingMore, page, query, searchParams.toString()]);
-
-  async function loadMore() {
-    setLoadingMore(true);
-    try {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set('q', query);
-      params.set('page', String(page));
-      params.set('per_page', String(PER_PAGE));
-      const res = await fetch(`/api/products/search?${params.toString()}`);
-      if (!res.ok) return;
-      const data = await res.json();
-      const newProducts: Product[] = data.products ?? [];
-
-      setItems((prev) => {
-        const ids = new Set(prev.map((p) => p.id));
-        return [...prev, ...newProducts.filter((p) => !ids.has(p.id))];
-      });
-      setPage((p) => p + 1);
-      setHasMore(Boolean(data.hasMore));
-    } finally {
-      setLoadingMore(false);
-    }
-  }
+  }, [hasMore, loadingMore, page, query, searchKey]);
 
   function setSort(value: string) {
     const params = new URLSearchParams(searchParams.toString());

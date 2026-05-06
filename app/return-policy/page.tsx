@@ -4,34 +4,6 @@ import Link from 'next/link';
 
 export const metadata = { title: 'Return Policy – Prag' };
 
-const RETURN_STEPS = [
-  {
-    heading: 'Contact Customer Support',
-    body: 'Email us at sales@prag.global or call +2348032170129 with your order number and reason for return.',
-  },
-  {
-    heading: 'Receive Return Authorization',
-    body: 'Our team will review your request and provide you with a Return Authorization (RA) number and return shipping instructions.',
-  },
-  {
-    heading: 'Ship the Product Back',
-    body: 'Pack the item securely in its original packaging and ship it back to us using the provided instructions. Include your RA number on the package.',
-  },
-  {
-    heading: 'Receive Your Refund',
-    body: "Once we receive and inspect the returned item, we'll process your refund within 5-7 business days. The refund will be credited to your original payment method.",
-  },
-];
-
-const contactLine = (
-  <p>
-    If you have any questions about our return policy, please contact our customer support team at{' '}
-    <a href="mailto:sales@prag.global" className="text-sky-700 underline">sales@prag.global</a>
-    {' '}or call us at{' '}
-    <a href="tel:+2348032170129" className="text-sky-700 underline">+2348032170129</a>.
-  </p>
-);
-
 export default async function ReturnPolicyPage() {
   const wpPage = await getPage('return-policy');
 

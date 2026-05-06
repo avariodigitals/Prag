@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ProductCard from './ProductCard';
 import type { Product } from '@/lib/types';
@@ -15,8 +15,6 @@ export default function FlashSales({ products }: FlashSalesProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [current, setCurrent] = useState(0);
 
-  if (products.length === 0) return null;
-
   function scrollToIndex(index: number) {
     const track = trackRef.current;
     if (!track) return;
@@ -26,7 +24,7 @@ export default function FlashSales({ products }: FlashSalesProps) {
     setCurrent(index);
   }
 
-  const handleScroll = useCallback(() => {
+  function handleScroll() {
     const track = trackRef.current;
     if (!track) return;
     const firstCard = track.children[0] as HTMLElement;
@@ -34,7 +32,9 @@ export default function FlashSales({ products }: FlashSalesProps) {
     const cardWidth = firstCard.offsetWidth + 16; // gap-4 = 16px
     const idx = Math.round(track.scrollLeft / cardWidth);
     setCurrent(Math.max(0, Math.min(idx, products.length - 1)));
-  }, [products.length]);
+  }
+
+  if (products.length === 0) return null;
 
   function prev() { scrollToIndex(Math.max(0, current - 1)); }
   function next() { scrollToIndex(Math.min(products.length - 1, current + 1)); }

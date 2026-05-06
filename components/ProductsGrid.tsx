@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import ProductCard from './ProductCard';
 import type { Product, Category, Tag } from '@/lib/types';
 import { ChevronDown, SlidersHorizontal, X } from 'lucide-react';
@@ -23,8 +23,20 @@ const SORT_OPTIONS = [
 const PER_PAGE = 16;
 
 export default function ProductsGrid({ products, total, categories = [], tags = [] }: Props) {
+  const searchParams = useSearchParams();
+  const resetKey = [
+    String(total),
+    products.map((product) => product.id).join(','),
+    searchParams.toString(),
+  ].join('::');
+
+  return <ProductsGridContent key={resetKey} products={products} total={total} categories={categories} tags={tags} />;
+}
+
+function ProductsGridContent({ products, total, categories = [], tags = [] }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const searchKey = searchParams.toString();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [minPrice, setMinPrice] = useState(searchParams.get('min_price') ?? '');
   const [maxPrice, setMaxPrice] = useState(searchParams.get('max_price') ?? '');
@@ -37,11 +49,27 @@ export default function ProductsGrid({ products, total, categories = [], tags = 
   const activeCategory = searchParams.get('category') ?? '';
   const activeTag = searchParams.get('tag') ?? '';
 
-  useEffect(() => {
-    setItems(products);
-    setPage(2);
-    setHasMore(products.length < total);
-  }, [products, total]);
+  const loadMore = useEffectEvent(async () => {
+    setLoadingMore(true);
+    try {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('page', String(page));
+      params.set('per_page', String(PER_PAGE));
+      const res = await fetch(`/api/products/list?${params.toString()}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      const newProducts: Product[] = data.products ?? [];
+
+      setItems((prev) => {
+        const ids = new Set(prev.map((product) => product.id));
+        return [...prev, ...newProducts.filter((product) => !ids.has(product.id))];
+      });
+      setPage((currentPage) => currentPage + 1);
+      setHasMore(Boolean(data.hasMore));
+    } finally {
+      setLoadingMore(false);
+    }
+  });
 
   useEffect(() => {
     if (!hasMore || loadingMore) return;
@@ -56,30 +84,7 @@ export default function ProductsGrid({ products, total, categories = [], tags = 
     );
     observer.observe(sentinel);
     return () => observer.disconnect();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasMore, loadingMore, page, searchParams.toString()]);
-
-  async function loadMore() {
-    setLoadingMore(true);
-    try {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set('page', String(page));
-      params.set('per_page', String(PER_PAGE));
-      const res = await fetch(`/api/products/list?${params.toString()}`);
-      if (!res.ok) return;
-      const data = await res.json();
-      const newProducts: Product[] = data.products ?? [];
-
-      setItems((prev) => {
-        const ids = new Set(prev.map((p) => p.id));
-        return [...prev, ...newProducts.filter((p) => !ids.has(p.id))];
-      });
-      setPage((p) => p + 1);
-      setHasMore(Boolean(data.hasMore));
-    } finally {
-      setLoadingMore(false);
-    }
-  }
+  }, [hasMore, loadingMore, page, searchKey]);
 
   function buildParams(overrides: Record<string, string | null>) {
     const params = new URLSearchParams(searchParams.toString());

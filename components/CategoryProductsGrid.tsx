@@ -1,15 +1,14 @@
 'use client';
 
-import { useEffect, useRef, useState, useTransition } from 'react';
+import { useEffect, useEffectEvent, useRef, useState, useTransition } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import ProductCard from './ProductCard';
-import type { Product, Category } from '@/lib/types';
+import type { Product } from '@/lib/types';
 import { ChevronDown } from 'lucide-react';
 
 interface Props {
   products: Product[];
   total: number;
-  subcategories: Category[];
   categorySlug: string;
   activeSub?: string;
   activeSort?: string;
@@ -63,6 +62,35 @@ export default function CategoryProductsGrid({
   activeSub,
   activeSort,
 }: Props) {
+  const searchParams = useSearchParams();
+  const resetKey = [
+    categorySlug,
+    activeSub ?? '',
+    activeSort ?? '',
+    String(total),
+    initialProducts.map((product) => product.id).join(','),
+    searchParams.toString(),
+  ].join('::');
+
+  return (
+    <CategoryProductsGridContent
+      key={resetKey}
+      products={initialProducts}
+      total={total}
+      categorySlug={categorySlug}
+      activeSub={activeSub}
+      activeSort={activeSort}
+    />
+  );
+}
+
+function CategoryProductsGridContent({
+  products: initialProducts,
+  total,
+  categorySlug,
+  activeSub,
+  activeSort,
+}: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -72,32 +100,9 @@ export default function CategoryProductsGrid({
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(initialProducts.length < total);
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const [pendingTab, setPendingTab] = useState<string | null>(null);
 
-  // Reset when tab/sort changes
-  useEffect(() => {
-    setProducts(initialProducts);
-    setPage(2);
-    setHasMore(initialProducts.length < total);
-  }, [initialProducts, total]);
-
-  // Infinite scroll via IntersectionObserver
-  useEffect(() => {
-    if (!hasMore || loading) return;
-    const sentinel = sentinelRef.current;
-    if (!sentinel) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) loadMore();
-      },
-      { rootMargin: '200px' }
-    );
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasMore, loading, page, activeSub, activeSort]);
-
-  async function loadMore() {
+  const loadMore = useEffectEvent(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -115,17 +120,31 @@ export default function CategoryProductsGrid({
       const newProducts: Product[] = data.products ?? [];
 
       setProducts((prev) => {
-        const ids = new Set(prev.map((p) => p.id));
-        return [...prev, ...newProducts.filter((p) => !ids.has(p.id))];
+        const ids = new Set(prev.map((product) => product.id));
+        return [...prev, ...newProducts.filter((product) => !ids.has(product.id))];
       });
-      setPage((p) => p + 1);
+      setPage((currentPage) => currentPage + 1);
       setHasMore(data.hasMore ?? false);
     } finally {
       setLoading(false);
     }
-  }
+  });
 
-  const [pendingTab, setPendingTab] = useState<string | null>(null);
+  // Infinite scroll via IntersectionObserver
+  useEffect(() => {
+    if (!hasMore || loading) return;
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) loadMore();
+      },
+      { rootMargin: '200px' }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore, loading, page, activeSub, activeSort]);
 
   function navigate(updates: Record<string, string | undefined>) {
     const params = new URLSearchParams(searchParams.toString());
@@ -141,10 +160,7 @@ export default function CategoryProductsGrid({
     });
   }
 
-  // clear pending tab once transition completes
-  useEffect(() => {
-    if (!isPending) setPendingTab(null);
-  }, [isPending]);
+  const activePendingTab = isPending ? pendingTab : null;
 
   const allLabel = SLUG_TO_LABEL[categorySlug] ?? `All ${categorySlug.charAt(0).toUpperCase() + categorySlug.slice(1)}`;
   const sectionSubs = SECTION_TABS[categorySlug] ?? [];
@@ -190,7 +206,7 @@ export default function CategoryProductsGrid({
           {tabs.map((tab) => {
             const isActive = tab.slug ? activeSub === tab.slug : !activeSub;
             const tabKey = tab.slug ?? 'all';
-            const isTabPending = isPending && pendingTab === tabKey;
+            const isTabPending = activePendingTab === tabKey;
             return (
               <button
                 key={tab.key}

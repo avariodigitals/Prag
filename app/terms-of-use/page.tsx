@@ -120,7 +120,7 @@ const SECTIONS = [
             <li>Provide proof of purchase</li>
             <li>Allow product inspection</li>
           </ul>
-          <p className="text-sm mt-2">Repairs or replacements will be handled at PRAG's discretion.</p>
+          <p className="text-sm mt-2">Repairs or replacements will be handled at PRAG&apos;s discretion.</p>
         </div>
       </div>
     ),

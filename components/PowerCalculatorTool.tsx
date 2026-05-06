@@ -1,9 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
-import { formatPrice, productUrl } from '@/lib/woocommerce';
 import ProductCard from './ProductCard';
 import type { Product } from '@/lib/types';
 

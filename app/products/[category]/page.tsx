@@ -1,5 +1,5 @@
 import CategoryProductsGrid from '@/components/CategoryProductsGrid';
-import { getProductBySlug, getProducts, getSubcategoriesByParentId, getCategoryBySlug, productUrl } from '@/lib/woocommerce';
+import { getProductBySlug, getProducts, getCategoryBySlug, productUrl } from '@/lib/woocommerce';
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
 
@@ -69,17 +69,14 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const resolvedCatId = knownSubId ?? activeCategory?.id ?? (knownId || cat?.id);
   const productCategorySlug = sp.sub ?? category;
 
-  const [subcategories, { products, total }] = await Promise.all([
-    resolvedCatId ? getSubcategoriesByParentId(resolvedCatId) : Promise.resolve([]),
-    getProducts({
-      category: resolvedCatId ? undefined : productCategorySlug,
-      category_id: resolvedCatId,
-      orderby,
-      order,
-      page: 1,
-      per_page: 16,
-    }),
-  ]);
+  const { products, total } = await getProducts({
+    category: resolvedCatId ? undefined : productCategorySlug,
+    category_id: resolvedCatId,
+    orderby,
+    order,
+    page: 1,
+    per_page: 16,
+  });
 
   if (!knownId && !cat && products.length === 0) notFound();
 
@@ -123,7 +120,6 @@ export default async function CategoryPage({ params, searchParams }: Props) {
           <CategoryProductsGrid
           products={products}
           total={total}
-          subcategories={subcategories}
           categorySlug={category}
           activeSub={sp.sub}
           activeSort={sp.sort}

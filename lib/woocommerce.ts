@@ -389,7 +389,7 @@ async function wpFetch<T>(path: string, fallback: T): Promise<T> {
 export async function getStores(): Promise<Store[]> {
   try {
     const data = await wpFetch<Array<{ id: number; title: { rendered: string }; meta: Record<string, string> }>>(
-      '/prag_store?per_page=20&_fields=id,title,meta', []
+      '/prag_store?per_page=100&_fields=id,title,meta', []
     );
     return data.map((s) => ({
       id: s.id,
@@ -399,6 +399,12 @@ export async function getStores(): Promise<Store[]> {
       phone: s.meta?.phone ?? '',
       map_url: s.meta?.map_url ?? '',
       type: (s.meta?.store_type as Store['type']) ?? 'prag',
+      logo: s.meta?.logo_url
+        ? {
+            src: s.meta.logo_url,
+            alt: s.meta?.logo_alt ?? s.title?.rendered ?? '',
+          }
+        : undefined,
     }));
   } catch {
     return [];
@@ -548,6 +554,9 @@ export interface SiteSettings {
   business_hours_weekday: string;
   business_hours_saturday: string;
   announcement_bar: string;
+  site_under_construction: boolean;
+  under_construction_title: string;
+  under_construction_message: string;
   footer_description: string;
   brand_banner_title: string;
   brand_banner_description: string;
@@ -567,6 +576,9 @@ const SETTINGS_FALLBACK: SiteSettings = {
   business_hours_weekday: 'Mon–Fri: 8:00 AM – 6:00 PM',
   business_hours_saturday: 'Sat: 9:00 AM – 2:00 PM',
   announcement_bar: '',
+  site_under_construction: false,
+  under_construction_title: 'We are coming back soon',
+  under_construction_message: 'We are currently making improvements to serve you better. Please check back shortly.',
   footer_description: 'Nigeria\'s leading power engineering company. We design, supply and install power solutions for homes, businesses and industrial facilities across the country.',
   brand_banner_title: 'No Hype. Just Inverters That Deliver.',
   brand_banner_description: 'Explore stabilizers, inverters, batteries, and complete power solutions designed to keep your home or business running without interruption.',

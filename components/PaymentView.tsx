@@ -181,10 +181,15 @@ export default function PaymentView() {
 
       const orderId = data.orderId;
       const orderDate = data.orderDate ?? '';
-      const email = searchParams.get('email') ?? '';
+      const email = (searchParams.get('email') ?? '').trim();
 
       // Paystack inline popup — keep everything in Next.js
       if (isPaystackGateway(selected) && paystackPublicKey) {
+        if (!email) {
+          setError('Email is required to process Paystack payment.');
+          return;
+        }
+
         await loadPaystackScript();
 
         if (!window.PaystackPop) {
@@ -198,36 +203,46 @@ export default function PaymentView() {
 
         const ref = `PRAG-${orderId}-${Date.now()}`;
         let paymentCompleted = false;
+        const paystackKey = paystackPublicKey.trim();
+
+        if (!paystackKey) {
+          setError('Paystack public key is not configured.');
+          return;
+        }
 
         const handler = window.PaystackPop.setup({
-          key: paystackPublicKey,
+          key: paystackKey,
           email,
           amount: amountKobo,
           currency: 'NGN',
           ref,
-          callback: async (response) => {
+          callback: function (response) {
             paymentCompleted = true;
             setSubmitting(true);
-            try {
-              const controller = new AbortController();
-              const timeoutId = setTimeout(() => controller.abort(), 15000);
+            void (async () => {
+              try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-              const verifyRes = await fetch('/api/checkout/verify', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ reference: response.reference, order_id: orderId }),
-                signal: controller.signal,
-              });
-              clearTimeout(timeoutId);
+                const verifyRes = await fetch('/api/checkout/verify', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ reference: response.reference, order_id: orderId }),
+                  signal: controller.signal,
+                });
+                clearTimeout(timeoutId);
 
-              if (!verifyRes.ok) {
-                console.error('Payment verify returned non-OK response', verifyRes.status);
+                if (!verifyRes.ok) {
+                  console.error('Payment verify returned non-OK response', verifyRes.status);
+                }
+              } catch {
+                // non-blocking — payment went through regardless
               }
-            } catch { /* non-blocking — payment went through regardless */ }
-            clear();
-            router.push(`/order-received?order_id=${orderId}&order_date=${encodeURIComponent(orderDate)}`);
+              clear();
+              router.push(`/order-received?order_id=${orderId}&order_date=${encodeURIComponent(orderDate)}`);
+            })();
           },
-          onClose: () => {
+          onClose: function () {
             if (paymentCompleted) return;
             setSubmitting(false);
             router.push(`/order-failed?order_id=${orderId}`);

@@ -24,6 +24,30 @@ export default function PaymentView() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
+  const summaryItems = useMemo(() => {
+    const lines = searchParams.getAll('line_item');
+    const names = searchParams.getAll('line_name');
+    const prices = searchParams.getAll('line_price');
+
+    return lines.map((entry, idx) => {
+      const [idRaw, qtyRaw] = entry.split(':');
+      const id = Number(idRaw);
+      const quantity = Number(qtyRaw);
+      const price = Number(String(prices[idx] ?? '').replace(/[^0-9.-]/g, ''));
+      return {
+        id: Number.isFinite(id) ? id : idx + 1,
+        name: names[idx] ?? 'Product',
+        quantity: Number.isFinite(quantity) && quantity > 0 ? quantity : 1,
+        price: Number.isFinite(price) ? price : 0,
+      };
+    });
+  }, [searchParams]);
+
+  const summaryTotal = useMemo(
+    () => summaryItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
+    [summaryItems]
+  );
+
   const lineItems = useMemo(() => {
     const fromQuery = searchParams.getAll('line_item')
       .map((entry) => {
@@ -185,6 +209,8 @@ export default function PaymentView() {
             onCta={proceed}
             shippingCost={SHIPPING_COST}
             ctaDisabled={loadingMethods || submitting || !selected || lineItems.length === 0}
+            itemsOverride={summaryItems}
+            totalOverride={summaryTotal}
           />
         </div>
       </div>

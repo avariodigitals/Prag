@@ -67,7 +67,11 @@ export default function CheckoutView() {
   function proceedToShipping(e: React.FormEvent) {
     e.preventDefault();
     const params = new URLSearchParams();
-    orderItems.forEach((item) => params.append('line_item', `${item.id}:${item.quantity}`));
+    orderItems.forEach((item) => {
+      params.append('line_item', `${item.id}:${item.quantity}`);
+      params.append('line_name', item.name);
+      params.append('line_price', String(item.price));
+    });
     Object.entries(form).forEach(([k, v]) => { if (v) params.set(k, v); });
     router.push(`/checkout/shipping?${params.toString()}`);
   }

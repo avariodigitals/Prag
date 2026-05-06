@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import CheckoutStepper from './CheckoutStepper';
 import CheckoutSummary from './CheckoutSummary';
@@ -19,6 +19,30 @@ export default function ShippingView() {
   const [selected, setSelected] = useState('');
   const [note, setNote] = useState('');
   const [loading, setLoading] = useState(true);
+
+  const summaryItems = useMemo(() => {
+    const lines = searchParams.getAll('line_item');
+    const names = searchParams.getAll('line_name');
+    const prices = searchParams.getAll('line_price');
+
+    return lines.map((entry, idx) => {
+      const [idRaw, qtyRaw] = entry.split(':');
+      const id = Number(idRaw);
+      const quantity = Number(qtyRaw);
+      const price = Number(String(prices[idx] ?? '').replace(/[^0-9.-]/g, ''));
+      return {
+        id: Number.isFinite(id) ? id : idx + 1,
+        name: names[idx] ?? 'Product',
+        quantity: Number.isFinite(quantity) && quantity > 0 ? quantity : 1,
+        price: Number.isFinite(price) ? price : 0,
+      };
+    });
+  }, [searchParams]);
+
+  const summaryTotal = useMemo(
+    () => summaryItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
+    [summaryItems]
+  );
 
   useEffect(() => {
     let mounted = true;
@@ -110,7 +134,13 @@ export default function ShippingView() {
         </div>
 
         <div className="w-full md:w-80 lg:w-96 shrink-0">
-          <CheckoutSummary ctaLabel="Proceed to Payment" onCta={proceed} ctaDisabled={loading || !selected} />
+          <CheckoutSummary
+            ctaLabel="Proceed to Payment"
+            onCta={proceed}
+            ctaDisabled={loading || !selected}
+            itemsOverride={summaryItems}
+            totalOverride={summaryTotal}
+          />
         </div>
       </div>
     </div>

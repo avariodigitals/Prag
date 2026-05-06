@@ -26,7 +26,7 @@ export default function ShippingView() {
     <div className="w-full px-4 md:px-20 py-6 md:py-10 flex flex-col items-center gap-6 md:gap-10">
       <CheckoutStepper activeStep={1} />
 
-      <div className="w-full flex flex-col-reverse md:flex-row items-start gap-6 md:gap-10">
+      <div className="w-full flex flex-col md:flex-row items-start gap-6 md:gap-10">
         <div className="w-full md:flex-1 p-4 md:p-8 bg-white rounded-2xl outline outline-[1.31px] outline-gray-200 flex flex-col gap-5">
           <h2 className="text-zinc-900 text-lg md:text-xl font-bold font-['Space_Grotesk']">Shipping Method</h2>
 

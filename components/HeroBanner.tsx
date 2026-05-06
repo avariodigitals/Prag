@@ -20,8 +20,11 @@ const FALLBACK_SLIDES: Slide[] = [
   { title: 'Reliable Power. Unbeatable Performance.', description: 'Experience consistent power delivery with inverters engineered for excellence.', cta: 'Get Started Today', link: '/products', productImage: 'https://central.prag.global/wp-content/uploads/2026/04/dd4b835690b546ee636b7659added08cd02d9891.png', productAlt: 'Premium Inverter' },
 ];
 
-export default function HeroBanner({ slides: slidesProp }: { slides?: Slide[] }) {
+const FALLBACK_BG = 'https://central.prag.global/wp-content/uploads/2026/04/421db5e8efbc14b105a33a6db7182652503c3fdd.png';
+
+export default function HeroBanner({ slides: slidesProp, heroBg }: { slides?: Slide[]; heroBg?: string }) {
   const slides = (slidesProp && slidesProp.length > 0) ? slidesProp : FALLBACK_SLIDES;
+  const bgSrc = heroBg || FALLBACK_BG;
   const [current, setCurrent] = useState(0);
 
   useEffect(() => {
@@ -36,7 +39,7 @@ export default function HeroBanner({ slides: slidesProp }: { slides?: Slide[] })
   return (
     <section className="w-full px-4 md:px-20 py-10 md:py-16 flex flex-col justify-center items-center overflow-hidden relative min-h-[615px] md:min-h-[600px] lg:min-h-[700px]">
       <Image
-        src="https://central.prag.global/wp-content/uploads/2026/04/421db5e8efbc14b105a33a6db7182652503c3fdd.png"
+        src={bgSrc}
         alt="Hero Background"
         fill
         className="object-cover"

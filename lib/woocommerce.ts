@@ -575,6 +575,7 @@ export interface SiteSettings {
   brand_banner_cta: string;
   brand_banner_link: string;
   brand_banner_image: string;
+  hero_background: string;
   socials: { facebook: string; instagram: string; linkedin: string; twitter: string; whatsapp: string };
   slides: { title: string; description: string; cta: string; link: string; productImage: string; productAlt: string }[];
   categories: { name: string; slug: string; image: string }[];
@@ -597,6 +598,7 @@ const SETTINGS_FALLBACK: SiteSettings = {
   brand_banner_cta: 'Buy Inverters Built to Last',
   brand_banner_link: '/products/inverters',
   brand_banner_image: 'https://central.prag.global/wp-content/uploads/2026/04/f80b14a4d9e3fc153ae2e60c3d8d11a58ebe33fe.png',
+  hero_background: 'https://central.prag.global/wp-content/uploads/2026/04/421db5e8efbc14b105a33a6db7182652503c3fdd.png',
   socials: {
     facebook: 'https://www.facebook.com/pragpowersolutions',
     instagram: 'https://www.instagram.com/prag_ng/',

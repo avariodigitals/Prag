@@ -20,7 +20,7 @@ export default async function HomePage() {
 
   return (
     <main className="w-full bg-white flex flex-col">
-      <HeroBanner slides={settings.slides} />
+      <HeroBanner slides={settings.slides} heroBg={settings.hero_background} />
       <CategoryGrid settings={settings} />
       <FeaturedProducts products={featuredProducts} />
       <BrandBanner settings={settings} />

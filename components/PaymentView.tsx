@@ -22,8 +22,8 @@ declare global {
         amount: number;
         currency?: string;
         ref: string;
-        onSuccess: (response: { reference: string }) => void;
-        onCancel: () => void;
+        callback: (response: { reference: string }) => void;
+        onClose: () => void;
       }) => { openIframe: () => void };
     };
   }
@@ -188,6 +188,7 @@ export default function PaymentView() {
         const amountKobo = Math.round((Number.isFinite(orderTotalNaira) && orderTotalNaira > 0 ? orderTotalNaira : summaryTotal) * 100);
 
         const ref = `PRAG-${orderId}-${Date.now()}`;
+        let paymentCompleted = false;
 
         const handler = window.PaystackPop.setup({
           key: paystackPublicKey,
@@ -195,19 +196,30 @@ export default function PaymentView() {
           amount: amountKobo,
           currency: 'NGN',
           ref,
-          onSuccess: async (response) => {
+          callback: async (response) => {
+            paymentCompleted = true;
             setSubmitting(true);
             try {
-              await fetch('/api/checkout/verify', {
+              const controller = new AbortController();
+              const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+              const verifyRes = await fetch('/api/checkout/verify', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ reference: response.reference, order_id: orderId }),
+                signal: controller.signal,
               });
+              clearTimeout(timeoutId);
+
+              if (!verifyRes.ok) {
+                console.error('Payment verify returned non-OK response', verifyRes.status);
+              }
             } catch { /* non-blocking — payment went through regardless */ }
             clear();
             router.push(`/order-received?order_id=${orderId}&order_date=${encodeURIComponent(orderDate)}`);
           },
-          onCancel: () => {
+          onClose: () => {
+            if (paymentCompleted) return;
             setSubmitting(false);
             router.push(`/order-failed?order_id=${orderId}`);
           },

@@ -406,10 +406,9 @@ async function wpFetch<T>(path: string, fallback: T): Promise<T> {
   }
 }
 
-export const getStores = unstable_cache(
-  async (): Promise<Store[]> => {
-    try {
-      const data = await wpFetch<Array<{ id: number; title: { rendered: string }; meta: Record<string, string> }>>(
+export async function getStores(): Promise<Store[]> {
+  try {
+    const data = await wpFetch<Array<{ id: number; title: { rendered: string }; meta: Record<string, string> }>>(
         '/prag_store?per_page=100&_fields=id,title,meta', []
       );
       return data.map((s) => ({
@@ -426,14 +425,11 @@ export const getStores = unstable_cache(
               alt: s.meta?.logo_alt ?? s.title?.rendered ?? '',
             }
           : undefined,
-      }));
-    } catch {
-      return [];
-    }
-  },
-  ['stores'],
-  { revalidate: 300 }
-);
+    }));
+  } catch {
+    return [];
+  }
+}
 
 export async function getProductsForCompare(slugs: string[]): Promise<Product[]> {
   if (!slugs.length) return [];

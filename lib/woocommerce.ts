@@ -626,7 +626,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_WP_API_URL ?? 'https://central.prag.global/wp-json'}/prag-core/v1/settings`,
-      { next: { revalidate: 300 } }
+      { next: { revalidate: 1 } }
     );
     if (!res.ok) return SETTINGS_FALLBACK;
     const data = await res.json();

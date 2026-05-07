@@ -139,9 +139,11 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
         <div className="flex items-center justify-center gap-3 mt-1.5 md:mt-2">
           <Link
             href={productUrl(product)}
+            aria-label={`Learn more about ${product.name}`}
             className="min-w-[108px] px-4 py-2 bg-sky-700 rounded-full text-white text-sm font-medium font-['Space_Grotesk'] text-center hover:bg-sky-800 transition-colors"
           >
             Learn more
+            <span className="sr-only"> about {product.name}</span>
           </Link>
           <button
             onClick={handleBuyNow}

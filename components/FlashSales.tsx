@@ -57,6 +57,7 @@ export default function FlashSales({ products }: FlashSalesProps) {
             <button
               onClick={prev}
               disabled={current === 0}
+              aria-label="Previous flash sale products"
               className="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center hover:bg-sky-50 disabled:opacity-30 transition-colors"
             >
               <ChevronLeft className="w-5 h-5 text-zinc-700" />
@@ -64,6 +65,7 @@ export default function FlashSales({ products }: FlashSalesProps) {
             <button
               onClick={next}
               disabled={current >= products.length - 1}
+              aria-label="Next flash sale products"
               className="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center hover:bg-sky-50 disabled:opacity-30 transition-colors"
             >
               <ChevronRight className="w-5 h-5 text-zinc-700" />
@@ -95,8 +97,8 @@ export default function FlashSales({ products }: FlashSalesProps) {
                 key={i}
                 onClick={() => scrollToIndex(i)}
                 aria-label={`Go to slide ${i + 1}`}
-                className={`rounded-full transition-all duration-300 ${
-                  i === current ? 'w-10 h-2.5 bg-sky-700' : 'w-2.5 h-2.5 bg-zinc-300'
+                className={`rounded-full transition-all duration-300 min-w-6 min-h-6 flex items-center justify-center ${
+                  i === current ? 'bg-sky-700' : 'bg-zinc-300'
                 }`}
               />
             ))}

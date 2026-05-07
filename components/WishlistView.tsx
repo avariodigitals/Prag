@@ -111,8 +111,10 @@ export default function WishlistView() {
                 </div>
                 <div className="flex items-center gap-3.5">
                   <Link href={productUrl({ slug: item.slug, categories: item.categories ?? [] })}
+                    aria-label={`Learn more about ${item.name}`}
                     className="w-32 p-3 bg-sky-700 rounded-[30px] flex justify-center items-center gap-2.5 hover:bg-sky-800 transition-colors">
                     <span className="text-stone-50 text-base font-medium font-['Space_Grotesk']">Learn more</span>
+                    <span className="sr-only"> about {item.name}</span>
                   </Link>
                   <a href={shopUrl(item.slug)} className="w-28 p-3 rounded-3xl flex justify-center items-center gap-2.5 hover:underline">
                     <span className="text-sky-700 text-base font-medium font-['Space_Grotesk']">Buy &gt;</span>

@@ -74,7 +74,7 @@ export default function HeroBanner({ slides: slidesProp, heroBg }: { slides?: Sl
           <div className="flex items-center gap-2 mt-4 md:mt-0">
             {slides.map((_, i) => (
               <button key={i} onClick={() => setCurrent(i)}
-                className={`w-2.5 h-2.5 rounded-full transition-colors ${i === current ? 'bg-sky-700' : 'bg-white/20 hover:bg-white/40'}`}
+                className={`w-6 h-6 rounded-full transition-colors flex items-center justify-center ${i === current ? 'bg-sky-700' : 'bg-white/20 hover:bg-white/40'}`}
                 aria-label={`Go to slide ${i + 1}`}
               />
             ))}

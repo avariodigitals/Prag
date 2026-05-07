@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Onest, Space_Grotesk } from 'next/font/google';
+import Script from 'next/script';
 import { CartProvider } from '@/lib/CartContext';
 import { WishlistProvider } from '@/lib/WishlistContext';
 import TrackingLoader from '@/components/TrackingLoader';
@@ -54,6 +55,14 @@ export default async function RootLayout({ children, modal }: { children: React.
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className={`${onest.variable} ${spaceGrotesk.variable} antialiased`} suppressHydrationWarning>
+        <Script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-K1FJPNG5K9"
+          strategy="afterInteractive"
+        />
+        <Script id="ga-hardcoded-fallback" strategy="afterInteractive">
+          {`window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-K1FJPNG5K9');`}
+        </Script>
         <CartProvider>
           <WishlistProvider>
             <SiteShell>

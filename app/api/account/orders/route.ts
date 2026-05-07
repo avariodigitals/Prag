@@ -11,30 +11,46 @@ interface SessionUser {
 
 interface WooOrder {
   id: number;
+  number: string;
+  status: string;
   date_created: string;
+  total: string;
+  line_items: Array<{ id: number; name: string; quantity: number; total: string }>;
+  shipping: { address_1?: string; city?: string; state?: string };
   billing?: {
     email?: string;
   };
 }
 
-async function fetchOrdersByQuery(query: string): Promise<WooOrder[]> {
-  const res = await fetch(`${WC}/orders?${AUTH}&status=any&per_page=100&orderby=date&order=desc&${query}`, {
+async function fetchOrdersPage(page: number): Promise<{ orders: WooOrder[]; totalPages: number }> {
+  const res = await fetch(`${WC}/orders?${AUTH}&status=any&per_page=100&page=${page}&orderby=date&order=desc`, {
     cache: 'no-store',
   });
 
-  if (!res.ok) return [];
+  if (!res.ok) return { orders: [], totalPages: 0 };
   const data = await res.json();
-  return Array.isArray(data) ? (data as WooOrder[]) : [];
+  const totalPages = Number(res.headers.get('X-WP-TotalPages') ?? '1');
+  return {
+    orders: Array.isArray(data) ? (data as WooOrder[]) : [],
+    totalPages: Number.isFinite(totalPages) && totalPages > 0 ? totalPages : 1,
+  };
 }
 
-async function fetchRecentOrders(): Promise<WooOrder[]> {
-  const res = await fetch(`${WC}/orders?${AUTH}&status=any&per_page=100&orderby=date&order=desc`, {
-    cache: 'no-store',
-  });
+async function fetchOrdersByEmail(email: string): Promise<WooOrder[]> {
+  const normalizedEmail = email.trim().toLowerCase();
+  if (!normalizedEmail) return [];
 
-  if (!res.ok) return [];
-  const data = await res.json();
-  return Array.isArray(data) ? (data as WooOrder[]) : [];
+  const firstPage = await fetchOrdersPage(1);
+  if (firstPage.orders.length === 0) return [];
+
+  const maxPages = Math.min(firstPage.totalPages, 25);
+  const rest = maxPages > 1
+    ? await Promise.all(Array.from({ length: maxPages - 1 }, (_, index) => fetchOrdersPage(index + 2)))
+    : [];
+
+  return [firstPage, ...rest]
+    .flatMap((page) => page.orders)
+    .filter((order) => String(order.billing?.email ?? '').trim().toLowerCase() === normalizedEmail);
 }
 
 export async function GET() {
@@ -50,33 +66,7 @@ export async function GET() {
     if (!userRes.ok) return NextResponse.json({ orders: [] });
     const user = (await userRes.json()) as SessionUser;
     const email = String(user.email ?? '').trim();
-    const userId = Number(user.id);
-
-    // Woo stores account-linked orders by customer ID; guest/legacy orders are tied by billing_email.
-    const [byCustomerId, byBillingEmail] = await Promise.all([
-      Number.isFinite(userId) && userId > 0 ? fetchOrdersByQuery(`customer=${userId}`) : Promise.resolve([]),
-      email
-        ? Promise.all([
-            fetchOrdersByQuery(`billing_email=${encodeURIComponent(email)}`),
-            fetchOrdersByQuery(`search=${encodeURIComponent(email)}`),
-          ]).then(([billingFiltered, searched]) => [...billingFiltered, ...searched])
-        : Promise.resolve([]),
-    ]);
-
-    const normalizedEmail = email.toLowerCase();
-    const byRecentBillingMatch = email
-      ? (await fetchRecentOrders()).filter((order) => {
-          const billingEmail = String(order.billing?.email ?? '').trim().toLowerCase();
-          return billingEmail === normalizedEmail;
-        })
-      : [];
-
-    const merged = new Map<number, WooOrder>();
-    for (const order of [...byCustomerId, ...byBillingEmail, ...byRecentBillingMatch]) {
-      merged.set(order.id, order);
-    }
-
-    const orders = Array.from(merged.values()).sort(
+    const orders = (email ? await fetchOrdersByEmail(email) : []).sort(
       (a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime(),
     );
 

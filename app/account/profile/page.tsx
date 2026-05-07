@@ -71,6 +71,7 @@ export default function PersonalInfoPage() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        email: form.email,
         first_name: form.first_name,
         last_name: form.last_name,
         meta: {
@@ -199,7 +200,7 @@ export default function PersonalInfoPage() {
         </div>
         <div className="flex flex-col gap-1">
           <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk'] leading-5">Email Address</label>
-          <input type="email" value={form.email} disabled className={inputCls(true)} />
+          <input type="email" value={form.email} onChange={set('email')} disabled={!editing} className={inputCls(!editing)} />
         </div>
         <div className="flex flex-col gap-1">
           <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk'] leading-5">Phone Number</label>

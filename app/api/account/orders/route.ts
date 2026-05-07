@@ -9,6 +9,11 @@ interface SessionUser {
   email: string;
 }
 
+interface WooCustomer {
+  id: number;
+  email?: string;
+}
+
 interface WooOrder {
   id: number;
   number: string;
@@ -34,6 +39,33 @@ async function fetchOrdersPage(page: number): Promise<{ orders: WooOrder[]; tota
     orders: Array.isArray(data) ? (data as WooOrder[]) : [],
     totalPages: Number.isFinite(totalPages) && totalPages > 0 ? totalPages : 1,
   };
+}
+
+async function fetchOrdersByCustomerId(customerId: number): Promise<WooOrder[]> {
+  if (!Number.isFinite(customerId) || customerId <= 0) return [];
+
+  const res = await fetch(`${WC}/orders?${AUTH}&status=any&customer=${customerId}&per_page=100&orderby=date&order=desc`, {
+    cache: 'no-store',
+  });
+
+  if (!res.ok) return [];
+  const data = await res.json();
+  return Array.isArray(data) ? (data as WooOrder[]) : [];
+}
+
+async function fetchWooCustomersByEmail(email: string): Promise<WooCustomer[]> {
+  const normalizedEmail = email.trim().toLowerCase();
+  if (!normalizedEmail) return [];
+
+  const res = await fetch(`${WC}/customers?${AUTH}&per_page=100&search=${encodeURIComponent(email)}`, {
+    cache: 'no-store',
+  });
+
+  if (!res.ok) return [];
+  const data = await res.json();
+  if (!Array.isArray(data)) return [];
+
+  return (data as WooCustomer[]).filter((customer) => String(customer.email ?? '').trim().toLowerCase() === normalizedEmail);
 }
 
 async function fetchOrdersByEmail(email: string): Promise<WooOrder[]> {
@@ -66,7 +98,15 @@ export async function GET() {
     if (!userRes.ok) return NextResponse.json({ orders: [] });
     const user = (await userRes.json()) as SessionUser;
     const email = String(user.email ?? '').trim();
-    const orders = (email ? await fetchOrdersByEmail(email) : []).sort(
+    const customerMatches = email ? await fetchWooCustomersByEmail(email) : [];
+    const customerOrders = await Promise.all(customerMatches.map((customer) => fetchOrdersByCustomerId(customer.id)));
+
+    const merged = new Map<number, WooOrder>();
+    for (const order of [...customerOrders.flat(), ...(email ? await fetchOrdersByEmail(email) : [])]) {
+      merged.set(order.id, order);
+    }
+
+    const orders = Array.from(merged.values()).sort(
       (a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime(),
     );
 

@@ -5,6 +5,9 @@ export interface EcommerceTrackingScripts {
   googleSearchConsoleVerification: string;
   metaPixelId: string;
   tiktokPixelId: string;
+  whatsappChatEnabled: boolean;
+  whatsappChatNumber: string;
+  whatsappChatText: string;
   customHeadScripts: string;
   customBodyScripts: string;
   customFooterScripts: string;

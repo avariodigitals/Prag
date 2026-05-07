@@ -9,6 +9,9 @@ interface TrackingConfig {
   googleSearchConsoleVerification?: string;
   metaPixelId?: string;
   tiktokPixelId?: string;
+  whatsappChatEnabled?: boolean;
+  whatsappChatNumber?: string;
+  whatsappChatText?: string;
   customHeadScripts?: string;
   customBodyScripts?: string;
   customFooterScripts?: string;
@@ -26,6 +29,12 @@ export default function TrackingLoader() {
   }, []);
 
   if (!cfg) return null;
+
+  const whatsappNumber = (cfg.whatsappChatNumber ?? '').replace(/\D/g, '');
+  const whatsappText = (cfg.whatsappChatText ?? '').trim() || 'Chat with us on WhatsApp';
+  const whatsappHref = whatsappNumber
+    ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hello, I need support from PRAG.')}`
+    : '';
 
   return (
     <>
@@ -73,6 +82,21 @@ export default function TrackingLoader() {
       {cfg.customFooterScripts && (
         <Script id="custom-footer" strategy="afterInteractive"
           dangerouslySetInnerHTML={{ __html: cfg.customFooterScripts }} />
+      )}
+
+      {cfg.whatsappChatEnabled && whatsappHref && (
+        <a
+          href={whatsappHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={whatsappText}
+          className="fixed bottom-5 right-4 z-[80] inline-flex items-center gap-2 rounded-full bg-[#25D366] px-4 py-3 text-sm font-semibold text-white shadow-lg transition-transform duration-200 hover:scale-[1.03] hover:bg-[#1ebe5d] md:bottom-6 md:right-6"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5 fill-current">
+            <path d="M20.52 3.48A11.85 11.85 0 0012.06 0C5.51 0 .19 5.32.19 11.87c0 2.09.54 4.14 1.57 5.95L0 24l6.35-1.67a11.84 11.84 0 005.71 1.46h.01c6.54 0 11.86-5.32 11.86-11.87 0-3.17-1.24-6.14-3.41-8.44zm-8.45 18.3h-.01a9.8 9.8 0 01-4.99-1.37l-.36-.22-3.77.99 1.01-3.68-.24-.38A9.8 9.8 0 012.2 11.87c0-5.44 4.42-9.87 9.86-9.87 2.63 0 5.09 1.03 6.95 2.91a9.8 9.8 0 012.86 6.96c0 5.44-4.42 9.87-9.86 9.87zm5.41-7.39c-.3-.15-1.75-.86-2.02-.95-.27-.1-.46-.15-.66.15-.2.3-.76.95-.93 1.15-.17.2-.34.22-.64.07-.3-.15-1.25-.46-2.39-1.47-.88-.78-1.48-1.75-1.65-2.04-.17-.3-.02-.46.13-.61.14-.14.3-.34.44-.51.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.66-1.59-.91-2.18-.24-.57-.48-.49-.66-.5h-.56c-.2 0-.52.07-.79.37-.27.3-1.03 1-1.03 2.43s1.05 2.82 1.2 3.02c.15.2 2.06 3.14 5 4.4.7.3 1.25.47 1.67.6.7.22 1.34.19 1.84.12.56-.08 1.75-.72 2-1.42.25-.7.25-1.3.17-1.42-.08-.12-.27-.2-.56-.35z" />
+          </svg>
+          <span className="max-w-[220px] truncate">{whatsappText}</span>
+        </a>
       )}
     </>
   );

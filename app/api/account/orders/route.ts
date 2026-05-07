@@ -92,17 +92,27 @@ export async function GET() {
   try {
     // Get WP user email to look up WC customer
     const userRes = await fetch(
-      `${process.env.NEXT_PUBLIC_WP_API_URL}/wp/v2/users/me?_fields=id,email`,
+      `${process.env.NEXT_PUBLIC_WP_API_URL}/wp/v2/users/me?context=edit&_fields=id,email`,
       { headers: { Authorization: `Bearer ${session.token}` }, cache: 'no-store' }
     );
     if (!userRes.ok) return NextResponse.json({ orders: [] });
     const user = (await userRes.json()) as SessionUser;
     const email = String(user.email ?? '').trim();
+    const userId = Number(user.id);
+
+    const ordersByUserId = Number.isFinite(userId) && userId > 0
+      ? await fetchOrdersByCustomerId(userId)
+      : [];
+
     const customerMatches = email ? await fetchWooCustomersByEmail(email) : [];
     const customerOrders = await Promise.all(customerMatches.map((customer) => fetchOrdersByCustomerId(customer.id)));
 
     const merged = new Map<number, WooOrder>();
-    for (const order of [...customerOrders.flat(), ...(email ? await fetchOrdersByEmail(email) : [])]) {
+    for (const order of [
+      ...ordersByUserId,
+      ...customerOrders.flat(),
+      ...(email ? await fetchOrdersByEmail(email) : []),
+    ]) {
       merged.set(order.id, order);
     }
 

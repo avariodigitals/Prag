@@ -35,6 +35,24 @@ function parsePrice(value: string | null): number {
   return Number.isFinite(n) ? n : 0;
 }
 
+function getEmailFromUserInfoCookie() {
+  if (typeof document === 'undefined') return '';
+
+  const cookie = document.cookie
+    .split('; ')
+    .find((row) => row.startsWith('user_info='));
+  if (!cookie) return '';
+
+  const value = cookie.slice('user_info='.length);
+  try {
+    const decoded = decodeURIComponent(value);
+    const parsed = JSON.parse(decoded) as { email?: unknown };
+    return typeof parsed.email === 'string' ? parsed.email.trim() : '';
+  } catch {
+    return '';
+  }
+}
+
 export default function CheckoutView() {
   const { items, total } = useCart();
   const router = useRouter();
@@ -61,6 +79,11 @@ export default function CheckoutView() {
 
   useEffect(() => {
     let active = true;
+
+    const cookieEmail = getEmailFromUserInfoCookie();
+    if (cookieEmail) {
+      setForm((prev) => (prev.email ? prev : { ...prev, email: cookieEmail }));
+    }
 
     fetch('/api/account/profile', { cache: 'no-store' })
       .then((res) => (res.ok ? res.json() : null))

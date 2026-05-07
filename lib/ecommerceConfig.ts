@@ -26,25 +26,77 @@ function adminBaseUrl() {
 }
 
 function normalizeHost(host: string) {
-  return host.split(':')[0].toLowerCase();
+  const trimmed = host.trim().toLowerCase();
+  if (!trimmed) return '';
+
+  const withoutProtocol = trimmed.replace(/^https?:\/\//, '');
+  const hostWithPath = withoutProtocol.replace(/\/.*$/, '');
+  const hostWithoutPort = hostWithPath.replace(/:\d+$/, '');
+  return hostWithoutPort.replace(/^www\./, '');
+}
+
+function toOrigin(input: string) {
+  const raw = input.trim();
+  if (!raw) return '';
+
+  try {
+    return new URL(raw).origin;
+  } catch {
+    try {
+      return new URL(`https://${raw}`).origin;
+    } catch {
+      return '';
+    }
+  }
+}
+
+function getAdminApiCandidates(host: string) {
+  const envCandidates = [
+    process.env.ECOMMERCE_ADMIN_API_URL,
+    process.env.NEXT_PUBLIC_ADMIN_API_URL,
+    process.env.NEXT_PUBLIC_ADMIN_URL,
+  ]
+    .map((value) => toOrigin(value ?? ''))
+    .filter(Boolean);
+
+  const normalizedHost = normalizeHost(host);
+  const hostParts = normalizedHost.split('.').filter(Boolean);
+  const inferred: string[] = [];
+
+  if (hostParts.length >= 2) {
+    const rootDomain = hostParts.slice(-2).join('.');
+    inferred.push(`https://admin.${rootDomain}`);
+  }
+
+  if (normalizedHost) {
+    inferred.push(`https://admin.${normalizedHost}`);
+  }
+
+  return Array.from(new Set([...envCandidates, ...inferred]));
 }
 
 export async function getEcommerceScriptsForHost(host: string): Promise<EcommerceTrackingScripts | null> {
-  const base = adminBaseUrl();
-  if (!base) return null;
+  const normalizedHost = normalizeHost(host);
+  if (!normalizedHost) return null;
 
-  try {
-    const normalizedHost = normalizeHost(host);
+  const candidates = getAdminApiCandidates(normalizedHost);
+  if (candidates.length === 0) return null;
+
+  for (const base of candidates) {
+    try {
     const res = await fetch(
       `${base.replace(/\/$/, '')}/api/ecommerce-config?host=${encodeURIComponent(normalizedHost)}`,
       { cache: 'no-store' },
     );
 
-    if (!res.ok) return null;
+      if (!res.ok) continue;
     const data = (await res.json()) as EcommerceConfigResponse;
-    if (!data.allowed || !data.scripts) return null;
+      if (!data.allowed || !data.scripts) continue;
     return data.scripts;
-  } catch {
-    return null;
+    } catch {
+      continue;
+    }
   }
+
+  return null;
 }

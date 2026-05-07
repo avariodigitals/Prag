@@ -508,6 +508,33 @@ class Prag_Core_Bridge {
         return $this->build_profile_response($user_id);
     }
 
+    /**
+     * Get email recipients for a form type from admin config.
+     * Reads from the `forms` array stored by the PRAG admin panel,
+     * matching on `formKey`. Falls back to the WordPress admin email.
+     *
+     * @param string $type  'contact' | 'distributor' | 'checkout'
+     * @return array
+     */
+    private function get_form_recipients(string $type): array {
+        $raw    = get_option('prag_admin_config', '');
+        $config = $raw ? json_decode($raw, true) : [];
+        $forms  = $config['forms'] ?? [];
+
+        foreach ($forms as $rule) {
+            if (($rule['formKey'] ?? '') !== $type) continue;
+            $list = $rule['recipients'] ?? [];
+            if (is_string($list)) {
+                $list = array_filter(array_map('trim', explode(',', $list)));
+            }
+            if (!empty($list)) {
+                return $list;
+            }
+        }
+
+        return [get_option('admin_email')];
+    }
+
     public function handle_contact_form($request) {
         $p = $request->get_json_params();
 
@@ -525,19 +552,9 @@ class Prag_Core_Bridge {
         $enquiry_type = sanitize_text_field($p['enquiry_type'] ?? '');
         $message      = sanitize_textarea_field($p['message']);
 
-        $site_name   = get_bloginfo('name');
-        $admin_email = get_option('admin_email');
-        $from_email  = 'noreply@' . parse_url(get_site_url(), PHP_URL_HOST);
-
-        $subject  = '[Contact Form] ' . ($enquiry_type ?: 'General Enquiry') . ' from ' . $name;
-        $body     = "New contact form submission.\r\n\r\n";
-        $body    .= "Name:         {$name}\r\n";
-        $body    .= "Email:        {$email}\r\n";
-        if ($phone)   { $body .= "Phone:        {$phone}\r\n"; }
-        if ($company) { $body .= "Company:      {$company}\r\n"; }
-        if ($enquiry_type) { $body .= "Enquiry Type: {$enquiry_type}\r\n"; }
-        $body    .= "\r\nMessage:\r\n{$message}\r\n\r\n";
-        $body    .= "-- \r\n{$site_name}\r\n";
+        $site_name  = get_bloginfo('name');
+        $from_email = 'noreply@' . parse_url(get_site_url(), PHP_URL_HOST);
+        $recipients = $this->get_form_recipients('contact');
 
         $headers = [
             'Content-Type: text/plain; charset=UTF-8',
@@ -545,11 +562,36 @@ class Prag_Core_Bridge {
             'Reply-To: ' . $name . ' <' . $email . '>',
         ];
 
-        $sent = wp_mail($admin_email, $subject, $body, $headers);
+        // --- Notification to staff ---
+        $subject  = '[Contact Form] ' . ($enquiry_type ?: 'General Enquiry') . ' from ' . $name;
+        $body     = "New contact form submission.\r\n\r\n";
+        $body    .= "Name:         {$name}\r\n";
+        $body    .= "Email:        {$email}\r\n";
+        if ($phone)        { $body .= "Phone:        {$phone}\r\n"; }
+        if ($company)      { $body .= "Company:      {$company}\r\n"; }
+        if ($enquiry_type) { $body .= "Enquiry Type: {$enquiry_type}\r\n"; }
+        $body    .= "\r\nMessage:\r\n{$message}\r\n\r\n";
+        $body    .= "-- \r\n{$site_name}\r\n";
+
+        $sent = wp_mail($recipients, $subject, $body, $headers);
 
         if (!$sent) {
             return new WP_Error('mail_failed', 'Failed to send message.', ['status' => 500]);
         }
+
+        // --- Acknowledgment to customer ---
+        $ack_subject = 'We received your message – ' . $site_name;
+        $ack_body    = "Hi {$name},\r\n\r\n";
+        $ack_body   .= "Thank you for reaching out. We have received your message and will get back to you shortly.\r\n\r\n";
+        $ack_body   .= "Your message:\r\n{$message}\r\n\r\n";
+        $ack_body   .= "-- \r\n{$site_name}\r\n";
+
+        $ack_headers = [
+            'Content-Type: text/plain; charset=UTF-8',
+            'From: ' . $site_name . ' <' . $from_email . '>',
+        ];
+
+        wp_mail($email, $ack_subject, $ack_body, $ack_headers);
 
         return ['success' => true, 'message' => 'Message sent'];
     }
@@ -591,10 +633,10 @@ class Prag_Core_Bridge {
             ],
         ]);
 
-        // Email notification to admin
+        // Email notification to staff
         $site_name  = get_bloginfo('name');
-        $admin_email = get_option('admin_email');
-        $from_email  = 'noreply@' . parse_url(get_site_url(), PHP_URL_HOST);
+        $recipients = $this->get_form_recipients('distributor');
+        $from_email = 'noreply@' . parse_url(get_site_url(), PHP_URL_HOST);
 
         $subject = 'New Distributor Application – ' . $name;
         $body  = "New distributor application received.\r\n\r\n";
@@ -614,7 +656,7 @@ class Prag_Core_Bridge {
             'Reply-To: ' . $name . ' <' . $email . '>',
         ];
 
-        wp_mail($admin_email, $subject, $body, $headers);
+        wp_mail($recipients, $subject, $body, $headers);
 
         // Confirmation email to applicant
         $confirm_subject = 'We received your PRAG partnership application';

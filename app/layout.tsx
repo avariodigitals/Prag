@@ -7,8 +7,8 @@ import TrackingLoader from '@/components/TrackingLoader';
 import SiteShell from '@/components/SiteShell';
 import './globals.css';
 
-const onest = Onest({ subsets: ['latin'], variable: '--font-onest', display: 'swap' });
-const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-space-grotesk', display: 'swap' });
+const onest = Onest({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-onest', display: 'swap' });
+const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-space-grotesk', display: 'swap' });
 
 export const viewport: Viewport = {
   width: 'device-width',

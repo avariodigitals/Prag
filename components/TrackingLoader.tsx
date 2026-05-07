@@ -60,7 +60,6 @@ export default function TrackingLoader() {
     if (!whatsappNumber) return;
     // Use wa.me shortlink which is more reliable for mobile apps and prefilled text
     const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-    console.log('Opening WhatsApp with URL:', url); // Debug log
     window.open(url, '_blank', 'noopener,noreferrer');
     setIsMenuOpen(false);
   }

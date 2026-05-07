@@ -463,23 +463,12 @@ export interface ContactFormData {
 
 export async function submitContactForm(data: ContactFormData): Promise<{ success: boolean }> {
   try {
-    const res = await fetch(
-      `${baseUrl().replace('/wp-json/wc/v3', '/wp-json/contact-form-7/v1/contact-forms/1/feedback')}`,
-
-      {
-        method: 'POST',
-        body: new URLSearchParams({
-          'your-name': data.name,
-          'your-email': data.email,
-          'your-phone': data.phone ?? '',
-          'your-company': data.company ?? '',
-          'enquiry-type': data.enquiry_type ?? '',
-          'your-message': data.message,
-        }),
-      }
-    );
-    const json = await res.json();
-    return { success: json.status === 'mail_sent' };
+    const res = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    return { success: res.ok };
   } catch {
     return { success: false };
   }

@@ -82,6 +82,27 @@ class Prag_Core_Bridge {
                 'auth_callback' => function() { return current_user_can('edit_posts'); },
             ]);
         }
+
+        // prag_distributor — Distributor / Partnership applications
+        register_post_type('prag_distributor', [
+            'labels'       => ['name' => 'Distributors', 'singular_name' => 'Distributor Application'],
+            'public'       => false,
+            'show_ui'      => true,
+            'show_in_menu' => true,
+            'supports'     => ['title', 'custom-fields'],
+            'menu_icon'    => 'dashicons-groups',
+            'capabilities' => ['create_posts' => 'do_not_allow'],
+            'map_meta_cap' => true,
+        ]);
+
+        foreach (['applicant_name', 'applicant_email', 'applicant_phone', 'business_name', 'business_city', 'business_type', 'partnership_tier', 'applicant_message', 'submitted_at'] as $meta) {
+            register_post_meta('prag_distributor', $meta, [
+                'type'          => 'string',
+                'single'        => true,
+                'show_in_rest'  => false,
+                'auth_callback' => function() { return current_user_can('edit_posts'); },
+            ]);
+        }
     }
 
     /**
@@ -174,6 +195,13 @@ class Prag_Core_Bridge {
         register_rest_route($namespace, '/distributor', [
             'methods' => 'POST',
             'callback' => [$this, 'handle_distributor_application'],
+            'permission_callback' => '__return_true',
+        ]);
+
+        // Contact form endpoint
+        register_rest_route($namespace, '/contact', [
+            'methods' => 'POST',
+            'callback' => [$this, 'handle_contact_form'],
             'permission_callback' => '__return_true',
         ]);
 
@@ -478,6 +506,52 @@ class Prag_Core_Bridge {
         }
 
         return $this->build_profile_response($user_id);
+    }
+
+    public function handle_contact_form($request) {
+        $p = $request->get_json_params();
+
+        $required = ['name', 'email', 'message'];
+        foreach ($required as $field) {
+            if (empty($p[$field])) {
+                return new WP_Error('missing_fields', ucfirst($field) . ' is required.', ['status' => 400]);
+            }
+        }
+
+        $name         = sanitize_text_field($p['name']);
+        $email        = sanitize_email($p['email']);
+        $phone        = sanitize_text_field($p['phone'] ?? '');
+        $company      = sanitize_text_field($p['company'] ?? '');
+        $enquiry_type = sanitize_text_field($p['enquiry_type'] ?? '');
+        $message      = sanitize_textarea_field($p['message']);
+
+        $site_name   = get_bloginfo('name');
+        $admin_email = get_option('admin_email');
+        $from_email  = 'noreply@' . parse_url(get_site_url(), PHP_URL_HOST);
+
+        $subject  = '[Contact Form] ' . ($enquiry_type ?: 'General Enquiry') . ' from ' . $name;
+        $body     = "New contact form submission.\r\n\r\n";
+        $body    .= "Name:         {$name}\r\n";
+        $body    .= "Email:        {$email}\r\n";
+        if ($phone)   { $body .= "Phone:        {$phone}\r\n"; }
+        if ($company) { $body .= "Company:      {$company}\r\n"; }
+        if ($enquiry_type) { $body .= "Enquiry Type: {$enquiry_type}\r\n"; }
+        $body    .= "\r\nMessage:\r\n{$message}\r\n\r\n";
+        $body    .= "-- \r\n{$site_name}\r\n";
+
+        $headers = [
+            'Content-Type: text/plain; charset=UTF-8',
+            'From: ' . $site_name . ' <' . $from_email . '>',
+            'Reply-To: ' . $name . ' <' . $email . '>',
+        ];
+
+        $sent = wp_mail($admin_email, $subject, $body, $headers);
+
+        if (!$sent) {
+            return new WP_Error('mail_failed', 'Failed to send message.', ['status' => 500]);
+        }
+
+        return ['success' => true, 'message' => 'Message sent'];
     }
 
     public function handle_distributor_application($request) {

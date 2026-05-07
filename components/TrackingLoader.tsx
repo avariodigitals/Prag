@@ -41,7 +41,7 @@ export default function TrackingLoader() {
           }} />
       )}
 
-      {cfg.googleAnalyticsId && (
+      {cfg.googleAnalyticsId && cfg.googleAnalyticsId !== 'G-K1FJPNG5K9' && (
         <>
           <Script src={`https://www.googletagmanager.com/gtag/js?id=${cfg.googleAnalyticsId}`} strategy="afterInteractive" />
           <Script id="ga4" strategy="afterInteractive"

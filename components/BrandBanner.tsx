@@ -26,6 +26,8 @@ export default function BrandBanner({ settings }: { settings?: SiteSettings }) {
           alt="Inverter"
           width={224}
           height={256}
+          quality={80}
+          loading="lazy"
         />
         <div className="flex-1 flex flex-col justify-start items-center md:items-start gap-4 text-center md:text-left">
           <div className="w-full text-black text-xl md:text-2xl font-bold font-['Onest'] leading-tight">

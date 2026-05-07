@@ -43,6 +43,7 @@ export default function HeroBanner({ slides: slidesProp, heroBg }: { slides?: Sl
         alt="Hero Background"
         fill
         sizes="100vw"
+        quality={80}
         className="object-cover"
         priority
       />
@@ -51,7 +52,7 @@ export default function HeroBanner({ slides: slidesProp, heroBg }: { slides?: Sl
       <div className="w-full max-w-[1280px] flex flex-col md:flex-row justify-between items-center gap-10 md:gap-12 relative z-10">
         <div className="flex justify-center w-full md:hidden">
           <div className="relative w-48 h-60">
-            <Image key={`mobile-${current}`} src={slide.productImage} alt={slide.productAlt} fill sizes="192px" className="object-contain" priority />
+            <Image key={`mobile-${current}`} src={slide.productImage} alt={slide.productAlt} fill sizes="192px" quality={85} className="object-contain" priority />
           </div>
         </div>
 
@@ -82,7 +83,7 @@ export default function HeroBanner({ slides: slidesProp, heroBg }: { slides?: Sl
 
         <div className="hidden md:flex flex-1 justify-center lg:justify-end">
           <div className="relative w-80 h-[450px] lg:w-[450px] lg:h-[550px]">
-            <Image key={`desktop-${current}`} src={slide.productImage} alt={slide.productAlt} fill sizes="(max-width: 1024px) 320px, 450px" className="object-contain" priority />
+            <Image key={`desktop-${current}`} src={slide.productImage} alt={slide.productAlt} fill sizes="(max-width: 1024px) 320px, 450px" quality={85} className="object-contain" loading="eager" />
           </div>
         </div>
       </div>

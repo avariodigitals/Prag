@@ -50,9 +50,19 @@ export default async function RootLayout({ children, modal }: { children: React.
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Preconnect to key origins for faster resource loading */}
         <link rel="preconnect" href="https://central.prag.global" />
         <link rel="dns-prefetch" href="https://central.prag.global" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://www.google-analytics.com" />
+        {/* Preload LCP hero background (fallback) */}
+        <link
+          rel="preload"
+          as="image"
+          href="https://central.prag.global/wp-content/uploads/2026/04/421db5e8efbc14b105a33a6db7182652503c3fdd.png"
+          fetchPriority="high"
+        />
       </head>
       <body className={`${onest.variable} ${spaceGrotesk.variable} antialiased`} suppressHydrationWarning>
         <Script

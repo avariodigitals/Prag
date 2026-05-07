@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCart } from '@/lib/CartContext';
 import CheckoutStepper from './CheckoutStepper';
@@ -58,6 +58,31 @@ export default function CheckoutView() {
     email: '', firstName: '', lastName: '', company: '',
     phone: '', address: '', city: '', state: '', zip: '', note: '',
   });
+
+  useEffect(() => {
+    let active = true;
+
+    fetch('/api/account/profile', { cache: 'no-store' })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((profile) => {
+        if (!active || !profile) return;
+        const email = typeof profile.email === 'string' ? profile.email.trim() : '';
+        if (!email) return;
+
+        setForm((prev) => {
+          if (prev.email) return prev;
+          return {
+            ...prev,
+            email,
+          };
+        });
+      })
+      .catch(() => {});
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   function set(field: string) {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>

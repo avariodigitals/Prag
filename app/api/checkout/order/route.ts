@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
     const billing = body.billing ?? {};
     const shippingMethodRaw = body.shipping_method ?? '';
     const [shippingMethodId, shippingInstanceRaw] = shippingMethodRaw.split(':');
-    const shippingInstanceId = Number(shippingInstanceRaw);
+    const shippingInstanceId = String(shippingInstanceRaw ?? '').trim();
 
     const payload = {
       payment_method: body.payment_method,
@@ -102,7 +102,7 @@ export async function POST(req: NextRequest) {
       shipping_lines: shippingMethodRaw
         ? [{
             method_id: shippingMethodId || shippingMethodRaw,
-            ...(Number.isFinite(shippingInstanceId) && shippingInstanceId > 0 ? { instance_id: shippingInstanceId } : {}),
+            ...(shippingInstanceId ? { instance_id: shippingInstanceId } : {}),
             method_title: body.shipping_method_title ?? body.shipping_method,
             total: '0',
           }]

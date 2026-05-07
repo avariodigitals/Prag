@@ -294,8 +294,21 @@ export default function PaymentView() {
     <div className="w-full px-4 md:px-20 py-6 md:py-10 flex flex-col items-center gap-6 md:gap-10">
       <CheckoutStepper activeStep={2} />
 
-      <div className="w-full flex flex-col-reverse md:flex-row items-start gap-6 md:gap-10">
-        <div className="w-full md:flex-1 p-4 md:p-8 bg-white rounded-2xl outline outline-[1.31px] outline-gray-200 flex flex-col gap-5">
+      <div className="w-full flex flex-col md:flex-row items-start gap-6 md:gap-10">
+        {/* Summary on mobile, then Payment methods, then Proceed button */}
+        <div className="w-full md:w-80 lg:w-96 shrink-0 md:order-2">
+          <CheckoutSummary
+            ctaLabel=""
+            onCta={() => {}}
+            shippingCost={SHIPPING_COST}
+            ctaDisabled={true}
+            itemsOverride={summaryItems}
+            totalOverride={summaryTotal}
+            hideMobileButton={true}
+          />
+        </div>
+
+        <div className="w-full md:flex-1 p-4 md:p-8 bg-white rounded-2xl outline outline-[1.31px] outline-gray-200 flex flex-col gap-5 md:order-1">
           <h2 className="text-zinc-900 text-lg md:text-xl font-bold font-['Space_Grotesk']">Payment Method</h2>
 
           <div className="flex flex-col gap-1">
@@ -331,21 +344,10 @@ export default function PaymentView() {
           <button
             onClick={proceed}
             disabled={loadingMethods || submitting || !selected || lineItems.length === 0}
-            className="hidden md:block w-full p-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Space_Grotesk'] hover:bg-sky-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full p-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Space_Grotesk'] hover:bg-sky-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {submitting ? 'Processing...' : 'Proceed'}
           </button>
-        </div>
-
-        <div className="w-full md:w-80 lg:w-96 shrink-0">
-          <CheckoutSummary
-            ctaLabel={submitting ? 'Processing...' : 'Proceed'}
-            onCta={proceed}
-            shippingCost={SHIPPING_COST}
-            ctaDisabled={loadingMethods || submitting || !selected || lineItems.length === 0}
-            itemsOverride={summaryItems}
-            totalOverride={summaryTotal}
-          />
         </div>
       </div>
     </div>

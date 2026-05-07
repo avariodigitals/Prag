@@ -13,9 +13,10 @@ interface Props {
   ctaDisabled?: boolean;
   itemsOverride?: Array<{ id: number; name: string; quantity: number; price: number }>;
   totalOverride?: number;
+  hideMobileButton?: boolean;
 }
 
-export default function CheckoutSummary({ ctaLabel, onCta, shippingCost, ctaDisabled, itemsOverride, totalOverride }: Props) {
+export default function CheckoutSummary({ ctaLabel, onCta, shippingCost, ctaDisabled, itemsOverride, totalOverride, hideMobileButton }: Props) {
   const { items, total } = useCart();
   const summaryItems = itemsOverride && itemsOverride.length > 0 ? itemsOverride : items;
   const subTotal = totalOverride !== undefined ? totalOverride : total;
@@ -64,13 +65,15 @@ export default function CheckoutSummary({ ctaLabel, onCta, shippingCost, ctaDisa
         <span className="text-slate-800 text-base font-bold font-['Space_Grotesk']">{fmt(grandTotal)}</span>
       </div>
 
-      <button
-        onClick={onCta}
-        disabled={ctaDisabled}
-        className="md:hidden w-full p-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Space_Grotesk'] hover:bg-sky-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-      >
-        {ctaLabel}
-      </button>
+      {!hideMobileButton && (
+        <button
+          onClick={onCta}
+          disabled={ctaDisabled}
+          className="md:hidden w-full p-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Space_Grotesk'] hover:bg-sky-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {ctaLabel}
+        </button>
+      )}
     </div>
   );
 }

@@ -22,7 +22,7 @@ export default function TrackingLoader() {
 
   useEffect(() => {
     const host = window.location.hostname;
-    fetch(`/api/tracking?host=${encodeURIComponent(host)}`)
+    fetch(`/api/tracking?host=${encodeURIComponent(host)}`, { cache: 'no-store' })
       .then((r) => (r.ok ? (r.json() as Promise<TrackingConfig>) : null))
       .then((data) => data && setCfg(data))
       .catch(() => {});

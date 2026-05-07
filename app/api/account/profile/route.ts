@@ -40,11 +40,14 @@ export async function GET() {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const res = await fetch(`${WP}/wp/v2/users/me?_fields=id,name,first_name,last_name,email,avatar_urls,meta`, {
+  const res = await fetch(`${WP}/prag-core/v1/profile`, {
     headers: { Authorization: `Bearer ${session.token}` },
     cache: 'no-store',
   });
-  if (!res.ok) return NextResponse.json({ error: 'Failed to fetch profile' }, { status: res.status });
+  if (!res.ok) {
+    const message = await readErrorMessage(res, 'Failed to fetch profile');
+    return NextResponse.json({ error: message }, { status: res.status });
+  }
   return NextResponse.json(await res.json());
 }
 
@@ -67,7 +70,7 @@ export async function POST(req: NextRequest) {
     },
   };
 
-  const res = await fetch(`${WP}/wp/v2/users/me`, {
+  const res = await fetch(`${WP}/prag-core/v1/profile`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.token}` },
     body: JSON.stringify(wpPayload),

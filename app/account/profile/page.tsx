@@ -32,41 +32,60 @@ interface Profile {
   avatar_urls?: Record<string, string>;
 }
 
+const EMPTY_FORM = {
+  first_name: '', last_name: '', email: '', phone: '',
+  address: '', city: '', state: '', postcode: '',
+};
+
+function mapProfileToForm(data: Profile) {
+  return {
+    first_name: data.first_name ?? '',
+    last_name: data.last_name ?? '',
+    email: data.email ?? '',
+    phone: data.meta?.prag_phone ?? '',
+    address: data.meta?.billing_address_1 ?? '',
+    city: data.meta?.billing_city ?? '',
+    state: data.meta?.billing_state ?? '',
+    postcode: data.meta?.billing_postcode ?? '',
+  };
+}
+
 export default function PersonalInfoPage() {
-  const [form, setForm] = useState({
-    first_name: '', last_name: '', email: '', phone: '',
-    address: '', city: '', state: '', postcode: '',
-  });
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [initialForm, setInitialForm] = useState(EMPTY_FORM);
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState('');
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
 
+  async function loadProfile() {
+    const res = await fetch('/api/account/profile', { cache: 'no-store' });
+    const data = await res.json().catch(() => null);
+    if (!res.ok || !data) {
+      throw new Error(String(data?.error ?? 'Failed to load profile.'));
+    }
+
+    const nextForm = mapProfileToForm(data as Profile);
+    setForm(nextForm);
+    setInitialForm(nextForm);
+    setAvatarUrl((data as Profile).meta?.prag_avatar || (data as Profile).avatar_urls?.['96'] || '');
+  }
+
   useEffect(() => {
-    fetch('/api/account/profile')
-      .then(r => r.json())
-      .then((data: Profile) => {
-        setForm({
-          first_name: data.first_name ?? '',
-          last_name: data.last_name ?? '',
-          email: data.email ?? '',
-          phone: data.meta?.prag_phone ?? '',
-          address: data.meta?.billing_address_1 ?? '',
-          city: data.meta?.billing_city ?? '',
-          state: data.meta?.billing_state ?? '',
-          postcode: data.meta?.billing_postcode ?? '',
-        });
-        setAvatarUrl(data.meta?.prag_avatar || data.avatar_urls?.['96'] || '');
+    loadProfile()
+      .catch((error) => {
+        setErrorMessage(error instanceof Error ? error.message : 'Failed to load profile.');
       })
-      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 
   async function handleSave() {
     setSaving(true);
+    setErrorMessage('');
     const res = await fetch('/api/account/profile', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -83,10 +102,26 @@ export default function PersonalInfoPage() {
         },
       }),
     });
+    const data = await res.json().catch(() => null);
     setSaving(false);
     setStatus(res.ok ? 'success' : 'error');
-    if (res.ok) setEditing(false);
+    if (res.ok && data) {
+      const nextForm = mapProfileToForm(data as Profile);
+      setForm(nextForm);
+      setInitialForm(nextForm);
+      setAvatarUrl((data as Profile).meta?.prag_avatar || (data as Profile).avatar_urls?.['96'] || '');
+      setEditing(false);
+    } else {
+      setErrorMessage(String(data?.error ?? 'Failed to save profile.'));
+    }
     setTimeout(() => setStatus('idle'), 3000);
+  }
+
+  function handleCancel() {
+    setForm(initialForm);
+    setEditing(false);
+    setStatus('idle');
+    setErrorMessage('');
   }
 
   async function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -140,15 +175,29 @@ export default function PersonalInfoPage() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <h2 className="text-zinc-900 text-2xl font-medium font-['Space_Grotesk'] leading-7">Personal Information</h2>
-        <button
-          onClick={() => editing ? handleSave() : setEditing(true)}
-          disabled={saving}
-          className="px-3 py-2 bg-white rounded-lg outline outline-1 outline-zinc-500 flex items-center gap-2 hover:outline-sky-700 hover:text-sky-700 transition-colors disabled:opacity-50">
-          <span className="text-zinc-500 text-sm font-medium font-['Space_Grotesk'] leading-5">
-            {saving ? 'Saving...' : editing ? 'Save' : 'Edit'}
-          </span>
-          <Pencil className="w-4 h-4 text-zinc-500" />
-        </button>
+        {editing ? (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleCancel}
+              disabled={saving}
+              className="px-3 py-2 bg-white rounded-lg outline outline-1 outline-zinc-300 text-zinc-600 text-sm font-medium font-['Space_Grotesk'] hover:outline-zinc-500 transition-colors disabled:opacity-50">
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="px-4 py-2 bg-sky-700 rounded-lg text-white text-sm font-medium font-['Space_Grotesk'] hover:bg-sky-800 transition-colors disabled:opacity-50">
+              {saving ? 'Saving...' : 'Save Changes'}
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => setEditing(true)}
+            className="px-3 py-2 bg-white rounded-lg outline outline-1 outline-zinc-500 flex items-center gap-2 hover:outline-sky-700 hover:text-sky-700 transition-colors">
+            <span className="text-zinc-500 text-sm font-medium font-['Space_Grotesk'] leading-5">Edit</span>
+            <Pencil className="w-4 h-4 text-zinc-500" />
+          </button>
+        )}
       </div>
 
       {status === 'success' && (
@@ -158,7 +207,13 @@ export default function PersonalInfoPage() {
       )}
       {status === 'error' && (
         <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm font-['Space_Grotesk']">
-          <AlertCircle size={16} /> Failed to save. Please try again.
+          <AlertCircle size={16} /> {errorMessage || 'Failed to save. Please try again.'}
+        </div>
+      )}
+
+      {!loading && !editing && errorMessage && status !== 'error' && (
+        <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-100 rounded-xl text-amber-700 text-sm font-['Space_Grotesk']">
+          <AlertCircle size={16} /> {errorMessage}
         </div>
       )}
 

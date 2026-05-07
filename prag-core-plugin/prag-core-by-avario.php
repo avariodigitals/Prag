@@ -153,6 +153,23 @@ class Prag_Core_Bridge {
             'permission_callback' => '__return_true',
         ]);
 
+        register_rest_route($namespace, '/profile', [
+            [
+                'methods' => 'GET',
+                'callback' => [$this, 'get_profile'],
+                'permission_callback' => function() {
+                    return is_user_logged_in();
+                },
+            ],
+            [
+                'methods' => 'POST',
+                'callback' => [$this, 'update_profile'],
+                'permission_callback' => function() {
+                    return is_user_logged_in();
+                },
+            ],
+        ]);
+
         // Distributor application endpoint
         register_rest_route($namespace, '/distributor', [
             'methods' => 'POST',
@@ -327,6 +344,140 @@ class Prag_Core_Bridge {
 
         retrieve_password($user->user_login);
         return ['success' => true];
+    }
+
+    private function build_profile_response($user_id) {
+        $user = get_userdata($user_id);
+        if (!$user) {
+            return new WP_Error('profile_not_found', 'Profile not found.', ['status' => 404]);
+        }
+
+        $meta = [
+            'prag_phone' => (string) get_user_meta($user_id, 'prag_phone', true),
+            'prag_avatar' => (string) get_user_meta($user_id, 'prag_avatar', true),
+            'billing_address_1' => (string) get_user_meta($user_id, 'billing_address_1', true),
+            'billing_city' => (string) get_user_meta($user_id, 'billing_city', true),
+            'billing_state' => (string) get_user_meta($user_id, 'billing_state', true),
+            'billing_postcode' => (string) get_user_meta($user_id, 'billing_postcode', true),
+        ];
+
+        if (class_exists('WC_Customer')) {
+            $customer = new WC_Customer($user_id);
+            if ($customer && $customer->get_id()) {
+                if (!$meta['prag_phone']) $meta['prag_phone'] = (string) $customer->get_billing_phone();
+                if (!$meta['billing_address_1']) $meta['billing_address_1'] = (string) $customer->get_billing_address_1();
+                if (!$meta['billing_city']) $meta['billing_city'] = (string) $customer->get_billing_city();
+                if (!$meta['billing_state']) $meta['billing_state'] = (string) $customer->get_billing_state();
+                if (!$meta['billing_postcode']) $meta['billing_postcode'] = (string) $customer->get_billing_postcode();
+            }
+        }
+
+        return [
+            'id' => $user->ID,
+            'first_name' => (string) get_user_meta($user_id, 'first_name', true),
+            'last_name' => (string) get_user_meta($user_id, 'last_name', true),
+            'email' => (string) $user->user_email,
+            'meta' => $meta,
+            'avatar_urls' => [
+                '96' => get_avatar_url($user_id, ['size' => 96]),
+            ],
+        ];
+    }
+
+    public function get_profile($request) {
+        $user_id = get_current_user_id();
+        if (!$user_id) {
+            return new WP_Error('unauthorized', 'Unauthorized', ['status' => 401]);
+        }
+
+        return $this->build_profile_response($user_id);
+    }
+
+    public function update_profile($request) {
+        $user_id = get_current_user_id();
+        if (!$user_id) {
+            return new WP_Error('unauthorized', 'Unauthorized', ['status' => 401]);
+        }
+
+        $params = $request->get_json_params();
+        $email = sanitize_email($params['email'] ?? '');
+        $first_name = sanitize_text_field($params['first_name'] ?? '');
+        $last_name = sanitize_text_field($params['last_name'] ?? '');
+        $phone = sanitize_text_field($params['meta']['prag_phone'] ?? '');
+        $billing_address_1 = sanitize_text_field($params['meta']['billing_address_1'] ?? '');
+        $billing_city = sanitize_text_field($params['meta']['billing_city'] ?? '');
+        $billing_state = sanitize_text_field($params['meta']['billing_state'] ?? '');
+        $billing_postcode = sanitize_text_field($params['meta']['billing_postcode'] ?? '');
+
+        if (!$email) {
+            return new WP_Error('missing_email', 'Email is required.', ['status' => 400]);
+        }
+
+        $existing = get_user_by('email', $email);
+        if ($existing && (int) $existing->ID !== (int) $user_id) {
+            return new WP_Error('email_exists', 'That email address is already in use.', ['status' => 409]);
+        }
+
+        $display_name = trim($first_name . ' ' . $last_name);
+        $updated = wp_update_user([
+            'ID' => $user_id,
+            'user_email' => $email,
+            'first_name' => $first_name,
+            'last_name' => $last_name,
+            'display_name' => $display_name ?: null,
+        ]);
+
+        if (is_wp_error($updated)) {
+            return $updated;
+        }
+
+        update_user_meta($user_id, 'first_name', $first_name);
+        update_user_meta($user_id, 'last_name', $last_name);
+        update_user_meta($user_id, 'prag_phone', $phone);
+        update_user_meta($user_id, 'billing_email', $email);
+        update_user_meta($user_id, 'billing_first_name', $first_name);
+        update_user_meta($user_id, 'billing_last_name', $last_name);
+        update_user_meta($user_id, 'billing_phone', $phone);
+        update_user_meta($user_id, 'billing_address_1', $billing_address_1);
+        update_user_meta($user_id, 'billing_city', $billing_city);
+        update_user_meta($user_id, 'billing_state', $billing_state);
+        update_user_meta($user_id, 'billing_postcode', $billing_postcode);
+        update_user_meta($user_id, 'billing_country', 'NG');
+        update_user_meta($user_id, 'shipping_first_name', $first_name);
+        update_user_meta($user_id, 'shipping_last_name', $last_name);
+        update_user_meta($user_id, 'shipping_address_1', $billing_address_1);
+        update_user_meta($user_id, 'shipping_city', $billing_city);
+        update_user_meta($user_id, 'shipping_state', $billing_state);
+        update_user_meta($user_id, 'shipping_postcode', $billing_postcode);
+        update_user_meta($user_id, 'shipping_country', 'NG');
+
+        if (class_exists('WC_Customer')) {
+            $customer = new WC_Customer($user_id);
+            if ($customer) {
+                $customer->set_email($email);
+                $customer->set_first_name($first_name);
+                $customer->set_last_name($last_name);
+                $customer->set_billing_email($email);
+                $customer->set_billing_first_name($first_name);
+                $customer->set_billing_last_name($last_name);
+                $customer->set_billing_phone($phone);
+                $customer->set_billing_address_1($billing_address_1);
+                $customer->set_billing_city($billing_city);
+                $customer->set_billing_state($billing_state);
+                $customer->set_billing_postcode($billing_postcode);
+                $customer->set_billing_country('NG');
+                $customer->set_shipping_first_name($first_name);
+                $customer->set_shipping_last_name($last_name);
+                $customer->set_shipping_address_1($billing_address_1);
+                $customer->set_shipping_city($billing_city);
+                $customer->set_shipping_state($billing_state);
+                $customer->set_shipping_postcode($billing_postcode);
+                $customer->set_shipping_country('NG');
+                $customer->save();
+            }
+        }
+
+        return $this->build_profile_response($user_id);
     }
 
     public function handle_distributor_application($request) {

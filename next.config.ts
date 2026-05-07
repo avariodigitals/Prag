@@ -1,5 +1,7 @@
 import type { NextConfig } from 'next';
 
+const isDev = process.env.NODE_ENV === 'development';
+
 const nextConfig: NextConfig = {
   devIndicators: false,
   httpAgentOptions: {
@@ -36,7 +38,10 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://js.paystack.co",
+              // Allow unsafe-eval only in dev (React DevTools / HMR need it)
+              isDev
+                ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://js.paystack.co"
+                : "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://js.paystack.co",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob: https://central.prag.global https://www.google-analytics.com https://www.googletagmanager.com",
               "font-src 'self' data:",

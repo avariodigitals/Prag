@@ -5,6 +5,34 @@ import { getSession } from '@/lib/auth';
 const WP = process.env.NEXT_PUBLIC_WP_API_URL ?? 'https://central.prag.global/wp-json';
 const WC = WP.replace('/wp-json', '/wp-json/wc/v3');
 
+interface WpUserProfile {
+  id: number;
+  name?: string;
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  avatar_urls?: Record<string, string>;
+  meta?: {
+    prag_phone?: string;
+    prag_avatar?: string;
+  };
+}
+
+interface WooCustomerProfile {
+  id: number;
+  email?: string;
+  first_name?: string;
+  last_name?: string;
+  avatar_url?: string;
+  billing?: {
+    phone?: string;
+    address_1?: string;
+    city?: string;
+    state?: string;
+    postcode?: string;
+  };
+}
+
 interface ProfilePayload {
   email?: string;
   first_name?: string;
@@ -36,19 +64,77 @@ async function readErrorMessage(res: Response, fallback: string) {
   }
 }
 
+async function fetchWpUser(token: string): Promise<WpUserProfile> {
+  const res = await fetch(`${WP}/wp/v2/users/me?_fields=id,name,first_name,last_name,email,avatar_urls,meta`, {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: 'no-store',
+  });
+
+  if (!res.ok) {
+    throw new Error(await readErrorMessage(res, 'Failed to fetch profile'));
+  }
+
+  return await res.json();
+}
+
+async function fetchWooCustomer(userId: number, email: string): Promise<WooCustomerProfile | null> {
+  if (!process.env.WC_CONSUMER_KEY || !process.env.WC_CONSUMER_SECRET) return null;
+
+  if (Number.isFinite(userId) && userId > 0) {
+    const direct = await fetch(`${WC}/customers/${userId}?${authQuery()}`, {
+      cache: 'no-store',
+    });
+    if (direct.ok) {
+      const customer = (await direct.json()) as WooCustomerProfile;
+      if (customer?.id) return customer;
+    }
+  }
+
+  if (!email) return null;
+
+  const search = await fetch(`${WC}/customers?${authQuery()}&per_page=100&search=${encodeURIComponent(email)}`, {
+    cache: 'no-store',
+  });
+  if (!search.ok) return null;
+
+  const customers = (await search.json()) as WooCustomerProfile[];
+  return customers.find((customer) => String(customer.email ?? '').trim().toLowerCase() === email.toLowerCase()) ?? null;
+}
+
+function mergeProfile(wpUser: WpUserProfile, wooCustomer: WooCustomerProfile | null) {
+  return {
+    id: wpUser.id,
+    first_name: wpUser.first_name ?? wooCustomer?.first_name ?? '',
+    last_name: wpUser.last_name ?? wooCustomer?.last_name ?? '',
+    email: wpUser.email ?? wooCustomer?.email ?? '',
+    meta: {
+      prag_phone: wpUser.meta?.prag_phone ?? wooCustomer?.billing?.phone ?? '',
+      prag_avatar: wpUser.meta?.prag_avatar ?? wooCustomer?.avatar_url ?? '',
+      billing_address_1: wooCustomer?.billing?.address_1 ?? '',
+      billing_city: wooCustomer?.billing?.city ?? '',
+      billing_state: wooCustomer?.billing?.state ?? '',
+      billing_postcode: wooCustomer?.billing?.postcode ?? '',
+    },
+    avatar_urls: wpUser.avatar_urls ?? {},
+  };
+}
+
+async function loadProfile(token: string) {
+  const wpUser = await fetchWpUser(token);
+  const wooCustomer = await fetchWooCustomer(Number(wpUser.id), String(wpUser.email ?? '').trim());
+  return mergeProfile(wpUser, wooCustomer);
+}
+
 export async function GET() {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const res = await fetch(`${WP}/prag-core/v1/profile`, {
-    headers: { Authorization: `Bearer ${session.token}` },
-    cache: 'no-store',
-  });
-  if (!res.ok) {
-    const message = await readErrorMessage(res, 'Failed to fetch profile');
-    return NextResponse.json({ error: message }, { status: res.status });
+  try {
+    return NextResponse.json(await loadProfile(session.token));
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to fetch profile';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
-  return NextResponse.json(await res.json());
 }
 
 export async function POST(req: NextRequest) {
@@ -70,21 +156,30 @@ export async function POST(req: NextRequest) {
     },
   };
 
-  const res = await fetch(`${WP}/prag-core/v1/profile`, {
+  const res = await fetch(`${WP}/wp/v2/users/me`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.token}` },
-    body: JSON.stringify(wpPayload),
+    body: JSON.stringify({
+      email: wpPayload.email,
+      first_name: wpPayload.first_name,
+      last_name: wpPayload.last_name,
+      meta: {
+        prag_phone: wpPayload.meta.prag_phone,
+      },
+    }),
   });
   if (!res.ok) {
     const message = await readErrorMessage(res, 'Failed to update profile');
     return NextResponse.json({ error: message }, { status: res.status });
   }
 
-  const updatedUser = await res.json();
+  const updatedUser = (await res.json()) as WpUserProfile;
 
   // Mirror customer-facing fields into Woo customer data when the account exists there.
-  if (process.env.WC_CONSUMER_KEY && process.env.WC_CONSUMER_SECRET && Number.isFinite(Number(updatedUser?.id))) {
-    await fetch(`${WC}/customers/${updatedUser.id}?${authQuery()}`, {
+  if (process.env.WC_CONSUMER_KEY && process.env.WC_CONSUMER_SECRET) {
+    const wooCustomer = await fetchWooCustomer(Number(updatedUser?.id), wpPayload.email);
+    if (wooCustomer?.id) {
+      const customerRes = await fetch(`${WC}/customers/${wooCustomer.id}?${authQuery()}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -113,7 +208,13 @@ export async function POST(req: NextRequest) {
         },
       }),
       cache: 'no-store',
-    }).catch(() => {});
+      });
+
+      if (!customerRes.ok) {
+        const message = await readErrorMessage(customerRes, 'Failed to update customer profile');
+        return NextResponse.json({ error: message }, { status: customerRes.status });
+      }
+    }
   }
 
   const cookieStore = await cookies();
@@ -129,5 +230,9 @@ export async function POST(req: NextRequest) {
     path: '/',
   });
 
-  return NextResponse.json(updatedUser);
+  try {
+    return NextResponse.json(await loadProfile(session.token));
+  } catch {
+    return NextResponse.json(mergeProfile(updatedUser, null));
+  }
 }

@@ -17,8 +17,13 @@ interface TrackingConfig {
   customFooterScripts?: string;
 }
 
+interface SiteSettings {
+  whatsapp?: string;
+}
+
 export default function TrackingLoader() {
   const [cfg, setCfg] = useState<TrackingConfig | null>(null);
+  const [fallbackWhatsapp, setFallbackWhatsapp] = useState('');
 
   useEffect(() => {
     const host = window.location.hostname;
@@ -28,9 +33,18 @@ export default function TrackingLoader() {
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    fetch('/api/settings', { cache: 'no-store' })
+      .then((r) => (r.ok ? (r.json() as Promise<SiteSettings>) : null))
+      .then((data) => setFallbackWhatsapp((data?.whatsapp ?? '').trim()))
+      .catch(() => {});
+  }, []);
+
   if (!cfg) return null;
 
-  const whatsappNumber = (cfg.whatsappChatNumber ?? '').replace(/\D/g, '');
+  const configuredWhatsapp = (cfg.whatsappChatNumber ?? '').trim();
+  const whatsappNumber = (configuredWhatsapp || fallbackWhatsapp).replace(/\D/g, '');
+  const isWhatsappEnabled = Boolean(cfg.whatsappChatEnabled) || (!configuredWhatsapp && Boolean(fallbackWhatsapp));
   const whatsappText = (cfg.whatsappChatText ?? '').trim() || 'Chat with us on WhatsApp';
   const whatsappHref = whatsappNumber
     ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hello, I need support from PRAG.')}`
@@ -84,7 +98,7 @@ export default function TrackingLoader() {
           dangerouslySetInnerHTML={{ __html: cfg.customFooterScripts }} />
       )}
 
-      {cfg.whatsappChatEnabled && whatsappHref && (
+      {isWhatsappEnabled && whatsappHref && (
         <a
           href={whatsappHref}
           target="_blank"

@@ -95,8 +95,29 @@ class Prag_Core_Bridge {
             'map_meta_cap' => true,
         ]);
 
-        foreach (['applicant_name', 'applicant_email', 'applicant_phone', 'business_name', 'business_city', 'business_type', 'partnership_tier', 'applicant_message', 'submitted_at'] as $meta) {
+        foreach (['applicant_name', 'applicant_email', 'applicant_phone', 'business_name', 'business_city', 'business_type', 'partnership_tier', 'applicant_message', 'submitted_at', 'application_status'] as $meta) {
             register_post_meta('prag_distributor', $meta, [
+                'type'          => 'string',
+                'single'        => true,
+                'show_in_rest'  => false,
+                'auth_callback' => function() { return current_user_can('edit_posts'); },
+            ]);
+        }
+
+        // prag_contact — Contact form submissions
+        register_post_type('prag_contact', [
+            'labels'       => ['name' => 'Enquiries', 'singular_name' => 'Contact Enquiry'],
+            'public'       => false,
+            'show_ui'      => true,
+            'show_in_menu' => true,
+            'supports'     => ['title', 'custom-fields'],
+            'menu_icon'    => 'dashicons-email-alt',
+            'capabilities' => ['create_posts' => 'do_not_allow'],
+            'map_meta_cap' => true,
+        ]);
+
+        foreach (['contact_name', 'contact_email', 'contact_phone', 'contact_company', 'enquiry_type', 'contact_message', 'submitted_at', 'contact_status'] as $meta) {
+            register_post_meta('prag_contact', $meta, [
                 'type'          => 'string',
                 'single'        => true,
                 'show_in_rest'  => false,
@@ -238,6 +259,44 @@ class Prag_Core_Bridge {
             [
                 'methods' => 'POST',
                 'callback' => [$this, 'upload_product_document'],
+                'permission_callback' => [$this, 'check_admin_permissions'],
+            ],
+        ]);
+
+        // B2B Enquiries (contact form submissions)
+        register_rest_route($namespace, '/b2b/enquiries', [
+            'methods'             => 'GET',
+            'callback'            => [$this, 'list_enquiries'],
+            'permission_callback' => [$this, 'check_admin_permissions'],
+        ]);
+        register_rest_route($namespace, '/b2b/enquiries/(?P<id>\d+)', [
+            [
+                'methods'             => 'PATCH',
+                'callback'            => [$this, 'update_enquiry_status'],
+                'permission_callback' => [$this, 'check_admin_permissions'],
+            ],
+            [
+                'methods'             => 'DELETE',
+                'callback'            => [$this, 'delete_enquiry'],
+                'permission_callback' => [$this, 'check_admin_permissions'],
+            ],
+        ]);
+
+        // B2B Distributor Applications
+        register_rest_route($namespace, '/b2b/distributors', [
+            'methods'             => 'GET',
+            'callback'            => [$this, 'list_distributors'],
+            'permission_callback' => [$this, 'check_admin_permissions'],
+        ]);
+        register_rest_route($namespace, '/b2b/distributors/(?P<id>\d+)', [
+            [
+                'methods'             => 'PATCH',
+                'callback'            => [$this, 'update_distributor_status'],
+                'permission_callback' => [$this, 'check_admin_permissions'],
+            ],
+            [
+                'methods'             => 'DELETE',
+                'callback'            => [$this, 'delete_distributor'],
                 'permission_callback' => [$this, 'check_admin_permissions'],
             ],
         ]);
@@ -552,6 +611,23 @@ class Prag_Core_Bridge {
         $enquiry_type = sanitize_text_field($p['enquiry_type'] ?? '');
         $message      = sanitize_textarea_field($p['message']);
 
+        // Persist to prag_contact CPT so the admin can view/manage submissions
+        $post_id = wp_insert_post([
+            'post_type'   => 'prag_contact',
+            'post_title'  => $name . ' – ' . ($enquiry_type ?: 'General Enquiry'),
+            'post_status' => 'private',
+            'meta_input'  => [
+                'contact_name'    => $name,
+                'contact_email'   => $email,
+                'contact_phone'   => $phone,
+                'contact_company' => $company,
+                'enquiry_type'    => $enquiry_type ?: 'General Enquiry',
+                'contact_message' => $message,
+                'contact_status'  => 'new',
+                'submitted_at'    => current_time('c'),
+            ],
+        ]);
+
         $site_name  = get_bloginfo('name');
         $from_email = 'noreply@' . parse_url(get_site_url(), PHP_URL_HOST);
         $recipients = $this->get_form_recipients('contact');
@@ -573,13 +649,9 @@ class Prag_Core_Bridge {
         $body    .= "\r\nMessage:\r\n{$message}\r\n\r\n";
         $body    .= "-- \r\n{$site_name}\r\n";
 
-        $sent = wp_mail($recipients, $subject, $body, $headers);
+        wp_mail($recipients, $subject, $body, $headers);
 
-        if (!$sent) {
-            return new WP_Error('mail_failed', 'Failed to send message.', ['status' => 500]);
-        }
-
-        // --- Acknowledgment to customer ---
+        // --- Acknowledgment to customer (best-effort) ---
         $ack_subject = 'We received your message – ' . $site_name;
         $ack_body    = "Hi {$name},\r\n\r\n";
         $ack_body   .= "Thank you for reaching out. We have received your message and will get back to you shortly.\r\n\r\n";
@@ -593,7 +665,7 @@ class Prag_Core_Bridge {
 
         wp_mail($email, $ack_subject, $ack_body, $ack_headers);
 
-        return ['success' => true, 'message' => 'Message sent'];
+        return ['success' => true, 'message' => 'Message received', 'id' => $post_id];
     }
 
     public function handle_distributor_application($request) {
@@ -846,6 +918,179 @@ class Prag_Core_Bridge {
             'pages' => '',
             'product_id' => $product_id,
         ]);
+    }
+
+    // -----------------------------------------------------------------------
+    // B2B Enquiries (prag_contact CPT)
+    // -----------------------------------------------------------------------
+
+    public function list_enquiries($request) {
+        $page     = max(1, intval($request->get_param('page') ?: 1));
+        $search   = sanitize_text_field($request->get_param('search') ?: '');
+        $status   = sanitize_text_field($request->get_param('status') ?: '');
+        $per_page = 20;
+
+        $args = [
+            'post_type'      => 'prag_contact',
+            'post_status'    => ['private', 'publish'],
+            'posts_per_page' => $per_page,
+            'paged'          => $page,
+            'orderby'        => 'date',
+            'order'          => 'DESC',
+        ];
+
+        if ($status) {
+            $args['meta_query'] = [[
+                'key'     => 'contact_status',
+                'value'   => $status,
+                'compare' => '=',
+            ]];
+        }
+
+        if ($search) {
+            $args['meta_query'] = array_merge(
+                isset($args['meta_query']) ? $args['meta_query'] : [],
+                [
+                    'relation' => 'OR',
+                    ['key' => 'contact_name',  'value' => $search, 'compare' => 'LIKE'],
+                    ['key' => 'contact_email', 'value' => $search, 'compare' => 'LIKE'],
+                    ['key' => 'contact_company', 'value' => $search, 'compare' => 'LIKE'],
+                ]
+            );
+        }
+
+        $query = new WP_Query($args);
+        $total = $query->found_posts;
+
+        $data = array_map(function($post) {
+            return [
+                'id'      => strval($post->ID),
+                'name'    => get_post_meta($post->ID, 'contact_name', true)    ?: '',
+                'company' => get_post_meta($post->ID, 'contact_company', true) ?: '',
+                'email'   => get_post_meta($post->ID, 'contact_email', true)   ?: '',
+                'phone'   => get_post_meta($post->ID, 'contact_phone', true)   ?: '',
+                'type'    => get_post_meta($post->ID, 'enquiry_type', true)    ?: 'General Enquiry',
+                'message' => get_post_meta($post->ID, 'contact_message', true) ?: '',
+                'status'  => get_post_meta($post->ID, 'contact_status', true)  ?: 'new',
+                'date'    => get_post_meta($post->ID, 'submitted_at', true)    ?: $post->post_date,
+            ];
+        }, $query->posts);
+
+        $response = rest_ensure_response(['data' => $data, 'total' => $total]);
+        $response->header('X-WP-Total', $total);
+        return $response;
+    }
+
+    public function update_enquiry_status($request) {
+        $id     = intval($request->get_param('id'));
+        $body   = $request->get_json_params();
+        $status = sanitize_text_field($body['status'] ?? '');
+
+        if (!$id || get_post_type($id) !== 'prag_contact') {
+            return new WP_Error('not_found', 'Enquiry not found', ['status' => 404]);
+        }
+
+        update_post_meta($id, 'contact_status', $status);
+        return ['ok' => true];
+    }
+
+    public function delete_enquiry($request) {
+        $id = intval($request->get_param('id'));
+
+        if (!$id || get_post_type($id) !== 'prag_contact') {
+            return new WP_Error('not_found', 'Enquiry not found', ['status' => 404]);
+        }
+
+        wp_trash_post($id);
+        return ['ok' => true];
+    }
+
+    // -----------------------------------------------------------------------
+    // B2B Distributor Applications (prag_distributor CPT)
+    // -----------------------------------------------------------------------
+
+    public function list_distributors($request) {
+        $page     = max(1, intval($request->get_param('page') ?: 1));
+        $search   = sanitize_text_field($request->get_param('search') ?: '');
+        $status   = sanitize_text_field($request->get_param('status') ?: '');
+        $per_page = 20;
+
+        $args = [
+            'post_type'      => 'prag_distributor',
+            'post_status'    => ['private', 'publish'],
+            'posts_per_page' => $per_page,
+            'paged'          => $page,
+            'orderby'        => 'date',
+            'order'          => 'DESC',
+        ];
+
+        if ($status) {
+            $args['meta_query'] = [[
+                'key'     => 'application_status',
+                'value'   => $status,
+                'compare' => '=',
+            ]];
+        }
+
+        if ($search) {
+            $args['meta_query'] = array_merge(
+                isset($args['meta_query']) ? $args['meta_query'] : [],
+                [
+                    'relation' => 'OR',
+                    ['key' => 'applicant_name',  'value' => $search, 'compare' => 'LIKE'],
+                    ['key' => 'applicant_email', 'value' => $search, 'compare' => 'LIKE'],
+                    ['key' => 'business_name',   'value' => $search, 'compare' => 'LIKE'],
+                ]
+            );
+        }
+
+        $query = new WP_Query($args);
+        $total = $query->found_posts;
+
+        $data = array_map(function($post) {
+            return [
+                'id'      => strval($post->ID),
+                'name'    => get_post_meta($post->ID, 'applicant_name', true)    ?: '',
+                'company' => get_post_meta($post->ID, 'business_name', true)     ?: '',
+                'email'   => get_post_meta($post->ID, 'applicant_email', true)   ?: '',
+                'phone'   => get_post_meta($post->ID, 'applicant_phone', true)   ?: '',
+                'city'    => get_post_meta($post->ID, 'business_city', true)     ?: '',
+                'state'   => '',
+                'tier'    => get_post_meta($post->ID, 'partnership_tier', true)  ?: '',
+                'type'    => get_post_meta($post->ID, 'business_type', true)     ?: '',
+                'message' => get_post_meta($post->ID, 'applicant_message', true) ?: '',
+                'status'  => get_post_meta($post->ID, 'application_status', true) ?: 'new',
+                'date'    => get_post_meta($post->ID, 'submitted_at', true)      ?: $post->post_date,
+            ];
+        }, $query->posts);
+
+        $response = rest_ensure_response(['data' => $data, 'total' => $total]);
+        $response->header('X-WP-Total', $total);
+        return $response;
+    }
+
+    public function update_distributor_status($request) {
+        $id     = intval($request->get_param('id'));
+        $body   = $request->get_json_params();
+        $status = sanitize_text_field($body['status'] ?? '');
+
+        if (!$id || get_post_type($id) !== 'prag_distributor') {
+            return new WP_Error('not_found', 'Application not found', ['status' => 404]);
+        }
+
+        update_post_meta($id, 'application_status', $status);
+        return ['ok' => true];
+    }
+
+    public function delete_distributor($request) {
+        $id = intval($request->get_param('id'));
+
+        if (!$id || get_post_type($id) !== 'prag_distributor') {
+            return new WP_Error('not_found', 'Application not found', ['status' => 404]);
+        }
+
+        wp_trash_post($id);
+        return ['ok' => true];
     }
 
     /**

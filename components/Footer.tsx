@@ -72,6 +72,7 @@ export default function Footer({ settings }: { settings?: SiteSettings }) {
             <div className="flex flex-col justify-start items-start gap-1.5">
               <Link href="/contact" className="text-white/70 text-base font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Contact Us</Link>
               <Link href="/power-calculator" className="text-white/70 text-base font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Power Calculator</Link>
+              <Link href="/compare" className="text-white/70 text-base font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Compare Products</Link>
               <Link href="/resources" className="text-white/70 text-base font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Technical Resources</Link>
               <Link href="/shipping-policy" className="text-white/70 text-base font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Shipping Policy</Link>
               <Link href="/return-policy" className="text-white/70 text-base font-normal font-['Space_Grotesk'] hover:text-white transition-colors">Return policy</Link>

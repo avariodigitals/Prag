@@ -79,14 +79,14 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
               className="w-full h-full object-contain p-1 md:p-1 group-hover:scale-105 transition-transform duration-300 mix-blend-multiply"
             />
 
-            <div className="absolute left-2 md:left-3 top-2 md:top-14 z-10 flex flex-col gap-1">
-              {isActuallyOutOfStock && (
+            <div className="absolute left-2 md:left-2 top-2 md:top-2 z-10 flex flex-col gap-1.5">
+              {isActuallyOutOfStock && hasValidPrice && (
                 <span className="px-2 py-1 rounded-full bg-rose-100 text-rose-700 text-[10px] font-semibold font-['Space_Grotesk'] uppercase tracking-wide">
                   Out of stock
                 </span>
               )}
               {product.on_sale && !isOutOfStock && (
-                <span className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-red-600 text-white text-xs md:text-sm font-bold font-['Space_Grotesk'] uppercase tracking-tight flex items-center justify-center leading-none">
+                <span className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-red-600 text-white text-sm md:text-base font-bold font-['Space_Grotesk'] uppercase tracking-tight flex items-center justify-center leading-none">
                   Sale
                 </span>
               )}
@@ -101,9 +101,9 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
               onClick={handleWishlist}
               disabled={saving}
               aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-              className="absolute right-2 md:right-3 top-2 md:top-14 p-1.5 bg-white/90 backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-colors z-10"
+              className="absolute right-2 md:right-3 top-2 md:top-2 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-colors z-10"
             >
-              <Heart className={`w-4 h-4 transition-colors ${wishlisted ? 'text-sky-700 fill-sky-700' : 'text-zinc-500'}`} />
+              <Heart className={`w-5 h-5 md:w-6 md:h-6 transition-colors ${wishlisted ? 'text-sky-700 fill-sky-700' : 'text-zinc-500'}`} />
             </button>
           </>
         ) : (

@@ -81,10 +81,10 @@ export default function OrderReceivedModal({
             <div className="p-2.5 bg-sky-700/10 rounded-full">
               <CheckCircle className="w-14 h-14 text-sky-700" />
             </div>
-            <h2 className="text-neutral-950 text-xl md:text-2xl font-medium font-['Space_Grotesk'] leading-7 text-center">
+            <h2 className="text-neutral-950 text-xl md:text-2xl font-medium font-['Montserrat'] leading-7 text-center">
               Order Received
             </h2>
-            <p className="text-zinc-500 text-sm font-normal font-['Space_Grotesk'] leading-5 text-center">
+            <p className="text-zinc-500 text-base md:text-lg font-normal font-['Montserrat'] leading-5 text-center">
               Thank you for your order!
             </p>
           </div>
@@ -94,18 +94,18 @@ export default function OrderReceivedModal({
           {/* Order details */}
           <div className="w-full flex flex-col gap-5">
             <div className="flex justify-between items-start">
-              <span className="text-neutral-950 text-base font-medium font-['Space_Grotesk'] leading-6">
+              <span className="text-neutral-950 text-base font-medium font-['Montserrat'] leading-6">
                 Order Number
               </span>
-              <span className="text-sky-700 text-lg md:text-2xl font-medium font-['Space_Grotesk'] leading-7 text-right break-all">
+              <span className="text-sky-700 text-lg md:text-2xl font-medium font-['Montserrat'] leading-7 text-right break-all">
                 {orderId ? `#${orderId}` : '—'}
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-neutral-950 text-base font-medium font-['Space_Grotesk'] leading-6">
+              <span className="text-neutral-950 text-base font-medium font-['Montserrat'] leading-6">
                 Order Date
               </span>
-              <span className="text-neutral-700 text-base md:text-lg font-medium font-['Space_Grotesk'] leading-7 text-right">
+              <span className="text-neutral-700 text-base md:text-lg font-medium font-['Montserrat'] leading-7 text-right">
                 {orderDate}
               </span>
             </div>
@@ -113,7 +113,7 @@ export default function OrderReceivedModal({
 
           {/* Confirmation message */}
           <div className="w-full p-4 md:p-6 bg-sky-700/10 rounded-xl flex justify-center items-center">
-            <p className="text-center text-sky-700 text-sm md:text-lg font-medium font-['Space_Grotesk'] leading-6 md:leading-7">
+            <p className="text-center text-sky-700 text-base md:text-lg font-medium font-['Montserrat'] leading-6 md:leading-7">
               We&apos;ve sent a confirmation email with your order details. Our sales representative will reach out to you in a short while.
             </p>
           </div>
@@ -124,7 +124,7 @@ export default function OrderReceivedModal({
               href="/products"
               className="w-full h-12 md:h-16 px-6 py-3 md:py-4 bg-sky-700 rounded-[30px] flex justify-center items-center hover:bg-sky-800 transition-colors"
             >
-              <span className="text-white text-base md:text-lg font-medium font-['Space_Grotesk'] leading-7">
+              <span className="text-white text-base md:text-lg font-medium font-['Montserrat'] leading-7">
                 Continue Shopping
               </span>
             </Link>
@@ -133,19 +133,19 @@ export default function OrderReceivedModal({
               type="button"
               onClick={() => void createAccount()}
               disabled={creating || created}
-              className="w-full h-12 md:h-16 px-6 py-3 md:py-4 rounded-[30px] border border-sky-700 text-sky-700 text-base md:text-lg font-medium font-['Space_Grotesk'] leading-7 hover:bg-sky-50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full h-12 md:h-16 px-6 py-3 md:py-4 rounded-[30px] border border-sky-700 text-sky-700 text-base md:text-lg font-medium font-['Montserrat'] leading-7 hover:bg-sky-50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {created ? 'Account Created' : creating ? 'Creating Account...' : 'Create an Account'}
             </button>
 
             {created && (
-              <p className="text-center text-emerald-700 text-sm font-medium font-['Space_Grotesk']">
+              <p className="text-center text-emerald-700 text-base md:text-lg font-medium font-['Montserrat']">
                 Account created successfully. Please check your email for OTP verification.
               </p>
             )}
 
             {accountError && (
-              <p className="text-center text-rose-600 text-sm font-medium font-['Space_Grotesk']">
+              <p className="text-center text-rose-600 text-base md:text-lg font-medium font-['Montserrat']">
                 {accountError}
               </p>
             )}

@@ -85,7 +85,7 @@ export default function ProductsSidebar({ categories, tags }: Props) {
       {hasFilters && (
         <button
           onClick={clearAll}
-          className="text-xs text-red-500 font-medium font-['Space_Grotesk'] hover:text-red-700 text-left"
+          className="text-xs text-red-500 font-medium font-['Montserrat'] hover:text-red-700 text-left"
         >
           ✕ Clear all filters
         </button>
@@ -93,7 +93,7 @@ export default function ProductsSidebar({ categories, tags }: Props) {
 
       {/* Categories */}
       <div className="flex flex-col gap-3">
-        <span className="text-gray-900 text-base font-semibold font-['Space_Grotesk']">Product Categories</span>
+        <span className="text-gray-900 text-base font-semibold font-['Montserrat']">Product Categories</span>
         <div className="flex flex-col gap-2">
           {displayCategories.map((cat) => (
             <button
@@ -103,12 +103,12 @@ export default function ProductsSidebar({ categories, tags }: Props) {
                 activeCategory === cat.slug ? 'text-sky-700 font-semibold' : 'text-gray-700 hover:text-sky-700'
               }`}
             >
-              <span className="text-sm font-['Space_Grotesk']">{cat.name}</span>
-              <span className="text-sky-700 text-xs font-['Space_Grotesk']">({cat.count})</span>
+              <span className="text-base md:text-lg font-['Montserrat']">{cat.name}</span>
+              <span className="text-sky-700 text-xs font-['Montserrat']">({cat.count})</span>
             </button>
           ))}
           {displayCategories.length === 0 && (
-            <p className="text-xs text-zinc-400 font-['Space_Grotesk']">No categories available.</p>
+            <p className="text-xs text-zinc-400 font-['Montserrat']">No categories available.</p>
           )}
         </div>
         <div className="w-full h-px bg-stone-100" />
@@ -116,7 +116,7 @@ export default function ProductsSidebar({ categories, tags }: Props) {
 
       {/* Price Range */}
       <div className="flex flex-col gap-4">
-        <span className="text-gray-900 text-base font-semibold font-['Space_Grotesk']">Price Range</span>
+        <span className="text-gray-900 text-base font-semibold font-['Montserrat']">Price Range</span>
         <div className="flex items-center gap-2">
           <input
             type="number"
@@ -136,7 +136,7 @@ export default function ProductsSidebar({ categories, tags }: Props) {
         </div>
         <button
           onClick={applyPrice}
-          className="w-full py-2 bg-sky-700 text-white text-sm font-medium font-['Space_Grotesk'] rounded-lg hover:bg-sky-800 transition-colors"
+          className="w-full py-2 bg-sky-700 text-white text-sm font-medium font-['Montserrat'] rounded-lg hover:bg-sky-800 transition-colors"
         >
           Apply Price
         </button>
@@ -146,7 +146,7 @@ export default function ProductsSidebar({ categories, tags }: Props) {
       {/* Tags */}
       {tags.length > 0 && (
         <div className="flex flex-col gap-4">
-          <span className="text-gray-900 text-base font-semibold font-['Space_Grotesk']">Product Tags</span>
+          <span className="text-gray-900 text-base font-semibold font-['Montserrat']">Product Tags</span>
           <div className="flex flex-wrap gap-2">
             {tags.map((tag) => (
               <button

@@ -1,6 +1,5 @@
 import { getPage } from '@/lib/woocommerce';
 import PolicyPageLayout from '@/components/PolicyPageLayout';
-import Link from 'next/link';
 
 export const metadata = { title: 'Shipping Policy - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more' };
 
@@ -32,7 +31,7 @@ const STATIC_SECTIONS = [
     body: (
       <div className="flex flex-col gap-6">
         <div>
-          <h3 className="text-neutral-950 text-lg font-semibold font-['Space_Grotesk'] mb-3">Delivery</h3>
+          <h3 className="text-neutral-950 text-lg font-semibold font-['Montserrat'] mb-3">Delivery</h3>
           <ul className="list-disc pl-5 space-y-2 text-neutral-700">
             <li>Available nationwide</li>
             <li>Delivery fees vary by location</li>
@@ -40,7 +39,7 @@ const STATIC_SECTIONS = [
           </ul>
         </div>
         <div>
-          <h3 className="text-neutral-950 text-lg font-semibold font-['Space_Grotesk'] mb-3">Installation</h3>
+          <h3 className="text-neutral-950 text-lg font-semibold font-['Montserrat'] mb-3">Installation</h3>
           <ul className="list-disc pl-5 space-y-2 text-neutral-700">
             <li>Installation is not mandatory through PRAG</li>
             <li>Customers are responsible for ensuring proper installation</li>
@@ -71,12 +70,7 @@ export default async function ShippingPolicyPage() {
     return (
       <main className="w-full bg-white flex flex-col">
         <div className="w-full px-4 md:px-20 py-6 md:py-10 bg-stone-50 flex flex-col gap-4 md:gap-6">
-          <div className="flex items-center gap-1">
-            <Link href="/" className="text-sky-700 text-sm md:text-base font-medium font-['Onest'] hover:underline">Home</Link>
-            <span className="text-zinc-500 text-xs md:text-base font-medium font-['Onest'] mx-1">/</span>
-            <span className="text-zinc-500 text-xs md:text-base font-medium font-['Onest']">Shipping Policy</span>
-          </div>
-          <h1 className="text-black text-2xl md:text-3xl font-medium font-['Onest']"
+          <h1 className="text-black text-2xl md:text-3xl font-medium font-['Montserrat']"
             dangerouslySetInnerHTML={{ __html: sanitizeHtml(wpPage.title.rendered) }}
           />
         </div>
@@ -106,8 +100,8 @@ export default async function ShippingPolicyPage() {
             <div className="flex flex-col gap-4">
               {DELIVERY_TIMEFRAMES.map((item) => (
                 <div key={item.area} className="px-4 border-l-[5px] border-sky-700 flex flex-col gap-2">
-                  <p className="text-neutral-950 text-lg font-medium font-['Space_Grotesk']">{item.area}</p>
-                  <p className="text-neutral-700 text-base font-normal font-['Space_Grotesk']">{item.time}</p>
+                  <p className="text-neutral-950 text-lg font-medium font-['Montserrat']">{item.area}</p>
+                  <p className="text-neutral-700 text-base font-normal font-['Montserrat']">{item.time}</p>
                 </div>
               ))}
             </div>
@@ -119,7 +113,7 @@ export default async function ShippingPolicyPage() {
             <div className="flex flex-col gap-6">
               <p>{STATIC_SECTIONS[1].body}</p>
               <div className="p-6 bg-sky-700/10 rounded-xl">
-                <p className="text-sky-700 text-lg font-medium font-['Space_Grotesk'] leading-7">
+                <p className="text-sky-700 text-lg font-medium font-['Montserrat'] leading-7">
                   Free Shipping on orders above ₦500,000 within Lagos
                 </p>
               </div>

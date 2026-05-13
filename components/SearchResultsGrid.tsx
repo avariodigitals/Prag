@@ -92,19 +92,19 @@ function SearchResultsGridContent({ products, total, query }: Props) {
   return (
     <div className="flex-1 flex flex-col gap-6">
       {/* Toolbar */}
-      <div className="flex justify-between items-center">
-        <p className="text-sm md:text-2xl font-medium font-['Space_Grotesk']">
+      <div className="flex flex-col gap-3 md:flex-row md:justify-between md:items-center">
+        <p className="text-[22px] md:text-2xl font-medium font-['Montserrat'] leading-relaxed">
           <span className="text-zinc-500">Found</span>
           <span className="text-black"> {total} </span>
           <span className="text-zinc-500">results for</span>
           <span className="text-black"> &quot;{query}&quot;</span>
         </p>
 
-        <div className="relative">
+        <div className="relative w-full md:w-auto">
           <select
             defaultValue={searchParams.get('sort') ?? ''}
             onChange={(e) => setSort(e.target.value)}
-            className="appearance-none p-2.5 pr-8 bg-white rounded-lg outline outline-[0.3px] outline-neutral-500 text-neutral-500 text-base font-medium font-['Space_Grotesk'] cursor-pointer"
+            className="appearance-none w-full md:w-auto p-2.5 pr-8 bg-white rounded-lg outline outline-[0.3px] outline-neutral-500 text-neutral-500 text-base font-medium font-['Montserrat'] cursor-pointer"
           >
             {SORT_OPTIONS.map((o) => (
               <option key={o.value} value={o.value}>{o.label}</option>
@@ -117,7 +117,7 @@ function SearchResultsGridContent({ products, total, query }: Props) {
       {/* Grid */}
       {items.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 gap-4">
-          <p className="text-gray-400 text-lg font-['Space_Grotesk']">
+          <p className="text-gray-400 text-lg font-['Montserrat']">
             {query ? `No results found for "${query}".` : 'Enter a search term above.'}
           </p>
         </div>
@@ -144,7 +144,7 @@ function SearchResultsGridContent({ products, total, query }: Props) {
       )}
 
       {!hasMore && items.length > 0 && (
-        <p className="text-center text-zinc-400 text-xs font-['Space_Grotesk'] py-2">All products loaded</p>
+        <p className="text-center text-zinc-400 text-xs font-['Montserrat'] py-2">All products loaded</p>
       )}
     </div>
   );

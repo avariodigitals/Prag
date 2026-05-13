@@ -16,7 +16,7 @@ export default function AccountSidebar() {
 
   return (
     <div className="p-4 bg-white rounded-lg outline outline-1 outline-zinc-100 flex flex-col gap-6 shrink-0">
-      <span className="text-zinc-900 text-xl font-medium font-['Onest'] leading-6">Account</span>
+      <span className="text-zinc-900 text-xl font-medium font-['Montserrat'] leading-6">Account</span>
       <div className="flex flex-col gap-3">
         {NAV.map(({ label, href, icon: Icon }) => {
           const active = pathname === href;
@@ -24,7 +24,7 @@ export default function AccountSidebar() {
             <Link key={href} href={href}
               className={`w-60 px-4 py-3 rounded flex items-center gap-3 transition-colors ${active ? 'bg-blue-100' : 'hover:bg-gray-50'}`}>
               <Icon className={`w-5 h-5 ${active ? 'text-sky-700' : 'text-neutral-700'}`} />
-              <span className={`flex-1 text-sm font-['Onest'] leading-5 ${active ? 'text-sky-700 font-medium' : 'text-slate-700 font-normal'}`}>
+              <span className={`flex-1 text-sm font-['Montserrat'] leading-5 ${active ? 'text-sky-700 font-medium' : 'text-slate-700 font-normal'}`}>
                 {label}
               </span>
             </Link>

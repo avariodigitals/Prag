@@ -1,14 +1,19 @@
 import type { Metadata, Viewport } from 'next';
-import { Onest, Space_Grotesk } from 'next/font/google';
+import { Montserrat } from 'next/font/google';
 import Script from 'next/script';
 import { CartProvider } from '@/lib/CartContext';
 import { WishlistProvider } from '@/lib/WishlistContext';
 import TrackingLoader from '@/components/TrackingLoader';
+import CookieConsentLoader from '@/components/CookieConsentLoader';
 import SiteShell from '@/components/SiteShell';
 import './globals.css';
 
-const onest = Onest({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-onest', display: 'swap' });
-const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-space-grotesk', display: 'swap' });
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+  variable: '--font-montserrat',
+  display: 'swap',
+});
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -64,7 +69,7 @@ export default async function RootLayout({ children, modal }: { children: React.
           fetchPriority="high"
         />
       </head>
-      <body className={`${onest.variable} ${spaceGrotesk.variable} antialiased`} suppressHydrationWarning>
+      <body className={`${montserrat.variable} antialiased`} suppressHydrationWarning>
         <Script
           async
           src="https://www.googletagmanager.com/gtag/js?id=G-K1FJPNG5K9"
@@ -73,6 +78,7 @@ export default async function RootLayout({ children, modal }: { children: React.
         <Script id="ga-hardcoded-fallback" strategy="afterInteractive">
           {`window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-K1FJPNG5K9');`}
         </Script>
+        <CookieConsentLoader />
         <CartProvider>
           <WishlistProvider>
             <SiteShell>

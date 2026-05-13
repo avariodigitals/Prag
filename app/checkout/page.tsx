@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import CheckoutView from '@/components/CheckoutView';
 
 export const dynamic = 'force-dynamic';
@@ -7,16 +6,8 @@ export const metadata = { title: 'Checkout - Nigeria Number #1 Inverter, Battery
 export default function CheckoutPage() {
   return (
     <main className="w-full bg-white flex flex-col">
-      {/* Breadcrumb + title */}
       <div className="w-full px-4 md:px-20 py-6 md:py-10 bg-stone-50 flex flex-col gap-4 md:gap-6">
-        <div className="flex items-center gap-1 flex-wrap">
-          <Link href="/products" className="text-sky-700 text-sm md:text-base font-medium font-['Onest'] hover:underline">Product Catalog</Link>
-          <span className="text-zinc-500 text-sm font-medium font-['Onest'] mx-1">/</span>
-          <Link href="/cart" className="text-zinc-500 text-sm md:text-base font-medium font-['Onest'] hover:underline">Cart</Link>
-          <span className="text-zinc-500 text-sm font-medium font-['Onest'] mx-1">/</span>
-          <span className="text-zinc-500 text-sm md:text-base font-medium font-['Onest']">Check out</span>
-        </div>
-        <h1 className="text-black text-2xl md:text-3xl font-medium font-['Onest']">Checkout</h1>
+        <h1 className="text-black text-2xl md:text-3xl font-medium font-['Montserrat']">Checkout</h1>
       </div>
 
       <CheckoutView />

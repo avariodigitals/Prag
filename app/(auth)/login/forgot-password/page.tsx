@@ -4,7 +4,7 @@ import AuthPanel from '@/components/AuthPanel';
 import Link from 'next/link';
 import { useState } from 'react';
 
-const inputCls = "w-full h-12 px-4 bg-white rounded-xl border border-gray-200 text-neutral-700 text-sm font-normal font-['Space_Grotesk'] focus:border-sky-700 focus:outline-none transition-colors";
+const inputCls = "w-full h-12 px-4 bg-white rounded-xl border border-gray-200 text-neutral-700 text-sm font-normal font-['Montserrat'] focus:border-sky-700 focus:outline-none transition-colors";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -47,28 +47,28 @@ export default function ForgotPasswordPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
               </div>
-              <h2 className="text-stone-900 text-2xl font-semibold font-['Onest']">Check your email</h2>
-              <p className="text-neutral-500 text-sm font-['Space_Grotesk']">
+              <h2 className="text-stone-900 text-2xl font-semibold font-['Montserrat']">Check your email</h2>
+              <p className="text-neutral-500 text-base md:text-lg font-['Montserrat']">
                 We sent a password reset link to <span className="text-zinc-900 font-medium">{email}</span>
               </p>
-              <Link href="/login" className="text-sky-700 text-sm font-medium font-['Space_Grotesk'] hover:underline">
+              <Link href="/login" className="text-sky-700 text-sm font-medium font-['Montserrat'] hover:underline">
                 Back to login
               </Link>
             </div>
           ) : (
             <>
               <div className="flex flex-col gap-2">
-                <h2 className="text-stone-900 text-3xl font-semibold font-['Onest'] leading-tight">Forgot password?</h2>
-                <p className="text-neutral-500 text-sm font-['Space_Grotesk']">Enter your email and we&apos;ll send you a reset link.</p>
+                <h2 className="text-stone-900 text-3xl font-semibold font-['Montserrat'] leading-tight">Forgot password?</h2>
+                <p className="text-neutral-500 text-base md:text-lg font-['Montserrat']">Enter your email and we&apos;ll send you a reset link.</p>
               </div>
 
               {error && (
-                <div className="p-4 bg-red-50 text-red-600 text-sm rounded-xl border border-red-100 font-['Space_Grotesk']">{error}</div>
+                <div className="p-4 bg-red-50 text-red-600 text-sm rounded-xl border border-red-100 font-['Montserrat']">{error}</div>
               )}
 
               <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk']">Email Address</label>
+                  <label className="text-zinc-900 text-xs font-bold font-['Montserrat']">Email Address</label>
                   <input
                     type="email" required value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -77,14 +77,14 @@ export default function ForgotPasswordPage() {
                   />
                 </div>
                 <button type="submit" disabled={loading}
-                  className="w-full h-14 bg-sky-700 rounded-2xl text-white text-base font-semibold font-['Space_Grotesk'] hover:bg-sky-800 transition-colors disabled:opacity-50">
+                  className="w-full h-14 bg-sky-700 rounded-2xl text-white text-base font-semibold font-['Montserrat'] hover:bg-sky-800 transition-colors disabled:opacity-50">
                   {loading ? 'Sending...' : 'Send Reset Link'}
                 </button>
               </form>
 
               <div className="flex items-center justify-center gap-1">
-                <span className="text-neutral-500 text-sm font-['Space_Grotesk']">Remember your password?</span>
-                <Link href="/login" className="text-sky-700 text-sm font-medium font-['Space_Grotesk'] hover:underline">Login</Link>
+                <span className="text-neutral-500 text-base md:text-lg font-['Montserrat']">Remember your password?</span>
+                <Link href="/login" className="text-sky-700 text-sm font-medium font-['Montserrat'] hover:underline">Login</Link>
               </div>
             </>
           )}

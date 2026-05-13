@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { X } from 'lucide-react';
 
-const inputCls = "w-full h-12 px-4 bg-white rounded-xl border border-gray-200 text-neutral-700 text-sm font-normal font-['Space_Grotesk'] focus:border-sky-700 focus:outline-none transition-colors";
+const inputCls = "w-full h-12 px-4 bg-white rounded-xl border border-gray-200 text-neutral-700 text-sm font-normal font-['Montserrat'] focus:border-sky-700 focus:outline-none transition-colors";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -55,37 +55,37 @@ export default function LoginPage() {
       <div className="hidden lg:flex flex-1 flex-col items-center justify-center px-6 py-10 lg:px-16 lg:overflow-y-auto">
         <div className="w-full max-w-[480px] flex flex-col gap-8">
           <div className="flex flex-col gap-2">
-            <h2 className="text-stone-900 text-xl md:text-2xl font-semibold font-['Onest'] leading-tight">Welcome back!</h2>
+            <h2 className="text-stone-900 text-xl md:text-2xl font-semibold font-['Montserrat'] leading-tight">Welcome back!</h2>
             <div className="flex items-center gap-1">
-              <span className="text-neutral-500 text-sm font-normal font-['Space_Grotesk']">Don&apos;t have an account?</span>
-              <Link href="/register" className="text-sky-700 text-sm font-medium font-['Space_Grotesk'] hover:underline">Sign Up</Link>
+              <span className="text-neutral-500 text-base md:text-lg font-normal font-['Montserrat']">Don&apos;t have an account?</span>
+              <Link href="/register" className="text-sky-700 text-sm font-medium font-['Montserrat'] hover:underline">Sign Up</Link>
             </div>
           </div>
 
           {error && (
-            <div className="p-4 bg-red-50 text-red-600 text-sm rounded-xl border border-red-100 font-['Space_Grotesk']">
+            <div className="p-4 bg-red-50 text-red-600 text-sm rounded-xl border border-red-100 font-['Montserrat']">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             <div className="flex flex-col gap-1.5">
-              <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk']">Email Address</label>
+              <label className="text-zinc-900 text-xs font-bold font-['Montserrat']">Email Address</label>
               <input name="username" type="email" placeholder="you@company.com" required className={inputCls} />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk']">Password</label>
+              <label className="text-zinc-900 text-xs font-bold font-['Montserrat']">Password</label>
               <input name="password" type="password" placeholder="Enter password" required className={inputCls} />
             </div>
 
             <div className="flex justify-end">
-              <Link href="/login/forgot-password" className="text-sky-700 text-sm font-medium font-['Space_Grotesk'] hover:underline">
+              <Link href="/login/forgot-password" className="text-sky-700 text-sm font-medium font-['Montserrat'] hover:underline">
                 Forgot Password?
               </Link>
             </div>
 
             <button type="submit" disabled={loading}
-              className="w-full h-12 bg-sky-700 rounded-2xl text-white text-sm font-semibold font-['Space_Grotesk'] hover:bg-sky-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              className="w-full h-12 bg-sky-700 rounded-2xl text-white text-sm font-semibold font-['Montserrat'] hover:bg-sky-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
               {loading ? 'Logging in...' : 'Log in'}
             </button>
           </form>
@@ -112,37 +112,37 @@ export default function LoginPage() {
           </div>
 
           <div className="flex flex-col gap-1 mb-4">
-            <h2 className="text-stone-900 text-xl font-semibold font-['Onest'] leading-tight">Welcome back!</h2>
+            <h2 className="text-stone-900 text-xl font-semibold font-['Montserrat'] leading-tight">Welcome back!</h2>
             <div className="flex items-center gap-1">
-              <span className="text-neutral-500 text-sm font-['Space_Grotesk']">Don&apos;t have an account?</span>
-              <Link href="/register" className="text-sky-700 text-sm font-medium font-['Space_Grotesk'] hover:underline">Sign Up</Link>
+              <span className="text-neutral-500 text-base md:text-lg font-['Montserrat']">Don&apos;t have an account?</span>
+              <Link href="/register" className="text-sky-700 text-sm font-medium font-['Montserrat'] hover:underline">Sign Up</Link>
             </div>
           </div>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-xl border border-red-100 font-['Space_Grotesk']">
+            <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-xl border border-red-100 font-['Montserrat']">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-3">
             <div className="flex flex-col gap-1.5">
-              <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk']">Email Address</label>
+              <label className="text-zinc-900 text-xs font-bold font-['Montserrat']">Email Address</label>
               <input name="username" type="email" placeholder="you@company.com" required className={inputCls} />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk']">Password</label>
+              <label className="text-zinc-900 text-xs font-bold font-['Montserrat']">Password</label>
               <input name="password" type="password" placeholder="Enter password" required className={inputCls} />
             </div>
 
             <div className="flex justify-end">
-              <Link href="/login/forgot-password" className="text-sky-700 text-sm font-medium font-['Space_Grotesk'] hover:underline">
+              <Link href="/login/forgot-password" className="text-sky-700 text-sm font-medium font-['Montserrat'] hover:underline">
                 Forgot Password?
               </Link>
             </div>
 
             <button type="submit" disabled={loading}
-              className="w-full h-12 bg-sky-700 rounded-2xl text-white text-sm font-semibold font-['Space_Grotesk'] hover:bg-sky-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-1">
+              className="w-full h-12 bg-sky-700 rounded-2xl text-white text-sm font-semibold font-['Montserrat'] hover:bg-sky-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-1">
               {loading ? 'Logging in...' : 'Log in'}
             </button>
           </form>

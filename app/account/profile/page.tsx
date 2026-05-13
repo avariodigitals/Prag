@@ -13,7 +13,7 @@ const NIGERIAN_STATES = [
 ];
 
 const inputCls = (disabled: boolean) =>
-  `w-full h-12 px-4 py-3 bg-white rounded-[10px] outline outline-[1.31px] text-neutral-700 text-sm font-normal font-['Space_Grotesk'] transition-colors outline-none ${
+  `w-full h-12 px-4 py-3 bg-white rounded-[10px] outline outline-[1.31px] text-neutral-700 text-sm font-normal font-['Montserrat'] transition-colors outline-none ${
     disabled ? 'outline-gray-100 text-gray-400 cursor-default' : 'outline-gray-200 focus:outline-sky-700'
   }`;
 
@@ -174,19 +174,19 @@ export default function PersonalInfoPage() {
     <div className="w-full max-w-[941px] p-6 md:p-11 bg-white rounded-[20px] outline outline-1 outline-zinc-100 flex flex-col gap-8">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h2 className="text-zinc-900 text-2xl font-medium font-['Space_Grotesk'] leading-7">Personal Information</h2>
+        <h2 className="text-zinc-900 text-2xl font-medium font-['Montserrat'] leading-7">Personal Information</h2>
         {editing ? (
           <div className="flex items-center gap-2">
             <button
               onClick={handleCancel}
               disabled={saving}
-              className="px-3 py-2 bg-white rounded-lg outline outline-1 outline-zinc-300 text-zinc-600 text-sm font-medium font-['Space_Grotesk'] hover:outline-zinc-500 transition-colors disabled:opacity-50">
+              className="px-3 py-2 bg-white rounded-lg outline outline-1 outline-zinc-300 text-zinc-600 text-sm font-medium font-['Montserrat'] hover:outline-zinc-500 transition-colors disabled:opacity-50">
               Cancel
             </button>
             <button
               onClick={handleSave}
               disabled={saving}
-              className="px-4 py-2 bg-sky-700 rounded-lg text-white text-sm font-medium font-['Space_Grotesk'] hover:bg-sky-800 transition-colors disabled:opacity-50">
+              className="px-4 py-2 bg-sky-700 rounded-lg text-white text-sm font-medium font-['Montserrat'] hover:bg-sky-800 transition-colors disabled:opacity-50">
               {saving ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
@@ -194,25 +194,25 @@ export default function PersonalInfoPage() {
           <button
             onClick={() => setEditing(true)}
             className="px-3 py-2 bg-white rounded-lg outline outline-1 outline-zinc-500 flex items-center gap-2 hover:outline-sky-700 hover:text-sky-700 transition-colors">
-            <span className="text-zinc-500 text-sm font-medium font-['Space_Grotesk'] leading-5">Edit</span>
+            <span className="text-zinc-500 text-base md:text-lg font-medium font-['Montserrat'] leading-5">Edit</span>
             <Pencil className="w-4 h-4 text-zinc-500" />
           </button>
         )}
       </div>
 
       {status === 'success' && (
-        <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-100 rounded-xl text-green-700 text-sm font-['Space_Grotesk']">
+        <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-100 rounded-xl text-green-700 text-sm font-['Montserrat']">
           <CheckCircle2 size={16} /> Profile updated successfully!
         </div>
       )}
       {status === 'error' && (
-        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm font-['Space_Grotesk']">
+        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm font-['Montserrat']">
           <AlertCircle size={16} /> {errorMessage || 'Failed to save. Please try again.'}
         </div>
       )}
 
       {!loading && !editing && errorMessage && status !== 'error' && (
-        <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-100 rounded-xl text-amber-700 text-sm font-['Space_Grotesk']">
+        <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-100 rounded-xl text-amber-700 text-sm font-['Montserrat']">
           <AlertCircle size={16} /> {errorMessage}
         </div>
       )}
@@ -245,38 +245,38 @@ export default function PersonalInfoPage() {
       <div className="flex flex-col gap-4">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1 flex flex-col gap-1">
-            <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk'] leading-5">First Name</label>
+            <label className="text-zinc-900 text-xs font-bold font-['Montserrat'] leading-5">First Name</label>
             <input type="text" value={form.first_name} onChange={set('first_name')} disabled={!editing} className={inputCls(!editing)} />
           </div>
           <div className="flex-1 flex flex-col gap-1">
-            <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk'] leading-5">Last Name</label>
+            <label className="text-zinc-900 text-xs font-bold font-['Montserrat'] leading-5">Last Name</label>
             <input type="text" value={form.last_name} onChange={set('last_name')} disabled={!editing} className={inputCls(!editing)} />
           </div>
         </div>
         <div className="flex flex-col gap-1">
-          <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk'] leading-5">Email Address</label>
+          <label className="text-zinc-900 text-xs font-bold font-['Montserrat'] leading-5">Email Address</label>
           <input type="email" value={form.email} onChange={set('email')} disabled={!editing} className={inputCls(!editing)} />
         </div>
         <div className="flex flex-col gap-1">
-          <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk'] leading-5">Phone Number</label>
+          <label className="text-zinc-900 text-xs font-bold font-['Montserrat'] leading-5">Phone Number</label>
           <input type="tel" value={form.phone} onChange={set('phone')} disabled={!editing} className={inputCls(!editing)} placeholder="+234..." />
         </div>
       </div>
 
       {/* Shipping address */}
-      <h3 className="text-zinc-900 text-2xl font-medium font-['Space_Grotesk'] leading-7">Shipping Address</h3>
+      <h3 className="text-zinc-900 text-2xl font-medium font-['Montserrat'] leading-7">Shipping Address</h3>
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
-          <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk'] leading-5">Street Address</label>
+          <label className="text-zinc-900 text-xs font-bold font-['Montserrat'] leading-5">Street Address</label>
           <input type="text" value={form.address} onChange={set('address')} disabled={!editing} className={inputCls(!editing)} placeholder="Address" />
         </div>
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1 flex flex-col gap-1">
-            <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk'] leading-5">City</label>
+            <label className="text-zinc-900 text-xs font-bold font-['Montserrat'] leading-5">City</label>
             <input type="text" value={form.city} onChange={set('city')} disabled={!editing} className={inputCls(!editing)} placeholder="City" />
           </div>
           <div className="flex-1 flex flex-col gap-1">
-            <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk'] leading-5">State / Region</label>
+            <label className="text-zinc-900 text-xs font-bold font-['Montserrat'] leading-5">State / Region</label>
             <select value={form.state} onChange={set('state')} disabled={!editing} className={inputCls(!editing)}>
               <option value="">Select state</option>
               {NIGERIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
@@ -285,11 +285,11 @@ export default function PersonalInfoPage() {
         </div>
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1 flex flex-col gap-1">
-            <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk'] leading-5">ZIP / Postal Code</label>
+            <label className="text-zinc-900 text-xs font-bold font-['Montserrat'] leading-5">ZIP / Postal Code</label>
             <input type="text" value={form.postcode} onChange={set('postcode')} disabled={!editing} className={inputCls(!editing)} placeholder="100001" />
           </div>
           <div className="flex-1 flex flex-col gap-1">
-            <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk'] leading-5">Country</label>
+            <label className="text-zinc-900 text-xs font-bold font-['Montserrat'] leading-5">Country</label>
             <input type="text" value="Nigeria" disabled className={inputCls(true)} />
           </div>
         </div>

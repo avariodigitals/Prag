@@ -3,7 +3,7 @@ import Image from 'next/image';
 import type { SiteSettings } from '@/lib/woocommerce';
 
 const FB = {
-  title: 'No Hype. Just Inverters That Deliver.',
+  title: 'No Hype. <br /> Just Inverters That Deliver.',
   description: 'Explore stabilizers, inverters, batteries, and complete power solutions designed to keep your home or business running without interruption.',
   cta: 'Buy Inverters Built to Last',
   link: '/products/inverters',
@@ -30,17 +30,17 @@ export default function BrandBanner({ settings }: { settings?: SiteSettings }) {
           loading="lazy"
         />
         <div className="flex-1 flex flex-col justify-start items-center md:items-start gap-4 text-center md:text-left">
-          <div className="w-full text-black text-xl md:text-2xl font-bold font-['Onest'] leading-tight">
+          <div className="w-full text-black text-2xl md:text-4xl font-bold font-['Montserrat'] leading-tight">
             {title}
           </div>
-          <div className="w-full max-w-[631px] text-zinc-600 text-sm font-normal font-['Space_Grotesk'] leading-relaxed">
+          <div className="w-full max-w-[631px] text-zinc-600 text-base md:text-lg font-normal font-['Montserrat'] leading-relaxed">
             {description}
           </div>
           <Link
             href={link}
             className="w-full md:w-auto py-2.5 px-5 bg-sky-700 rounded-3xl flex justify-center items-center gap-2.5 hover:bg-sky-800 transition-colors"
           >
-            <div className="text-white text-sm font-medium font-['Space_Grotesk'] whitespace-nowrap">
+            <div className="text-white text-base md:text-lg font-medium font-['Montserrat'] whitespace-nowrap">
               {cta}
             </div>
           </Link>

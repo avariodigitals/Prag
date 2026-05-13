@@ -85,12 +85,12 @@ export default function ShippingView() {
 
       <div className="w-full flex flex-col md:flex-row items-start gap-6 md:gap-10">
         <div className="w-full md:flex-1 p-4 md:p-8 bg-white rounded-2xl outline outline-[1.31px] outline-gray-200 flex flex-col gap-5">
-          <h2 className="text-zinc-900 text-lg md:text-xl font-bold font-['Space_Grotesk']">Shipping Method</h2>
+          <h2 className="text-zinc-900 text-lg md:text-xl font-bold font-['Montserrat']">Shipping Method</h2>
 
           <div className="flex flex-col gap-3">
-            {loading && <p className="text-sm text-zinc-500 font-['Space_Grotesk']">Loading shipping methods...</p>}
+            {loading && <p className="text-base text-zinc-500 font-['Montserrat']">Loading shipping methods...</p>}
             {!loading && methods.length === 0 && (
-              <p className="text-sm text-rose-600 font-['Space_Grotesk']">No WooCommerce shipping methods available.</p>
+              <p className="text-base text-rose-600 font-['Montserrat']">No WooCommerce shipping methods available.</p>
             )}
             {methods.map((method) => {
               const active = selected === method.id;
@@ -103,10 +103,10 @@ export default function ShippingView() {
                     active ? 'bg-slate-50 outline-sky-700' : 'bg-white outline-stone-200 hover:outline-sky-300'
                   }`}
                 >
-                  <p className={`text-base font-bold font-['Space_Grotesk'] ${active ? 'text-sky-700' : 'text-zinc-500'}`}>
+                  <p className={`text-base font-bold font-['Montserrat'] ${active ? 'text-sky-700' : 'text-zinc-500'}`}>
                     {method.title}
                   </p>
-                  <p className={`text-sm font-normal font-['Space_Grotesk'] ${active ? 'text-sky-700' : 'text-zinc-500'}`}>
+                  <p className={`text-base font-normal font-['Montserrat'] ${active ? 'text-sky-700' : 'text-zinc-500'}`}>
                     {method.description || 'Shipping option from WooCommerce'}
                   </p>
                 </button>
@@ -115,19 +115,19 @@ export default function ShippingView() {
           </div>
 
           <div className="flex flex-col gap-1">
-            <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk']">Delivery Note</label>
+            <label className="text-zinc-900 text-xs font-bold font-['Montserrat']">Delivery Note</label>
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
               rows={4}
-              className="w-full px-4 py-3 bg-white rounded-[10px] border-[1.31px] border-gray-200 text-zinc-500 text-sm font-normal font-['Space_Grotesk'] focus:border-sky-700 focus:text-zinc-900 transition-colors resize-none outline-none"
+              className="w-full px-4 py-3 bg-white rounded-[10px] border-[1.31px] border-gray-200 text-zinc-500 text-base font-normal font-['Montserrat'] focus:border-sky-700 focus:text-zinc-900 transition-colors resize-none outline-none"
             />
           </div>
 
           <button
             onClick={proceed}
             disabled={loading || !selected}
-            className="hidden md:block w-full p-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Space_Grotesk'] hover:bg-sky-800 transition-colors"
+            className="hidden md:block w-full p-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Montserrat'] hover:bg-sky-800 transition-colors"
           >
             Proceed to Payment
           </button>

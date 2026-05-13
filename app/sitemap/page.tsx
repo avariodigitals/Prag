@@ -55,8 +55,8 @@ export default function SitemapPage() {
   return (
     <main className="w-full bg-white flex flex-col">
       <section className="w-full px-4 md:px-20 py-16 bg-stone-50 flex flex-col items-center gap-4">
-        <h1 className="text-sky-700 text-2xl md:text-3xl font-bold font-['Onest'] text-center">Sitemap</h1>
-        <p className="max-w-xl text-center text-sky-700 text-base md:text-lg font-normal font-['Space_Grotesk']">
+        <h1 className="text-sky-700 text-2xl md:text-3xl font-bold font-['Montserrat'] text-center">Sitemap</h1>
+        <p className="max-w-xl text-center text-sky-700 text-base md:text-lg font-normal font-['Montserrat']">
           Find the main pages and product sections across PRAG.
         </p>
       </section>
@@ -65,13 +65,13 @@ export default function SitemapPage() {
         <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {SECTIONS.map((section) => (
             <div key={section.title} className="flex flex-col gap-4">
-              <h2 className="text-zinc-900 text-xl font-semibold font-['Space_Grotesk']">{section.title}</h2>
+              <h2 className="text-zinc-900 text-xl font-semibold font-['Montserrat']">{section.title}</h2>
               <div className="flex flex-col gap-2">
                 {section.links.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="text-zinc-500 text-base font-normal font-['Space_Grotesk'] hover:text-sky-700 transition-colors"
+                    className="text-zinc-500 text-base font-normal font-['Montserrat'] hover:text-sky-700 transition-colors"
                   >
                     {link.label}
                   </Link>

@@ -59,12 +59,12 @@ export default function WishlistView() {
     <div className="w-full px-4 md:px-20 py-6 md:py-10 bg-white flex flex-col gap-10">
       {/* Toolbar */}
       <div className="flex justify-between items-center">
-        <span className="text-black text-base md:text-2xl font-medium font-['Space_Grotesk']">
+        <span className="text-black text-base md:text-2xl font-medium font-['Montserrat']">
           {items.length} item{items.length !== 1 ? 's' : ''} saved for Later
         </span>
         <div className="relative">
           <select value={sort} onChange={(e) => setSort(e.target.value)}
-            className="appearance-none p-2.5 pr-8 bg-white rounded-lg outline outline-[0.3px] outline-neutral-500 text-neutral-500 text-sm md:text-base font-medium font-['Space_Grotesk'] cursor-pointer">
+            className="appearance-none p-2.5 pr-8 bg-white rounded-lg outline outline-[0.3px] outline-neutral-500 text-neutral-500 text-sm md:text-base font-medium font-['Montserrat'] cursor-pointer">
             <option value="">Sort by</option>
             <option value="price">Price: Low to High</option>
             <option value="price-desc">Price: High to Low</option>
@@ -75,8 +75,8 @@ export default function WishlistView() {
 
       {sorted.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 gap-6">
-          <p className="text-gray-400 text-lg font-['Space_Grotesk']">No saved items yet.</p>
-          <Link href="/products" className="px-8 py-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Space_Grotesk'] hover:bg-sky-800 transition-colors">
+          <p className="text-gray-400 text-lg font-['Montserrat']">No saved items yet.</p>
+          <Link href="/products" className="px-8 py-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Montserrat'] hover:bg-sky-800 transition-colors">
             Browse Products
           </Link>
         </div>
@@ -91,7 +91,7 @@ export default function WishlistView() {
                 )}
                 {item.on_sale && (
                   <div className="absolute left-5 top-5 w-16 px-2.5 py-5 bg-red-600 rounded-[100px] flex flex-col justify-center items-center overflow-hidden">
-                    <span className="text-white text-base font-medium font-['Space_Grotesk']">SALE</span>
+                    <span className="text-white text-base font-medium font-['Montserrat']">SALE</span>
                   </div>
                 )}
                 <button onClick={() => remove(item.id)} aria-label="Remove from wishlist"
@@ -101,23 +101,23 @@ export default function WishlistView() {
               </div>
               <div className="flex flex-col items-center gap-6">
                 <div className="w-full flex flex-col gap-2">
-                  <p className="text-center text-zinc-900 text-lg font-medium font-['Onest'] line-clamp-1 group-hover:text-sky-700 transition-colors">{item.name}</p>
+                  <p className="text-center text-zinc-900 text-lg font-medium font-['Montserrat'] line-clamp-1 group-hover:text-sky-700 transition-colors">{item.name}</p>
                   <div className="flex justify-center items-center gap-2">
                     {item.on_sale && item.regular_price && (
-                      <span className="text-zinc-400 text-base font-light font-['Onest'] line-through">{formatPrice(item.regular_price)}</span>
+                      <span className="text-zinc-400 text-base font-light font-['Montserrat'] line-through">{formatPrice(item.regular_price)}</span>
                     )}
-                    <span className="text-zinc-900 text-base font-light font-['Onest']">{formatPrice(item.price)}</span>
+                    <span className="text-zinc-900 text-base font-light font-['Montserrat']">{formatPrice(item.price)}</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-3.5">
                   <Link href={productUrl({ slug: item.slug, categories: item.categories ?? [] })}
                     aria-label={`Learn more about ${item.name}`}
                     className="w-32 p-3 bg-sky-700 rounded-[30px] flex justify-center items-center gap-2.5 hover:bg-sky-800 transition-colors">
-                    <span className="text-stone-50 text-base font-medium font-['Space_Grotesk']">Learn more</span>
+                    <span className="text-stone-50 text-base font-medium font-['Montserrat']">Learn more</span>
                     <span className="sr-only"> about {item.name}</span>
                   </Link>
                   <a href={shopUrl(item.slug)} className="w-28 p-3 rounded-3xl flex justify-center items-center gap-2.5 hover:underline">
-                    <span className="text-sky-700 text-base font-medium font-['Space_Grotesk']">Buy &gt;</span>
+                    <span className="text-sky-700 text-base font-medium font-['Montserrat']">Buy &gt;</span>
                   </a>
                 </div>
               </div>

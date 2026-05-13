@@ -22,10 +22,10 @@ export default function DistributorPage() {
     <main className="w-full bg-white flex flex-col">
       {/* Hero */}
       <div className="w-full px-4 pt-8 md:pt-12 pb-6 md:pb-8 bg-stone-50 flex flex-col items-center gap-3">
-        <h1 className="text-sky-700 text-2xl md:text-3xl font-bold font-['Onest'] text-center">
+        <h1 className="text-sky-700 text-2xl md:text-3xl font-bold font-['Montserrat'] text-center">
           Sell the Solutions Nigeria Needs.
         </h1>
-        <p className="max-w-[531px] text-center text-sky-700 text-base md:text-lg font-normal font-['Space_Grotesk']">
+        <p className="max-w-[531px] text-center text-sky-700 text-base md:text-lg font-normal font-['Montserrat']">
           Partner with PRAG and build a profitable business distributing Nigeria&apos;s most trusted power engineering products.
         </p>
       </div>
@@ -35,9 +35,9 @@ export default function DistributorPage() {
         <div className="flex flex-col gap-3 md:gap-4">
           <div className="flex items-center gap-1.5">
             <div className="w-4 h-4 bg-sky-700" />
-            <span className="text-zinc-900 text-base font-normal font-['Space_Grotesk']">PARTNER BENEFITS</span>
+            <span className="text-zinc-900 text-base font-normal font-['Montserrat']">PARTNER BENEFITS</span>
           </div>
-          <h2 className="max-w-[631px] text-zinc-900 text-2xl md:text-4xl font-bold font-['Onest']">
+          <h2 className="max-w-[631px] text-zinc-900 text-2xl md:text-4xl font-bold font-['Montserrat']">
             Everything You Need to Build a Thriving Power Business
           </h2>
         </div>
@@ -45,8 +45,8 @@ export default function DistributorPage() {
           {BENEFITS.map((b) => (
             <div key={b.title} className="p-5 rounded-2xl outline outline-[0.3px] outline-zinc-500/50 flex flex-col gap-4">
               <div className="w-7 h-7 bg-sky-700 rounded-full" />
-              <h3 className="text-zinc-900 text-lg font-medium font-['Onest']">{b.title}</h3>
-              <p className="text-neutral-700 text-sm font-normal font-['Onest']">{b.body}</p>
+              <h3 className="text-zinc-900 text-lg font-medium font-['Montserrat']">{b.title}</h3>
+              <p className="text-neutral-700 text-base md:text-lg font-normal font-['Montserrat']">{b.body}</p>
             </div>
           ))}
         </div>
@@ -57,9 +57,9 @@ export default function DistributorPage() {
         <div className="flex flex-col items-center gap-3">
           <div className="flex items-center gap-1.5">
             <div className="w-4 h-4 bg-sky-700" />
-            <span className="text-zinc-900 text-base font-normal font-['Space_Grotesk']">PARTNERSHIP TIER</span>
+            <span className="text-zinc-900 text-base font-normal font-['Montserrat']">PARTNERSHIP TIER</span>
           </div>
-          <h2 className="max-w-[631px] text-center text-zinc-900 text-2xl md:text-4xl font-bold font-['Onest']">
+          <h2 className="max-w-[631px] text-center text-zinc-900 text-2xl md:text-4xl font-bold font-['Montserrat']">
             Choose the Tier That Fits Your Business
           </h2>
         </div>
@@ -69,8 +69,8 @@ export default function DistributorPage() {
               <div className="p-2.5 bg-sky-700 rounded-full w-fit">
                 <div className="w-4 h-4 bg-white rounded-sm" />
               </div>
-              <h3 className="text-zinc-900 text-lg font-medium font-['Onest']">{tier.title}</h3>
-              <p className="text-neutral-700 text-sm font-normal font-['Onest']">{tier.body}</p>
+              <h3 className="text-zinc-900 text-lg font-medium font-['Montserrat']">{tier.title}</h3>
+              <p className="text-neutral-700 text-base md:text-lg font-normal font-['Montserrat']">{tier.body}</p>
             </div>
           ))}
         </div>
@@ -81,12 +81,12 @@ export default function DistributorPage() {
         <div className="flex flex-col items-center gap-3">
           <div className="flex items-center gap-1.5">
             <div className="w-4 h-4 bg-sky-700" />
-            <span className="text-zinc-900 text-base font-normal font-['Space_Grotesk']">APPLICATION FORM</span>
+            <span className="text-zinc-900 text-base font-normal font-['Montserrat']">APPLICATION FORM</span>
           </div>
-          <h2 className="max-w-[631px] text-center text-zinc-900 text-2xl md:text-4xl font-bold font-['Onest']">
+          <h2 className="max-w-[631px] text-center text-zinc-900 text-2xl md:text-4xl font-bold font-['Montserrat']">
             Start Your PRAG Partnership
           </h2>
-          <p className="max-w-[631px] text-center text-neutral-700 text-sm md:text-base font-normal font-['Onest']">
+          <p className="max-w-[631px] text-center text-neutral-700 text-sm md:text-base font-normal font-['Montserrat']">
             Fill in the form below and our partnership team will contact you within 2 business days.
           </p>
         </div>

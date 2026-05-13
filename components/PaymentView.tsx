@@ -309,12 +309,12 @@ export default function PaymentView() {
         </div>
 
         <div className="w-full md:flex-1 p-4 md:p-8 bg-white rounded-2xl outline outline-[1.31px] outline-gray-200 flex flex-col gap-5 md:order-1">
-          <h2 className="text-zinc-900 text-lg md:text-xl font-bold font-['Space_Grotesk']">Payment Method</h2>
+          <h2 className="text-zinc-900 text-lg md:text-xl font-bold font-['Montserrat']">Payment Method</h2>
 
           <div className="flex flex-col gap-1">
-            {loadingMethods && <p className="text-sm text-zinc-500 font-['Space_Grotesk']">Loading payment methods...</p>}
+            {loadingMethods && <p className="text-base text-zinc-500 font-['Montserrat']">Loading payment methods...</p>}
             {!loadingMethods && methods.length === 0 && (
-              <p className="text-sm text-rose-600 font-['Space_Grotesk']">No payment methods available.</p>
+              <p className="text-base text-rose-600 font-['Montserrat']">No payment methods available.</p>
             )}
             {methods.map((method, idx) => {
               const active = selected === method.id;
@@ -331,20 +331,20 @@ export default function PaymentView() {
                     {active && <div className="w-2.5 h-2.5 bg-sky-700 rounded-full absolute top-[5px] left-[5px]" />}
                   </div>
                   <div className="flex flex-col gap-0.5">
-                    <span className="text-black text-sm md:text-base font-normal font-['Space_Grotesk']">{method.title}</span>
-                    <span className="text-slate-500 text-xs font-normal font-['Space_Grotesk']">{method.description || 'Payment option'}</span>
+                    <span className="text-black text-base md:text-lg font-normal font-['Montserrat']">{method.title}</span>
+                    <span className="text-slate-500 text-base md:text-lg font-normal font-['Montserrat']">{method.description || 'Payment option'}</span>
                   </div>
                 </button>
               );
             })}
           </div>
 
-          {error && <p className="text-sm text-rose-600 font-['Space_Grotesk']">{error}</p>}
+          {error && <p className="text-base text-rose-600 font-['Montserrat']">{error}</p>}
 
           <button
             onClick={proceed}
             disabled={loadingMethods || submitting || !selected || lineItems.length === 0}
-            className="w-full p-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Space_Grotesk'] hover:bg-sky-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full p-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Montserrat'] hover:bg-sky-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {submitting ? 'Processing...' : 'Proceed'}
           </button>

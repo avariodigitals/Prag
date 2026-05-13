@@ -188,6 +188,55 @@ async function fetchAllProductsForDefaultSort(baseParams: URLSearchParams, reval
   };
 }
 
+async function fetchAllProducts(baseParams: URLSearchParams, revalidate = 300): Promise<Product[]> {
+  const firstQs = new URLSearchParams(baseParams.toString());
+  firstQs.set('per_page', String(PRODUCTS_FETCH_PAGE_SIZE));
+  firstQs.set('page', '1');
+
+  const firstPage = await fetchProductsRaw(firstQs, revalidate);
+  if (firstPage.total <= firstPage.products.length) {
+    return firstPage.products;
+  }
+
+  const totalPages = Math.ceil(firstPage.total / PRODUCTS_FETCH_PAGE_SIZE);
+  const remainingPageNumbers = Array.from({ length: Math.max(totalPages - 1, 0) }, (_, i) => i + 2);
+
+  const rest = await Promise.all(
+    remainingPageNumbers.map(async (pageNumber) => {
+      const qs = new URLSearchParams(baseParams.toString());
+      qs.set('per_page', String(PRODUCTS_FETCH_PAGE_SIZE));
+      qs.set('page', String(pageNumber));
+      return fetchProductsRaw(qs, revalidate);
+    })
+  );
+
+  return [
+    ...firstPage.products,
+    ...rest.flatMap((result) => result.products),
+  ];
+}
+
+function normalizeSearchText(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function isAccurateSearchMatch(product: Product, query: string): boolean {
+  const tokens = normalizeSearchText(query).split(' ').filter(Boolean);
+  if (tokens.length === 0) return false;
+
+  const normalizedName = normalizeSearchText(product.name);
+  const normalizedCategories = (product.categories ?? []).map((category) => normalizeSearchText(category.name));
+
+  const matchesName = tokens.every((token) => normalizedName.includes(token));
+  if (matchesName) return true;
+
+  return normalizedCategories.some((category) => tokens.every((token) => category.includes(token)));
+}
+
 export const getFeaturedProducts = unstable_cache(
   async (): Promise<Product[]> => {
     const products = await wcFetch<Product[]>(`/products?featured=true&per_page=6&status=publish&_fields=${PRODUCT_LIST_FIELDS}`, []);
@@ -352,21 +401,22 @@ export async function searchProducts(query: string, sort?: string, page = 1, per
 
   if (!hasExplicitSort) {
     try {
-      const { products: allProducts, total } = await fetchAllProductsForDefaultSort(baseQs, 0);
+      const { products: allProducts } = await fetchAllProductsForDefaultSort(baseQs, 0);
+      const filteredProducts = allProducts.filter((product) => isAccurateSearchMatch(product, query));
       const start = (page - 1) * per_page;
       const end = start + per_page;
-      return { products: allProducts.slice(start, end), total };
+      return { products: filteredProducts.slice(start, end), total: filteredProducts.length };
     } catch {
       return { products: [], total: 0 };
     }
   }
 
-  const qs = new URLSearchParams(baseQs.toString());
-  qs.set('per_page', String(per_page));
-  qs.set('page', String(page));
-
   try {
-    return await fetchProductsRaw(qs, 0);
+    const allProducts = await fetchAllProducts(baseQs, 0);
+    const filteredProducts = allProducts.filter((product) => isAccurateSearchMatch(product, query));
+    const start = (page - 1) * per_page;
+    const end = start + per_page;
+    return { products: filteredProducts.slice(start, end), total: filteredProducts.length };
   } catch {
     return { products: [], total: 0 };
   }

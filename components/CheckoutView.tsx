@@ -20,7 +20,7 @@ function formatPrice(n: number) {
 function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk'] leading-5">
+      <label className="text-zinc-900 text-xs font-bold font-['Montserrat'] leading-5">
         {label}{required && ' *'}
       </label>
       {children}
@@ -28,7 +28,7 @@ function Field({ label, required, children }: { label: string; required?: boolea
   );
 }
 
-const inputCls = "w-full h-12 px-4 py-3 bg-white rounded-[10px] outline outline-[1.31px] outline-gray-200 text-zinc-500 text-sm font-normal font-['Space_Grotesk'] focus:outline-sky-700 focus:text-zinc-900 transition-colors";
+const inputCls = "w-full h-12 px-4 py-3 bg-white rounded-[10px] outline outline-[1.31px] outline-gray-200 text-zinc-500 text-sm font-normal font-['Montserrat'] focus:outline-sky-700 focus:text-zinc-900 transition-colors";
 
 function parsePrice(value: string | null): number {
   const n = Number(String(value ?? '').replace(/[^0-9.-]/g, ''));
@@ -133,7 +133,7 @@ export default function CheckoutView() {
 
         {/* Contact form — top on mobile, left on desktop */}
         <form id="checkout-form" onSubmit={proceedToShipping} className="w-full md:flex-1 md:order-1 px-4 md:px-6 py-6 md:py-8 bg-white rounded-[10px] outline outline-1 outline-gray-200 flex flex-col gap-5">
-          <h2 className="text-zinc-900 text-lg md:text-xl font-bold font-['Space_Grotesk']">Contact Details</h2>
+          <h2 className="text-zinc-900 text-lg md:text-xl font-bold font-['Montserrat']">Contact Details</h2>
 
           <Field label="Email Address" required>
             <input type="email" required value={form.email} onChange={set('email')} placeholder="you@company.com" className={inputCls} />
@@ -181,14 +181,14 @@ export default function CheckoutView() {
               value={form.note}
               onChange={set('note')}
               rows={3}
-              className="w-full px-4 py-3 bg-white rounded-[10px] border-[1.31px] border-gray-200 text-zinc-500 text-sm font-normal font-['Space_Grotesk'] focus:border-sky-700 focus:text-zinc-900 transition-colors resize-none outline-none"
+              className="w-full px-4 py-3 bg-white rounded-[10px] border-[1.31px] border-gray-200 text-zinc-500 text-sm font-normal font-['Montserrat'] focus:border-sky-700 focus:text-zinc-900 transition-colors resize-none outline-none"
             />
           </Field>
 
           {/* Submit button — visible on desktop inside form, hidden on mobile (mobile uses the one in summary) */}
           <button
             type="submit"
-            className="hidden md:block w-full p-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Space_Grotesk'] hover:bg-sky-800 transition-colors"
+            className="hidden md:block w-full p-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Montserrat'] hover:bg-sky-800 transition-colors"
           >
             Proceed to Shipping
           </button>
@@ -196,15 +196,15 @@ export default function CheckoutView() {
 
         {/* Order summary — below form on mobile, right on desktop */}
         <div className="w-full md:w-80 lg:w-96 md:order-2 shrink-0 px-4 md:px-6 py-6 md:py-8 bg-white rounded-[10px] outline outline-1 outline-gray-200 flex flex-col gap-5">
-          <h2 className="text-neutral-700 text-xl md:text-2xl font-bold font-['Space_Grotesk']">Summary</h2>
+          <h2 className="text-neutral-700 text-xl md:text-2xl font-bold font-['Montserrat']">Summary</h2>
 
           <div className="flex flex-col gap-4">
             {orderItems.length === 0 ? (
-              <p className="text-zinc-400 text-sm font-['Space_Grotesk']">No items in cart.</p>
+              <p className="text-zinc-400 text-base md:text-lg font-['Montserrat']">No items in cart.</p>
             ) : orderItems.map((item) => (
               <div key={item.id} className="flex justify-between items-start gap-2">
-                <span className="flex-1 text-neutral-700 text-sm font-normal font-['Space_Grotesk'] leading-5">{item.name} {item.quantity > 1 && <span className="text-zinc-400">×{item.quantity}</span>}</span>
-                <span className="text-sky-700 text-sm font-medium font-['Onest'] shrink-0">{formatPrice(item.price * item.quantity)}</span>
+                <span className="flex-1 text-neutral-700 text-base md:text-lg font-normal font-['Montserrat'] leading-5">{item.name} {item.quantity > 1 && <span className="text-zinc-400">×{item.quantity}</span>}</span>
+                <span className="text-sky-700 text-sm font-medium font-['Montserrat'] shrink-0">{formatPrice(item.price * item.quantity)}</span>
               </div>
             ))}
           </div>
@@ -213,27 +213,27 @@ export default function CheckoutView() {
 
           <div className="flex flex-col gap-3">
             <div className="flex justify-between">
-              <span className="text-slate-600 text-sm font-medium font-['Space_Grotesk']">Sub Total</span>
-              <span className="text-slate-600 text-sm font-['Space_Grotesk']">{formatPrice(orderTotal)}</span>
+              <span className="text-slate-600 text-base md:text-lg font-medium font-['Montserrat']">Sub Total</span>
+              <span className="text-slate-600 text-base md:text-lg font-['Montserrat']">{formatPrice(orderTotal)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-600 text-sm font-medium font-['Space_Grotesk']">VAT (7.5%)</span>
-              <span className="text-slate-600 text-sm font-['Space_Grotesk']">₦0.00</span>
+              <span className="text-slate-600 text-base md:text-lg font-medium font-['Montserrat']">VAT (7.5%)</span>
+              <span className="text-slate-600 text-base md:text-lg font-['Montserrat']">₦0.00</span>
             </div>
           </div>
 
           <div className="w-full h-px bg-gray-200" />
 
           <div className="flex justify-between items-center">
-            <span className="text-slate-600 text-sm font-medium font-['Space_Grotesk']">Total</span>
-            <span className="text-slate-800 text-base font-bold font-['Space_Grotesk']">{formatPrice(orderTotal)}</span>
+            <span className="text-slate-600 text-base md:text-lg font-medium font-['Montserrat']">Total</span>
+            <span className="text-slate-800 text-base font-bold font-['Montserrat']">{formatPrice(orderTotal)}</span>
           </div>
 
           {/* Mobile submit button */}
           <button
             type="submit"
             form="checkout-form"
-            className="md:hidden w-full p-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Space_Grotesk'] hover:bg-sky-800 transition-colors"
+            className="md:hidden w-full p-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Montserrat'] hover:bg-sky-800 transition-colors"
           >
             Proceed to Shipping
           </button>

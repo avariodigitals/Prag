@@ -18,7 +18,7 @@ export default function NavBar() {
             <Link
               key={cat.slug}
               href={`/products/${cat.slug}`}
-              className="px-2 py-2 text-white text-sm xl:text-base font-medium font-['Space_Grotesk'] hover:text-white/80 transition-colors whitespace-nowrap"
+              className="px-2 py-2 text-white text-base xl:text-lg font-medium font-['Montserrat'] hover:text-white/80 transition-colors whitespace-nowrap"
             >
               {cat.label}
             </Link>
@@ -28,15 +28,15 @@ export default function NavBar() {
         <div className="flex items-center gap-3 xl:gap-5 min-w-0 flex-wrap">
           <div className="flex items-center gap-2 min-w-0">
             <ShieldCheck className="w-5 h-5 text-white shrink-0" />
-            <span className="text-white/70 text-xs xl:text-sm font-normal font-['Space_Grotesk'] whitespace-nowrap">Secure Payment</span>
+            <span className="text-white/80 text-sm xl:text-base font-normal font-['Montserrat'] whitespace-nowrap">Secure Payment</span>
           </div>
           <div className="flex items-center gap-2 min-w-0">
             <Truck className="w-5 h-5 text-white shrink-0" />
-            <span className="text-white/70 text-xs xl:text-sm font-normal font-['Space_Grotesk'] whitespace-nowrap">Nationwide Delivery</span>
+            <span className="text-white/80 text-sm xl:text-base font-normal font-['Montserrat'] whitespace-nowrap">Nationwide Delivery</span>
           </div>
           <div className="flex items-center gap-2 min-w-0">
             <RefreshCw className="w-5 h-5 text-white shrink-0" />
-            <span className="text-white/70 text-xs xl:text-sm font-normal font-['Space_Grotesk'] whitespace-nowrap">7 Days Return Policy</span>
+            <span className="text-white/80 text-sm xl:text-base font-normal font-['Montserrat'] whitespace-nowrap">7 Days Return Policy</span>
           </div>
         </div>
       </div>

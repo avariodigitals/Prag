@@ -7,7 +7,7 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { CheckCircle, X } from 'lucide-react';
 
-const inputCls = "w-full h-12 px-4 bg-white rounded-xl border border-gray-200 text-neutral-700 text-sm font-normal font-['Space_Grotesk'] focus:border-sky-700 focus:outline-none transition-colors";
+const inputCls = "w-full h-12 px-4 bg-white rounded-xl border border-gray-200 text-neutral-700 text-sm font-normal font-['Montserrat'] focus:border-sky-700 focus:outline-none transition-colors";
 
 type Step = 'form' | 'otp' | 'success';
 
@@ -137,15 +137,15 @@ export default function RegisterPage() {
             {step === 'form' && (
               <>
                 <div className="flex flex-col gap-2">
-                  <h2 className="text-stone-900 text-xl md:text-2xl font-semibold font-['Onest'] leading-tight">Get Started</h2>
+                  <h2 className="text-stone-900 text-xl md:text-2xl font-semibold font-['Montserrat'] leading-tight">Get Started</h2>
                   <div className="flex items-center gap-1">
-                    <span className="text-neutral-500 text-sm font-normal font-['Space_Grotesk']">Already have an account?</span>
-                    <Link href="/login" className="text-sky-700 text-sm font-medium font-['Space_Grotesk'] hover:underline">Login</Link>
+                    <span className="text-neutral-500 text-base md:text-lg font-normal font-['Montserrat']">Already have an account?</span>
+                    <Link href="/login" className="text-sky-700 text-sm font-medium font-['Montserrat'] hover:underline">Login</Link>
                   </div>
                 </div>
 
                 {error && (
-                  <div className="p-4 bg-red-50 text-red-600 text-sm rounded-xl border border-red-100 font-['Space_Grotesk']">
+                  <div className="p-4 bg-red-50 text-red-600 text-sm rounded-xl border border-red-100 font-['Montserrat']">
                     {error}
                   </div>
                 )}
@@ -153,33 +153,33 @@ export default function RegisterPage() {
                 <form onSubmit={handleRegister} className="flex flex-col gap-5">
                   <div className="flex gap-3">
                     <div className="flex-1 flex flex-col gap-1.5">
-                      <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk']">First Name</label>
+                      <label className="text-zinc-900 text-xs font-bold font-['Montserrat']">First Name</label>
                       <input name="first_name" type="text" placeholder="John" required className={inputCls} />
                     </div>
                     <div className="flex-1 flex flex-col gap-1.5">
-                      <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk']">Last Name</label>
+                      <label className="text-zinc-900 text-xs font-bold font-['Montserrat']">Last Name</label>
                       <input name="last_name" type="text" placeholder="Doe" required className={inputCls} />
                     </div>
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk']">Email Address</label>
+                    <label className="text-zinc-900 text-xs font-bold font-['Montserrat']">Email Address</label>
                     <input name="email" type="email" placeholder="you@company.com" required className={inputCls} />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk']">Phone Number</label>
+                    <label className="text-zinc-900 text-xs font-bold font-['Montserrat']">Phone Number</label>
                     <input name="phone" type="tel" placeholder="+234 9052177845" className={inputCls} />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk']">Password</label>
+                    <label className="text-zinc-900 text-xs font-bold font-['Montserrat']">Password</label>
                     <input name="password" type="password" placeholder="Enter password" required value={password} onChange={e => setPassword(e.target.value)} className={inputCls} />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk']">Confirm Password</label>
+                    <label className="text-zinc-900 text-xs font-bold font-['Montserrat']">Confirm Password</label>
                     <input name="confirm_password" type="password" placeholder="Confirm password" required className={inputCls} />
                   </div>
 
                   <button type="submit" disabled={loading}
-                    className="w-full h-12 bg-sky-700 rounded-2xl text-white text-sm font-semibold font-['Space_Grotesk'] hover:bg-sky-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                    className="w-full h-12 bg-sky-700 rounded-2xl text-white text-sm font-semibold font-['Montserrat'] hover:bg-sky-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                     {loading ? 'Creating account...' : 'Sign up'}
                   </button>
                 </form>
@@ -190,13 +190,13 @@ export default function RegisterPage() {
             {step === 'otp' && (
               <>
                 <div className="flex flex-col gap-2">
-                  <h2 className="text-stone-900 text-xl md:text-2xl font-semibold font-['Onest'] leading-tight">Verify your email</h2>
-                  <p className="text-neutral-500 text-sm font-['Space_Grotesk']">
+                  <h2 className="text-stone-900 text-xl md:text-2xl font-semibold font-['Montserrat'] leading-tight">Verify your email</h2>
+                  <p className="text-neutral-500 text-base md:text-lg font-['Montserrat']">
                     We sent a 6-digit code to <span className="text-zinc-900 font-medium">{email}</span>.
                   </p>
                 </div>
 
-                {error && <div className="p-4 bg-red-50 text-red-600 text-sm rounded-xl border border-red-100 font-['Space_Grotesk']">{error}</div>}
+                {error && <div className="p-4 bg-red-50 text-red-600 text-sm rounded-xl border border-red-100 font-['Montserrat']">{error}</div>}
 
                 <form onSubmit={handleVerify} className="flex flex-col gap-5">
                   <div onPaste={handleOtpPaste} className="flex justify-between gap-2">
@@ -210,17 +210,17 @@ export default function RegisterPage() {
                         value={digit}
                         onChange={e => handleOtpChange(idx, e.target.value)}
                         onKeyDown={e => handleOtpKeyDown(idx, e)}
-                        className="w-full h-12 text-center text-xl font-bold text-zinc-900 bg-white rounded-xl border border-gray-200 focus:border-sky-700 focus:outline-none transition-colors font-['Space_Grotesk']"
+                        className="w-full h-12 text-center text-xl font-bold text-zinc-900 bg-white rounded-xl border border-gray-200 focus:border-sky-700 focus:outline-none transition-colors font-['Montserrat']"
                       />
                     ))}
                   </div>
 
                   <button type="submit" disabled={loading || otp.join('').length < 6}
-                    className="w-full h-12 bg-sky-700 rounded-2xl text-white text-sm font-semibold font-['Space_Grotesk'] hover:bg-sky-800 transition-colors disabled:opacity-50">
+                    className="w-full h-12 bg-sky-700 rounded-2xl text-white text-sm font-semibold font-['Montserrat'] hover:bg-sky-800 transition-colors disabled:opacity-50">
                     {loading ? 'Verifying...' : 'Verify & Continue'}
                   </button>
 
-                  <p className="text-center text-sm text-neutral-500 font-['Space_Grotesk']">
+                  <p className="text-center text-base md:text-lg text-neutral-500 font-['Montserrat']">
                     Didn&apos;t receive a code?{' '}
                     <button type="button" onClick={resendOtp} className="text-sky-700 font-medium hover:underline">
                       Resend
@@ -237,10 +237,10 @@ export default function RegisterPage() {
                   <CheckCircle className="w-8 h-8 text-sky-700" />
                 </div>
                 <div className="flex flex-col gap-1">
-                  <h2 className="text-stone-900 text-xl font-semibold font-['Onest']">Account created!</h2>
-                  <p className="text-neutral-500 text-sm font-['Space_Grotesk']">Your email has been verified. Redirecting you now...</p>
+                  <h2 className="text-stone-900 text-xl font-semibold font-['Montserrat']">Account created!</h2>
+                  <p className="text-neutral-500 text-base md:text-lg font-['Montserrat']">Your email has been verified. Redirecting you now...</p>
                 </div>
-                <Link href="/account" className="w-full h-12 bg-sky-700 rounded-2xl text-white text-sm font-semibold font-['Space_Grotesk'] hover:bg-sky-800 transition-colors flex items-center justify-center">
+                <Link href="/account" className="w-full h-12 bg-sky-700 rounded-2xl text-white text-sm font-semibold font-['Montserrat'] hover:bg-sky-800 transition-colors flex items-center justify-center">
                   Go to my account
                 </Link>
               </div>
@@ -271,49 +271,49 @@ export default function RegisterPage() {
             {step === 'form' && (
               <>
                 <div className="flex flex-col gap-1">
-                  <h2 className="text-stone-900 text-xl font-semibold font-['Onest'] leading-tight">Get Started</h2>
-                  <span className="text-neutral-500 text-sm font-['Space_Grotesk']">Enter your details to start shopping on PRAG</span>
+                  <h2 className="text-stone-900 text-xl font-semibold font-['Montserrat'] leading-tight">Get Started</h2>
+                  <span className="text-neutral-500 text-base md:text-lg font-['Montserrat']">Enter your details to start shopping on PRAG</span>
                 </div>
 
-              {error && <div className="p-3 bg-red-50 text-red-600 text-sm rounded-xl border border-red-100 font-['Space_Grotesk']">{error}</div>}
+              {error && <div className="p-3 bg-red-50 text-red-600 text-sm rounded-xl border border-red-100 font-['Montserrat']">{error}</div>}
 
                 <form onSubmit={handleRegister} className="flex flex-col gap-3">
                   <div className="flex gap-3">
                     <div className="flex-1 flex flex-col gap-1.5">
-                      <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk']">First Name</label>
+                      <label className="text-zinc-900 text-xs font-bold font-['Montserrat']">First Name</label>
                       <input name="first_name" type="text" placeholder="John" required className={inputCls} />
                     </div>
                     <div className="flex-1 flex flex-col gap-1.5">
-                      <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk']">Last Name</label>
+                      <label className="text-zinc-900 text-xs font-bold font-['Montserrat']">Last Name</label>
                       <input name="last_name" type="text" placeholder="Doe" required className={inputCls} />
                     </div>
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk']">Email Address</label>
+                    <label className="text-zinc-900 text-xs font-bold font-['Montserrat']">Email Address</label>
                     <input name="email" type="email" placeholder="you@company.com" required className={inputCls} />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk']">Phone Number</label>
+                    <label className="text-zinc-900 text-xs font-bold font-['Montserrat']">Phone Number</label>
                     <input name="phone" type="tel" placeholder="+234 9052177845" className={inputCls} />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk']">Password</label>
+                    <label className="text-zinc-900 text-xs font-bold font-['Montserrat']">Password</label>
                     <input name="password" type="password" placeholder="Enter password" required
                       value={password} onChange={e => setPassword(e.target.value)} className={inputCls} />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-zinc-900 text-xs font-bold font-['Space_Grotesk']">Confirm Password</label>
+                    <label className="text-zinc-900 text-xs font-bold font-['Montserrat']">Confirm Password</label>
                     <input name="confirm_password" type="password" placeholder="Confirm password" required className={inputCls} />
                   </div>
 
                   <button type="submit" disabled={loading}
-                    className="w-full h-12 bg-sky-700 rounded-2xl text-white text-sm font-semibold font-['Space_Grotesk'] hover:bg-sky-800 transition-colors disabled:opacity-50 mt-1">
+                    className="w-full h-12 bg-sky-700 rounded-2xl text-white text-sm font-semibold font-['Montserrat'] hover:bg-sky-800 transition-colors disabled:opacity-50 mt-1">
                     {loading ? 'Creating account...' : 'Sign up'}
                   </button>
 
                   <div className="flex items-center justify-center gap-1">
-                    <span className="text-neutral-500 text-sm font-['Space_Grotesk']">Already have an account?</span>
-                    <Link href="/login" className="text-sky-700 text-sm font-medium font-['Space_Grotesk'] hover:underline">Login</Link>
+                    <span className="text-neutral-500 text-base md:text-lg font-['Montserrat']">Already have an account?</span>
+                    <Link href="/login" className="text-sky-700 text-sm font-medium font-['Montserrat'] hover:underline">Login</Link>
                   </div>
                 </form>
               </>
@@ -323,13 +323,13 @@ export default function RegisterPage() {
             {step === 'otp' && (
               <>
                 <div className="flex flex-col gap-1">
-                  <h2 className="text-stone-900 text-xl font-semibold font-['Onest'] leading-tight">Verify your email</h2>
-                  <p className="text-neutral-500 text-sm font-['Space_Grotesk']">
+                  <h2 className="text-stone-900 text-xl font-semibold font-['Montserrat'] leading-tight">Verify your email</h2>
+                  <p className="text-neutral-500 text-base md:text-lg font-['Montserrat']">
                     We sent a 6-digit code to <span className="text-zinc-900 font-medium">{email}</span>.
                   </p>
                 </div>
 
-                {error && <div className="p-3 bg-red-50 text-red-600 text-sm rounded-xl border border-red-100 font-['Space_Grotesk']">{error}</div>}
+                {error && <div className="p-3 bg-red-50 text-red-600 text-sm rounded-xl border border-red-100 font-['Montserrat']">{error}</div>}
 
                 <form onSubmit={handleVerify} className="flex flex-col gap-4">
                   <div onPaste={handleOtpPaste} className="flex justify-between gap-2">
@@ -343,17 +343,17 @@ export default function RegisterPage() {
                         value={digit}
                         onChange={e => handleOtpChange(idx, e.target.value)}
                         onKeyDown={e => handleOtpKeyDown(idx, e)}
-                        className="w-full h-12 text-center text-xl font-bold text-zinc-900 bg-white rounded-xl border border-gray-200 focus:border-sky-700 focus:outline-none transition-colors font-['Space_Grotesk']"
+                        className="w-full h-12 text-center text-xl font-bold text-zinc-900 bg-white rounded-xl border border-gray-200 focus:border-sky-700 focus:outline-none transition-colors font-['Montserrat']"
                       />
                     ))}
                   </div>
 
                   <button type="submit" disabled={loading || otp.join('').length < 6}
-                    className="w-full h-12 bg-sky-700 rounded-2xl text-white text-sm font-semibold font-['Space_Grotesk'] hover:bg-sky-800 transition-colors disabled:opacity-50">
+                    className="w-full h-12 bg-sky-700 rounded-2xl text-white text-sm font-semibold font-['Montserrat'] hover:bg-sky-800 transition-colors disabled:opacity-50">
                     {loading ? 'Verifying...' : 'Verify & Continue'}
                   </button>
 
-                  <p className="text-center text-sm text-neutral-500 font-['Space_Grotesk']">
+                  <p className="text-center text-base md:text-lg text-neutral-500 font-['Montserrat']">
                     Didn&apos;t receive a code?{' '}
                     <button type="button" onClick={resendOtp} className="text-sky-700 font-medium hover:underline">
                       Resend
@@ -370,10 +370,10 @@ export default function RegisterPage() {
                   <CheckCircle className="w-8 h-8 text-sky-700" />
                 </div>
                 <div className="flex flex-col gap-1">
-                  <h2 className="text-stone-900 text-xl font-semibold font-['Onest']">Account created!</h2>
-                  <p className="text-neutral-500 text-sm font-['Space_Grotesk']">Your email has been verified. Redirecting you now...</p>
+                  <h2 className="text-stone-900 text-xl font-semibold font-['Montserrat']">Account created!</h2>
+                  <p className="text-neutral-500 text-base md:text-lg font-['Montserrat']">Your email has been verified. Redirecting you now...</p>
                 </div>
-                <Link href="/account" className="w-full h-12 bg-sky-700 rounded-2xl text-white text-sm font-semibold font-['Space_Grotesk'] hover:bg-sky-800 transition-colors flex items-center justify-center">
+                <Link href="/account" className="w-full h-12 bg-sky-700 rounded-2xl text-white text-sm font-semibold font-['Montserrat'] hover:bg-sky-800 transition-colors flex items-center justify-center">
                   Go to my account
                 </Link>
               </div>

@@ -67,8 +67,8 @@ export default function AccountDashboard() {
       {/* Recent orders */}
       <div className="p-8 bg-white rounded-xl outline outline-1 outline-zinc-100 flex flex-col gap-6">
         <div className="flex justify-between items-center">
-          <h2 className="text-zinc-900 text-xl font-bold font-['Space_Grotesk'] leading-8">Recent Orders</h2>
-          <Link href="/account/orders" className="text-sky-700 text-sm font-medium font-['Space_Grotesk'] leading-5 hover:underline">
+          <h2 className="text-zinc-900 text-xl font-bold font-['Montserrat'] leading-8">Recent Orders</h2>
+          <Link href="/account/orders" className="text-sky-700 text-sm font-medium font-['Montserrat'] leading-5 hover:underline">
             View All Orders →
           </Link>
         </div>
@@ -84,7 +84,7 @@ export default function AccountDashboard() {
 
         {!loading && recent.length === 0 && (
           <div className="p-6 rounded-lg outline outline-[1.31px] outline-gray-300 text-center">
-            <p className="text-zinc-500 text-sm font-['Space_Grotesk'] py-4">
+            <p className="text-zinc-500 text-sm font-['Montserrat'] py-4">
               No orders yet.{' '}
               <Link href="/products" className="text-sky-700 underline">Browse products</Link>
             </p>
@@ -97,20 +97,20 @@ export default function AccountDashboard() {
             <div key={order.id} className="p-6 rounded-lg outline outline-[1.31px] outline-gray-300 flex flex-col gap-3">
               <div className="flex justify-between items-center">
                 <div className="flex flex-col gap-2">
-                  <span className="text-zinc-900 text-base font-bold font-['Space_Grotesk'] leading-6">#{order.number}</span>
+                  <span className="text-zinc-900 text-base font-bold font-['Montserrat'] leading-6">#{order.number}</span>
                   <span className="text-slate-500 text-sm font-normal font-['Inter'] leading-5">
                     {formatDate(order.date_created)} · {order.line_items.length} item{order.line_items.length !== 1 ? 's' : ''}
                   </span>
                 </div>
-                <span className={`px-3 py-0.5 rounded-full text-xs font-medium font-['Space_Grotesk'] ${badge.cls}`}>
+                <span className={`px-3 py-0.5 rounded-full text-xs font-medium font-['Montserrat'] ${badge.cls}`}>
                   {badge.label}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-zinc-900 text-lg font-bold font-['Space_Grotesk'] leading-7">
+                <span className="text-zinc-900 text-lg font-bold font-['Montserrat'] leading-7">
                   ₦{Number(order.total).toLocaleString('en-NG')}
                 </span>
-                <Link href="/account/orders" className="text-sky-700 text-sm font-medium font-['Space_Grotesk'] leading-5 hover:underline">
+                <Link href="/account/orders" className="text-sky-700 text-sm font-medium font-['Montserrat'] leading-5 hover:underline">
                   View Details
                 </Link>
               </div>

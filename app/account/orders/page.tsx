@@ -59,7 +59,7 @@ export default function OrderHistoryPage() {
       <div className="flex items-center gap-4 flex-wrap">
         {STATUS_TABS.map((tab) => (
           <button key={tab.value} onClick={() => setActiveStatus(tab.value)}
-            className={`p-3 rounded-3xl text-base font-medium font-['Space_Grotesk'] transition-colors ${
+            className={`p-3 rounded-3xl text-base font-medium font-['Montserrat'] transition-colors ${
               activeStatus === tab.value
                 ? 'bg-sky-700 text-white'
                 : 'bg-white outline outline-1 outline-neutral-500 text-neutral-500 hover:outline-sky-700 hover:text-sky-700'
@@ -82,7 +82,7 @@ export default function OrderHistoryPage() {
 
         {!loading && filtered.length === 0 && (
           <div className="p-6 rounded-lg outline outline-[1.31px] outline-gray-300 text-center">
-            <p className="text-zinc-500 text-sm font-['Space_Grotesk'] py-4">
+            <p className="text-zinc-500 text-sm font-['Montserrat'] py-4">
               {orders.length === 0
                 ? <><Link href="/products" className="text-sky-700 underline">Browse products</Link> to place your first order.</>
                 : 'No orders found for this status.'}
@@ -102,10 +102,10 @@ export default function OrderHistoryPage() {
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex flex-col gap-3">
                     <div className="flex items-center gap-3">
-                      <span className="text-zinc-900 text-2xl font-bold font-['Space_Grotesk'] leading-6">
+                      <span className="text-zinc-900 text-2xl font-bold font-['Montserrat'] leading-6">
                         #{order.number}
                       </span>
-                      <span className={`px-3 py-0.5 rounded-full text-xs font-medium font-['Space_Grotesk'] ${badge.cls}`}>
+                      <span className={`px-3 py-0.5 rounded-full text-xs font-medium font-['Montserrat'] ${badge.cls}`}>
                         {badge.label}
                       </span>
                     </div>
@@ -115,7 +115,7 @@ export default function OrderHistoryPage() {
                   </div>
                   <div className="flex flex-col items-end gap-3">
                     <span className="text-slate-500 text-sm font-normal font-['Inter'] leading-5">Total Amount</span>
-                    <span className="text-zinc-900 text-2xl font-bold font-['Space_Grotesk'] leading-6">
+                    <span className="text-zinc-900 text-2xl font-bold font-['Montserrat'] leading-6">
                       ₦{Number(order.total).toLocaleString('en-NG')}
                     </span>
                   </div>
@@ -123,7 +123,7 @@ export default function OrderHistoryPage() {
 
                 <button
                   onClick={() => setExpanded(isOpen ? null : order.id)}
-                  className={`w-full p-4 rounded-lg text-base font-medium font-['Space_Grotesk'] transition-colors ${
+                  className={`w-full p-4 rounded-lg text-base font-medium font-['Montserrat'] transition-colors ${
                     isOpen
                       ? 'bg-white outline outline-1 outline-sky-700 text-sky-700'
                       : 'bg-sky-700 text-white hover:bg-sky-800'
@@ -137,16 +137,16 @@ export default function OrderHistoryPage() {
                 <div className="p-6 bg-neutral-100 border-t border-zinc-100 flex flex-col gap-4">
                   {/* Order items */}
                   <div className="flex flex-col gap-3">
-                    <span className="text-neutral-700 text-xl font-medium font-['Space_Grotesk']">Order items</span>
+                    <span className="text-neutral-700 text-xl font-medium font-['Montserrat']">Order items</span>
                     {order.line_items.map((item) => (
                       <div key={item.id} className="p-4 bg-white rounded-lg outline outline-1 outline-zinc-100 flex justify-between items-start gap-3">
                         <div className="flex flex-col gap-2">
-                          <span className="text-zinc-900 text-base font-bold font-['Space_Grotesk'] leading-6">{item.name}</span>
+                          <span className="text-zinc-900 text-base font-bold font-['Montserrat'] leading-6">{item.name}</span>
                           <span className="text-slate-500 text-sm font-normal font-['Inter'] leading-5">Quantity: {item.quantity}</span>
                         </div>
                         <div className="flex flex-col items-end gap-2">
                           <span className="text-slate-500 text-sm font-normal font-['Inter'] leading-5">Total Amount</span>
-                          <span className="text-zinc-900 text-base font-bold font-['Space_Grotesk'] leading-6">
+                          <span className="text-zinc-900 text-base font-bold font-['Montserrat'] leading-6">
                             ₦{Number(item.total).toLocaleString('en-NG')}
                           </span>
                         </div>
@@ -157,10 +157,10 @@ export default function OrderHistoryPage() {
                   {/* Shipping */}
                   {shippingAddr && (
                     <div className="flex flex-col gap-3">
-                      <span className="text-neutral-700 text-xl font-medium font-['Space_Grotesk']">Shipping Information</span>
+                      <span className="text-neutral-700 text-xl font-medium font-['Montserrat']">Shipping Information</span>
                       <div className="p-4 bg-white rounded-lg outline outline-1 outline-zinc-100 flex flex-col gap-2">
                         <span className="text-slate-500 text-sm font-normal font-['Inter'] leading-5">Delivery Address</span>
-                        <span className="text-zinc-900 text-base font-bold font-['Space_Grotesk'] leading-6">{shippingAddr}</span>
+                        <span className="text-zinc-900 text-base font-bold font-['Montserrat'] leading-6">{shippingAddr}</span>
                       </div>
                     </div>
                   )}

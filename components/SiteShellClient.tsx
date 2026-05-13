@@ -6,7 +6,6 @@ import Image from 'next/image';
 import TopBar from './TopBar';
 import NavBar from './NavBar';
 import Footer from './Footer';
-import ScrollToTop from './ScrollToTop';
 import NavigationScrollReset from './NavigationScrollReset';
 import type { SiteSettings } from '@/lib/woocommerce';
 
@@ -61,7 +60,6 @@ export default function SiteShellClient({ children, user, settings }: Props) {
       <NavBar />
       {children}
       <Footer settings={settings} />
-      <ScrollToTop />
     </>
   );
 }

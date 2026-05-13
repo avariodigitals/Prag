@@ -159,14 +159,14 @@ function ProductsGridContent({ products, total, categories = [], tags = [] }: Pr
 
       {/* Toolbar */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-4">
-        <span className="text-black text-base md:text-2xl font-medium font-['Space_Grotesk']">
+        <span className="text-black text-base md:text-2xl font-medium font-['Montserrat']">
           {total} result{total !== 1 ? 's' : ''}
         </span>
         <div className="w-full sm:w-auto flex items-center justify-between sm:justify-start gap-2 sm:gap-3 min-w-0">
           {/* Mobile filter button */}
           <button
             onClick={() => setDrawerOpen(true)}
-            className="md:hidden flex items-center gap-2 px-3 py-2 rounded-lg outline outline-1 outline-neutral-300 text-neutral-600 text-sm font-medium font-['Space_Grotesk']"
+            className="md:hidden flex items-center gap-2 px-3 py-2 rounded-lg outline outline-1 outline-neutral-300 text-neutral-600 text-sm font-medium font-['Montserrat']"
           >
             <SlidersHorizontal className="w-4 h-4" />
             Filters
@@ -178,7 +178,7 @@ function ProductsGridContent({ products, total, categories = [], tags = [] }: Pr
             <select
               value={searchParams.get('sort') ?? ''}
               onChange={(e) => setSort(e.target.value)}
-              className="appearance-none w-full sm:w-auto px-3 py-2 pr-8 bg-white rounded-lg outline outline-[0.3px] outline-neutral-400 text-neutral-500 text-sm md:text-base font-medium font-['Space_Grotesk'] cursor-pointer"
+              className="appearance-none w-full sm:w-auto px-3 py-2 pr-8 bg-white rounded-lg outline outline-[0.3px] outline-neutral-400 text-neutral-500 text-sm md:text-base font-medium font-['Montserrat'] cursor-pointer"
             >
               {SORT_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>{o.label}</option>
@@ -192,9 +192,9 @@ function ProductsGridContent({ products, total, categories = [], tags = [] }: Pr
       {/* Grid */}
       {items.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center gap-4 py-10">
-          <p className="text-gray-400 text-lg font-['Space_Grotesk']">No products found.</p>
+          <p className="text-gray-400 text-lg font-['Montserrat']">No products found.</p>
           {hasFilters && (
-            <button onClick={clearAll} className="text-sky-700 text-sm font-medium font-['Space_Grotesk'] underline">
+            <button onClick={clearAll} className="text-sky-700 text-sm font-medium font-['Montserrat'] underline">
               Clear filters
             </button>
           )}
@@ -219,7 +219,7 @@ function ProductsGridContent({ products, total, categories = [], tags = [] }: Pr
       )}
 
       {!hasMore && items.length > 0 && (
-        <p className="text-center text-zinc-400 text-xs font-['Space_Grotesk'] py-2">All products loaded</p>
+        <p className="text-center text-zinc-400 text-xs font-['Montserrat'] py-2">All products loaded</p>
       )}
 
       {/* Mobile Filter Drawer */}
@@ -231,14 +231,14 @@ function ProductsGridContent({ products, total, categories = [], tags = [] }: Pr
           {/* Drawer */}
           <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl p-6 flex flex-col gap-6 max-h-[85vh] overflow-y-auto">
             <div className="flex justify-between items-center">
-              <span className="text-zinc-900 text-lg font-semibold font-['Space_Grotesk']">Filters</span>
+              <span className="text-zinc-900 text-lg font-semibold font-['Montserrat']">Filters</span>
               <button onClick={() => setDrawerOpen(false)}>
                 <X className="w-5 h-5 text-zinc-500" />
               </button>
             </div>
 
             {hasFilters && (
-              <button onClick={clearAll} className="text-xs text-red-500 font-medium font-['Space_Grotesk'] text-left">
+              <button onClick={clearAll} className="text-xs text-red-500 font-medium font-['Montserrat'] text-left">
                 ✕ Clear all filters
               </button>
             )}
@@ -246,7 +246,7 @@ function ProductsGridContent({ products, total, categories = [], tags = [] }: Pr
             {/* Categories */}
             {displayCategories.length > 0 && (
               <div className="flex flex-col gap-3">
-                <span className="text-gray-900 text-base font-semibold font-['Space_Grotesk']">Categories</span>
+                <span className="text-gray-900 text-base font-semibold font-['Montserrat']">Categories</span>
                 <div className="flex flex-col gap-2">
                   {displayCategories.map((cat) => (
                     <button
@@ -256,8 +256,8 @@ function ProductsGridContent({ products, total, categories = [], tags = [] }: Pr
                         activeCategory === cat.slug ? 'text-sky-700 font-semibold' : 'text-gray-700'
                       }`}
                     >
-                      <span className="text-sm font-['Space_Grotesk']">{cat.name}</span>
-                      <span className="text-sky-700 text-xs font-['Space_Grotesk']">({cat.count})</span>
+                      <span className="text-base md:text-lg font-['Montserrat']">{cat.name}</span>
+                      <span className="text-sky-700 text-xs font-['Montserrat']">({cat.count})</span>
                     </button>
                   ))}
                 </div>
@@ -266,7 +266,7 @@ function ProductsGridContent({ products, total, categories = [], tags = [] }: Pr
 
             {/* Price Range */}
             <div className="flex flex-col gap-3">
-              <span className="text-gray-900 text-base font-semibold font-['Space_Grotesk']">Price Range</span>
+              <span className="text-gray-900 text-base font-semibold font-['Montserrat']">Price Range</span>
               <div className="flex items-center gap-2">
                 <input
                   type="number"
@@ -286,7 +286,7 @@ function ProductsGridContent({ products, total, categories = [], tags = [] }: Pr
               </div>
               <button
                 onClick={applyPrice}
-                className="w-full py-2.5 bg-sky-700 text-white text-sm font-medium font-['Space_Grotesk'] rounded-lg hover:bg-sky-800 transition-colors"
+                className="w-full py-2.5 bg-sky-700 text-white text-sm font-medium font-['Montserrat'] rounded-lg hover:bg-sky-800 transition-colors"
               >
                 Apply Price
               </button>
@@ -295,7 +295,7 @@ function ProductsGridContent({ products, total, categories = [], tags = [] }: Pr
             {/* Tags */}
             {tags.length > 0 && (
               <div className="flex flex-col gap-3">
-                <span className="text-gray-900 text-base font-semibold font-['Space_Grotesk']">Tags</span>
+                <span className="text-gray-900 text-base font-semibold font-['Montserrat']">Tags</span>
                 <div className="flex flex-wrap gap-2">
                   {tags.map((tag) => (
                     <button

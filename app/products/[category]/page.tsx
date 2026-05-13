@@ -1,7 +1,6 @@
 import CategoryProductsGrid from '@/components/CategoryProductsGrid';
 import { getProductBySlug, getProducts, getCategoryBySlug, productUrl } from '@/lib/woocommerce';
 import { notFound, redirect } from 'next/navigation';
-import Link from 'next/link';
 
 interface Props {
   params: Promise<{ category: string }>;
@@ -93,21 +92,12 @@ export default async function CategoryPage({ params, searchParams }: Props) {
     <main className="w-full bg-white flex flex-col">
       {/* Hero */}
       <div className="w-full pt-10 md:pt-12 pb-6 md:pb-8 bg-stone-50 flex flex-col items-center gap-3 md:gap-4 px-4">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-1 text-sm font-['Space_Grotesk']">
-          <Link href="/" className="text-sky-700 hover:underline">Home</Link>
-          <span className="text-zinc-400 mx-1">/</span>
-          <Link href="/products" className="text-zinc-500 hover:text-sky-700">Products</Link>
-          <span className="text-zinc-400 mx-1">/</span>
-          <span className="text-zinc-500">{displayName}</span>
-        </div>
-
         <div className="flex flex-col items-center gap-3">
-          <h1 className="text-sky-700 text-2xl md:text-3xl font-bold font-['Onest'] text-center">
+          <h1 className="text-sky-700 text-2xl md:text-3xl font-bold font-['Montserrat'] text-center">
             {displayName}
           </h1>
           {description && (
-            <p className="max-w-[531px] text-center text-sky-700 text-base md:text-lg font-normal font-['Space_Grotesk']"
+            <p className="max-w-[531px] text-center text-sky-700 text-base md:text-lg font-normal font-['Montserrat']"
               dangerouslySetInnerHTML={{ __html: description }}
             />
           )}
@@ -118,12 +108,12 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       <div className="w-full px-4 md:px-20 py-6 md:py-8 bg-white flex justify-center">
         <div className="w-full max-w-[1280px]">
           <CategoryProductsGrid
-          products={products}
-          total={total}
-          categorySlug={category}
-          activeSub={sp.sub}
-          activeSort={sp.sort}
-        />
+            products={products}
+            total={total}
+            categorySlug={category}
+            activeSub={sp.sub}
+            activeSort={sp.sort}
+          />
         </div>
       </div>
     </main>

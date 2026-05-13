@@ -178,7 +178,7 @@ function CategoryProductsGridContent({
             <select
               value={activeSub ?? ''}
               onChange={(e) => navigate({ sub: e.target.value || undefined })}
-              className="appearance-none w-full h-10 px-3 pr-8 bg-white rounded-full outline outline-1 outline-sky-700/60 text-sky-700 text-xs font-medium font-['Space_Grotesk'] cursor-pointer"
+              className="appearance-none w-full h-10 px-3 pr-8 bg-white rounded-full outline outline-1 outline-sky-700/60 text-sky-700 text-xs font-medium font-['Montserrat'] cursor-pointer"
             >
               {tabs.map((tab) => (
                 <option key={tab.key} value={tab.slug ?? ''}>{tab.label}</option>
@@ -191,7 +191,7 @@ function CategoryProductsGridContent({
             <select
               value={activeSort ?? ''}
               onChange={(e) => navigate({ sort: e.target.value || undefined })}
-              className="appearance-none w-full h-10 px-3 pr-8 bg-white rounded-md outline outline-[0.3px] outline-neutral-400 text-neutral-500 text-xs font-medium font-['Space_Grotesk'] cursor-pointer"
+              className="appearance-none w-full h-10 px-3 pr-8 bg-white rounded-md outline outline-[0.3px] outline-neutral-400 text-neutral-500 text-xs font-medium font-['Montserrat'] cursor-pointer"
             >
               {SORT_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>{o.label}</option>
@@ -213,7 +213,7 @@ function CategoryProductsGridContent({
                 onClick={() => navigate({ sub: tab.slug })}
                 className="inline-flex flex-col items-center shrink-0"
               >
-                <span className={`px-3 md:px-4 pt-3 pb-3 text-xs md:text-sm font-medium font-['Space_Grotesk'] whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+                <span className={`px-3 md:px-4 pt-3 pb-3 text-xs md:text-sm font-medium font-['Montserrat'] whitespace-nowrap transition-colors flex items-center gap-1.5 ${
                   isActive ? 'text-sky-700' : 'text-zinc-500 hover:text-zinc-700'
                 }`}>
                   {tab.label}
@@ -234,7 +234,7 @@ function CategoryProductsGridContent({
             <select
               value={activeSort ?? ''}
               onChange={(e) => navigate({ sort: e.target.value || undefined })}
-              className="appearance-none p-2.5 pr-8 bg-white rounded-lg outline outline-[0.3px] outline-neutral-500 text-neutral-500 text-sm font-medium font-['Space_Grotesk'] cursor-pointer"
+              className="appearance-none p-2.5 pr-8 bg-white rounded-lg outline outline-[0.3px] outline-neutral-500 text-neutral-500 text-sm font-medium font-['Montserrat'] cursor-pointer"
             >
               {SORT_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>{o.label}</option>
@@ -262,7 +262,7 @@ function CategoryProductsGridContent({
         </div>
       ) : products.length === 0 ? (
         <div className="flex justify-center py-20">
-          <p className="text-gray-400 text-sm font-['Space_Grotesk']">No products found.</p>
+          <p className="text-gray-400 text-base md:text-lg font-['Montserrat']">No products found.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-9 md:gap-x-6 md:gap-y-11">
@@ -286,7 +286,7 @@ function CategoryProductsGridContent({
       )}
 
       {!hasMore && products.length > 0 && (
-        <p className="text-center text-zinc-400 text-xs font-['Space_Grotesk'] py-4">All products loaded</p>
+        <p className="text-center text-zinc-400 text-xs font-['Montserrat'] py-4">All products loaded</p>
       )}
     </div>
   );

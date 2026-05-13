@@ -105,15 +105,15 @@ export default function PowerCalculatorTool() {
                 <div key={appliance.name} className={`p-4 bg-white rounded-xl outline outline-1 flex flex-col gap-2 transition-colors ${qty > 0 ? 'outline-sky-700 bg-sky-50/30' : 'outline-zinc-200'}`}>
                   <div className="flex justify-between items-center">
                     <div className="flex flex-col gap-1">
-                      <span className="text-zinc-900 text-sm font-semibold font-['Onest']">{appliance.name}</span>
-                      <span className="text-zinc-400 text-xs font-normal font-['Onest']">{appliance.watts}W per unit</span>
+                      <span className="text-zinc-900 text-sm font-semibold font-['Montserrat']">{appliance.name}</span>
+                      <span className="text-zinc-400 text-xs font-normal font-['Montserrat']">{appliance.watts}W per unit</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <button onClick={() => update(appliance.name, -1)}
                         className="w-7 h-7 bg-white rounded-full outline outline-1 outline-zinc-300 flex justify-center items-center hover:outline-sky-700 transition-colors">
                         <span className="text-zinc-500 text-sm font-bold leading-none">−</span>
                       </button>
-                      <span className="text-zinc-900 text-sm font-bold font-['Onest'] w-4 text-center">{qty}</span>
+                      <span className="text-zinc-900 text-sm font-bold font-['Montserrat'] w-4 text-center">{qty}</span>
                       <button onClick={() => update(appliance.name, 1)}
                         className="w-7 h-7 bg-sky-700 rounded-full flex justify-center items-center hover:bg-sky-800 transition-colors">
                         <span className="text-white text-sm font-bold leading-none">+</span>
@@ -137,21 +137,21 @@ export default function PowerCalculatorTool() {
             { label: 'Recommended Inverter', value: appliancesAdded > 0 ? `${recommendedKva} KVA` : '—' },
           ].map((item) => (
             <div key={item.label} className="flex flex-col items-center gap-0.5">
-              <span className="text-white text-lg font-extrabold font-['Onest']">{item.value}</span>
-              <span className="text-white/60 text-xs font-normal font-['Space_Grotesk']">{item.label}</span>
+              <span className="text-white text-lg font-extrabold font-['Montserrat']">{item.value}</span>
+              <span className="text-white/60 text-xs font-normal font-['Montserrat']">{item.label}</span>
             </div>
           ))}
         </div>
 
         <div className="flex items-center gap-3">
           <button onClick={reset}
-            className="h-10 px-4 rounded-lg outline outline-1 outline-white text-white text-xs font-medium font-['Space_Grotesk'] hover:bg-sky-800 transition-colors">
+            className="h-10 px-4 rounded-lg outline outline-1 outline-white text-white text-xs font-medium font-['Montserrat'] hover:bg-sky-800 transition-colors">
             Reset
           </button>
           <button
             onClick={getRecommendations}
             disabled={appliancesAdded === 0 || loading}
-            className="h-10 px-5 bg-white rounded-lg text-sky-700 text-sm font-semibold font-['Space_Grotesk'] flex items-center gap-2 hover:bg-sky-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="h-10 px-5 bg-white rounded-lg text-sky-700 text-sm font-semibold font-['Montserrat'] flex items-center gap-2 hover:bg-sky-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {loading ? (
               <>
@@ -170,20 +170,20 @@ export default function PowerCalculatorTool() {
       {recommendations !== null && (
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-1">
-            <h2 className="text-zinc-900 text-xl font-bold font-['Onest']">
+            <h2 className="text-zinc-900 text-xl font-bold font-['Montserrat']">
               {recommendations.length > 0
                 ? `Recommended ${recommendedKva} KVA Inverters for Your Load`
                 : 'No exact matches found'}
             </h2>
-            <p className="text-zinc-500 text-sm font-['Space_Grotesk']">
+            <p className="text-zinc-500 text-base md:text-lg font-['Montserrat']">
               Based on your {peakWatts}W peak load, you need at least a {recommendedKva} KVA inverter.
             </p>
           </div>
 
           {recommendations.length === 0 ? (
             <div className="flex flex-col items-center gap-4 py-10">
-              <p className="text-zinc-400 font-['Space_Grotesk']">No products matched. Browse our full inverter range.</p>
-              <Link href="/products/inverters" className="px-6 py-3 bg-sky-700 rounded-full text-white text-sm font-medium font-['Space_Grotesk'] hover:bg-sky-800 transition-colors">
+              <p className="text-zinc-400 font-['Montserrat']">No products matched. Browse our full inverter range.</p>
+              <Link href="/products/inverters" className="px-6 py-3 bg-sky-700 rounded-full text-white text-sm font-medium font-['Montserrat'] hover:bg-sky-800 transition-colors">
                 Browse Inverters
               </Link>
             </div>

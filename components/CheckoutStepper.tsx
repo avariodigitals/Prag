@@ -14,7 +14,7 @@ export default function CheckoutStepper({ activeStep }: Props) {
               <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-white text-xs md:text-sm font-medium font-['Inter'] ${i <= activeStep ? 'bg-sky-700' : 'bg-zinc-300'}`}>
                 {i + 1}
               </div>
-              <span className={`text-xs md:text-sm font-medium font-['Onest'] whitespace-nowrap ${i <= activeStep ? 'text-sky-700' : 'text-zinc-400'}`}>
+              <span className={`text-xs md:text-sm font-medium font-['Montserrat'] whitespace-nowrap ${i <= activeStep ? 'text-sky-700' : 'text-zinc-400'}`}>
                 {label}
               </span>
             </div>

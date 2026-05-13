@@ -14,8 +14,7 @@
 }
 
 @theme inline {
-  --font-onest: var(--font-onest);
-  --font-space-grotesk: var(--font-space-grotesk);
+  --font-montserrat: var(--font-montserrat);
 }
 
 body {
@@ -25,14 +24,14 @@ body {
 
 /* WordPress content reset — forces all WP HTML to match site theme */
 .wp-content {
-  font-family: var(--font-space-grotesk), sans-serif;
+  font-family: var(--font-montserrat), sans-serif;
   font-size: 1.1rem;
   line-height: 1.75;
   color: #475569;
 }
 
 .wp-content p {
-  font-family: var(--font-space-grotesk), sans-serif;
+  font-family: var(--font-montserrat), sans-serif;
   margin-bottom: 1rem;
   color: #475569;
   font-size: inherit;
@@ -45,7 +44,7 @@ body {
 .wp-content h4,
 .wp-content h5,
 .wp-content h6 {
-  font-family: var(--font-onest), sans-serif;
+  font-family: var(--font-montserrat), sans-serif;
   font-weight: 600;
   color: #0c0c0c;
   margin-top: 1.5rem;
@@ -58,7 +57,7 @@ body {
 
 .wp-content ul,
 .wp-content ol {
-  font-family: var(--font-space-grotesk), sans-serif;
+  font-family: var(--font-montserrat), sans-serif;
   padding-left: 1.5rem;
   margin-bottom: 1rem;
   color: #475569;
@@ -90,8 +89,8 @@ body {
 .wp-content table {
   width: 100%;
   border-collapse: collapse;
-  font-family: var(--font-space-grotesk), sans-serif;
-  font-size: 0.95rem;
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: 1rem;
   margin-bottom: 1.5rem;
 }
 
@@ -133,4 +132,74 @@ body {
   [aria-disabled='true']:hover {
     cursor: not-allowed;
   }
+}
+
+/* TermsFeed cookie consent: centered overlay + PRAG blue accents */
+.termsfeed-com---nb-simple.termsfeed-com---is-visible {
+  position: fixed !important;
+  inset: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(2, 6, 23, 0.56) !important;
+  z-index: 2147483647 !important;
+  padding: 1rem !important;
+}
+
+.termsfeed-com---nb-simple .cc-nb-main-container {
+  width: min(92vw, 720px) !important;
+  max-height: calc(100vh - 2rem) !important;
+  overflow: auto !important;
+  border-radius: 18px !important;
+  border: 1px solid #d1d5db !important;
+  box-shadow: 0 24px 60px rgba(2, 6, 23, 0.35) !important;
+  background: #ffffff !important;
+}
+
+.termsfeed-com---nb-simple .cc-nb-text,
+.termsfeed-com---nb-simple .cc-nb-title,
+.termsfeed-com---nb-simple .cc-nb-text-content {
+  color: #0f172a !important;
+}
+
+.termsfeed-com---nb-simple .cc-nb-buttons-container {
+  display: flex !important;
+  justify-content: center !important;
+  gap: 0.75rem !important;
+  flex-wrap: wrap !important;
+}
+
+.termsfeed-com---nb-simple .cc-nb-okagree,
+.termsfeed-com---nb-simple .cc-nb-reject,
+.termsfeed-com---pc-overlay .cc-cp-foot-save,
+.termsfeed-com---pc-overlay .cc-cp-foot-button {
+  border-radius: 9999px !important;
+  border: 1px solid #0369a1 !important;
+  background: #0369a1 !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+.termsfeed-com---nb-simple .cc-nb-reject {
+  background: #ffffff !important;
+  color: #0369a1 !important;
+}
+
+.termsfeed-com---nb-simple .cc-nb-changep,
+.termsfeed-com---pc-overlay .cc-cp-body-tabs-item-link,
+.termsfeed-com---pc-overlay .cc-cp-foot-byline a,
+.termsfeed-com---pc-overlay .cc-nb-text-urls a {
+  color: #0369a1 !important;
+}
+
+.termsfeed-com---pc-overlay .cc-cp-body-tabs-item-link[aria-selected='true'],
+.termsfeed-com---pc-overlay .cc-cp-body-tabs-item-link:focus,
+.termsfeed-com---pc-overlay .cc-cp-body-tabs-item-link:hover {
+  color: #0b4f79 !important;
+}
+
+.termsfeed-com---pc-overlay .cc-custom-checkbox input:checked,
+.termsfeed-com---pc-overlay .cc-custom-checkbox input:checked + span,
+.termsfeed-com---pc-overlay .cc-custom-checkbox input:checked + label {
+  accent-color: #0369a1 !important;
 }

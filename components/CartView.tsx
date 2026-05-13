@@ -36,8 +36,8 @@ export default function CartView() {
   if (items.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-6">
-        <p className="text-gray-400 text-xl font-['Space_Grotesk']">Your cart is empty.</p>
-        <Link href="/products" className="px-8 py-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Space_Grotesk'] hover:bg-sky-800 transition-colors">
+        <p className="text-gray-400 text-xl font-['Montserrat']">Your cart is empty.</p>
+        <Link href="/products" className="px-8 py-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Montserrat'] hover:bg-sky-800 transition-colors">
           Browse Products
         </Link>
       </div>
@@ -57,8 +57,8 @@ export default function CartView() {
                   <Image src={item.image || '/placeholder-product.png'} alt={item.name} fill className="object-contain p-2" />
                 </div>
                 <div className="flex flex-col gap-3">
-                  <p className="w-full md:w-72 text-gray-900 text-sm md:text-xl font-bold font-['Space_Grotesk'] leading-4 md:leading-6">{item.name}</p>
-                  <p className="text-sky-700 text-xs md:text-lg font-medium font-['Onest']">{formatPrice(item.price)}</p>
+                  <p className="w-full md:w-72 text-gray-900 text-sm md:text-xl font-bold font-['Montserrat'] leading-4 md:leading-6">{item.name}</p>
+                  <p className="text-sky-700 text-xs md:text-lg font-medium font-['Montserrat']">{formatPrice(item.price)}</p>
                   {/* Qty + remove — mobile inline */}
                   <div className="flex md:hidden items-center gap-3">
                     <div className="p-2 bg-stone-50 rounded-3xl outline outline-1 outline-zinc-500/40 flex items-center gap-7">
@@ -103,23 +103,23 @@ export default function CartView() {
 
       {/* Summary */}
       <div className="w-full md:w-[400px] md:shrink-0 px-4 md:px-6 py-6 md:py-8 bg-white rounded-[10px] outline outline-1 outline-gray-200 flex flex-col gap-6">
-        <h2 className="text-gray-900 text-2xl font-bold font-['Space_Grotesk'] leading-7">Summary</h2>
+        <h2 className="text-gray-900 text-2xl font-bold font-['Montserrat'] leading-7">Summary</h2>
 
         <div className="flex flex-col gap-6">
           {/* Coupon */}
           <div className="flex flex-col gap-3">
-            <span className="text-gray-900 text-base font-bold font-['Space_Grotesk'] leading-6">Apply Discount</span>
+            <span className="text-gray-900 text-base font-bold font-['Montserrat'] leading-6">Apply Discount</span>
             <div className="flex items-start gap-4">
               <input
                 type="text"
                 value={coupon}
                 onChange={(e) => setCoupon(e.target.value)}
                 placeholder="Enter Coupon Code"
-                className="flex-1 h-14 pl-5 pr-4 py-3 bg-gray-50 rounded-[30px] text-gray-400 text-sm font-normal font-['Space_Grotesk'] outline-none"
+                className="flex-1 h-14 pl-5 pr-4 py-3 bg-gray-50 rounded-[30px] text-gray-400 text-sm font-normal font-['Montserrat'] outline-none"
               />
               <button
                 onClick={applyCoupon}
-                className="w-28 p-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Space_Grotesk'] hover:bg-sky-800 transition-colors"
+                className="w-28 p-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Montserrat'] hover:bg-sky-800 transition-colors"
               >
                 Apply
               </button>
@@ -131,17 +131,17 @@ export default function CartView() {
           {/* Totals */}
           <div className="flex flex-col gap-4">
             <div className="flex justify-between">
-              <span className="text-slate-600 text-sm font-medium font-['Space_Grotesk'] leading-5">Sub Total</span>
-              <span className="text-slate-600 text-sm font-normal font-['Space_Grotesk'] leading-5">{formatPrice(total)}</span>
+              <span className="text-slate-600 text-base md:text-lg font-medium font-['Montserrat'] leading-5">Sub Total</span>
+              <span className="text-slate-600 text-base md:text-lg font-normal font-['Montserrat'] leading-5">{formatPrice(total)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-600 text-sm font-medium font-['Space_Grotesk'] leading-5">VAT (7.5%)</span>
-              <span className="text-slate-600 text-sm font-normal font-['Space_Grotesk'] leading-5">₦0.00</span>
+              <span className="text-slate-600 text-base md:text-lg font-medium font-['Montserrat'] leading-5">VAT (7.5%)</span>
+              <span className="text-slate-600 text-base md:text-lg font-normal font-['Montserrat'] leading-5">₦0.00</span>
             </div>
             {discount > 0 && (
               <div className="flex justify-between">
-                <span className="text-slate-600 text-sm font-medium font-['Space_Grotesk'] leading-5">Discount</span>
-                <span className="text-green-600 text-sm font-normal font-['Space_Grotesk'] leading-5">-{formatPrice(discount)}</span>
+                <span className="text-slate-600 text-base md:text-lg font-medium font-['Montserrat'] leading-5">Discount</span>
+                <span className="text-green-600 text-base md:text-lg font-normal font-['Montserrat'] leading-5">-{formatPrice(discount)}</span>
               </div>
             )}
           </div>
@@ -149,8 +149,8 @@ export default function CartView() {
           <div className="w-full h-px bg-gray-200" />
 
           <div className="flex justify-between items-center">
-            <span className="text-slate-600 text-sm font-medium font-['Space_Grotesk'] leading-5">Total</span>
-            <span className="text-slate-800 text-base font-bold font-['Space_Grotesk'] leading-6">{formatPrice(grandTotal)}</span>
+            <span className="text-slate-600 text-base md:text-lg font-medium font-['Montserrat'] leading-5">Total</span>
+            <span className="text-slate-800 text-base font-bold font-['Montserrat'] leading-6">{formatPrice(grandTotal)}</span>
           </div>
         </div>
 
@@ -158,13 +158,13 @@ export default function CartView() {
         <div className="flex flex-col gap-6">
           <button
             onClick={proceedToCheckout}
-            className="w-full p-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Space_Grotesk'] hover:bg-sky-800 transition-colors"
+            className="w-full p-4 bg-sky-700 rounded-3xl text-white text-base font-medium font-['Montserrat'] hover:bg-sky-800 transition-colors"
           >
             Proceed to check out
           </button>
           <Link
             href="/products"
-            className="w-full p-4 rounded-3xl outline outline-1 outline-sky-700 text-center text-sky-700 text-base font-medium font-['Space_Grotesk'] hover:bg-sky-50 transition-colors"
+            className="w-full p-4 rounded-3xl outline outline-1 outline-sky-700 text-center text-sky-700 text-base font-medium font-['Montserrat'] hover:bg-sky-50 transition-colors"
           >
             Continue Shopping
           </Link>

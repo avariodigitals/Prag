@@ -701,6 +701,8 @@ class Prag_Core_Bridge {
                 'business_type'      => $type,
                 'partnership_tier'   => $tier,
                 'applicant_message'  => $message,
+                // Prag-Admin B2B UI defaults distributor applications to "pending"
+                'application_status' => 'pending',
                 'submitted_at'       => current_time('mysql'),
             ],
         ]);
@@ -932,31 +934,41 @@ class Prag_Core_Bridge {
 
         $args = [
             'post_type'      => 'prag_contact',
-            'post_status'    => ['private', 'publish'],
+            // Form submissions can be saved under other non-trash statuses depending on capabilities.
+            'post_status'    => ['private', 'publish', 'draft', 'pending'],
             'posts_per_page' => $per_page,
             'paged'          => $page,
             'orderby'        => 'date',
             'order'          => 'DESC',
         ];
 
+        $meta_query = ['relation' => 'AND'];
         if ($status) {
-            $args['meta_query'] = [[
-                'key'     => 'contact_status',
-                'value'   => $status,
-                'compare' => '=',
-            ]];
-        }
-
-        if ($search) {
-            $args['meta_query'] = array_merge(
-                isset($args['meta_query']) ? $args['meta_query'] : [],
-                [
+            // Treat missing status as "new" so legacy records still appear.
+            if ($status === 'new') {
+                $meta_query[] = [
                     'relation' => 'OR',
-                    ['key' => 'contact_name',  'value' => $search, 'compare' => 'LIKE'],
-                    ['key' => 'contact_email', 'value' => $search, 'compare' => 'LIKE'],
-                    ['key' => 'contact_company', 'value' => $search, 'compare' => 'LIKE'],
-                ]
-            );
+                    ['key' => 'contact_status', 'compare' => 'NOT EXISTS'],
+                    ['key' => 'contact_status', 'value' => 'new', 'compare' => '='],
+                ];
+            } else {
+                $meta_query[] = [
+                    'key'     => 'contact_status',
+                    'value'   => $status,
+                    'compare' => '=',
+                ];
+            }
+        }
+        if ($search) {
+            $meta_query[] = [
+                'relation' => 'OR',
+                ['key' => 'contact_name', 'value' => $search, 'compare' => 'LIKE'],
+                ['key' => 'contact_email', 'value' => $search, 'compare' => 'LIKE'],
+                ['key' => 'contact_company', 'value' => $search, 'compare' => 'LIKE'],
+            ];
+        }
+        if (count($meta_query) > 1) {
+            $args['meta_query'] = $meta_query;
         }
 
         $query = new WP_Query($args);
@@ -976,7 +988,8 @@ class Prag_Core_Bridge {
             ];
         }, $query->posts);
 
-        $response = rest_ensure_response(['data' => $data, 'total' => $total]);
+        // Return an array (WP list-endpoint convention). Total stays in header for pagination.
+        $response = rest_ensure_response($data);
         $response->header('X-WP-Total', $total);
         return $response;
     }
@@ -1017,31 +1030,41 @@ class Prag_Core_Bridge {
 
         $args = [
             'post_type'      => 'prag_distributor',
-            'post_status'    => ['private', 'publish'],
+            // Form submissions can be saved under other non-trash statuses depending on capabilities.
+            'post_status'    => ['private', 'publish', 'draft', 'pending'],
             'posts_per_page' => $per_page,
             'paged'          => $page,
             'orderby'        => 'date',
             'order'          => 'DESC',
         ];
 
+        $meta_query = ['relation' => 'AND'];
         if ($status) {
-            $args['meta_query'] = [[
-                'key'     => 'application_status',
-                'value'   => $status,
-                'compare' => '=',
-            ]];
-        }
-
-        if ($search) {
-            $args['meta_query'] = array_merge(
-                isset($args['meta_query']) ? $args['meta_query'] : [],
-                [
+            // Treat missing status as "pending" so legacy records still appear.
+            if ($status === 'pending') {
+                $meta_query[] = [
                     'relation' => 'OR',
-                    ['key' => 'applicant_name',  'value' => $search, 'compare' => 'LIKE'],
-                    ['key' => 'applicant_email', 'value' => $search, 'compare' => 'LIKE'],
-                    ['key' => 'business_name',   'value' => $search, 'compare' => 'LIKE'],
-                ]
-            );
+                    ['key' => 'application_status', 'compare' => 'NOT EXISTS'],
+                    ['key' => 'application_status', 'value' => 'pending', 'compare' => '='],
+                ];
+            } else {
+                $meta_query[] = [
+                    'key'     => 'application_status',
+                    'value'   => $status,
+                    'compare' => '=',
+                ];
+            }
+        }
+        if ($search) {
+            $meta_query[] = [
+                'relation' => 'OR',
+                ['key' => 'applicant_name', 'value' => $search, 'compare' => 'LIKE'],
+                ['key' => 'applicant_email', 'value' => $search, 'compare' => 'LIKE'],
+                ['key' => 'business_name', 'value' => $search, 'compare' => 'LIKE'],
+            ];
+        }
+        if (count($meta_query) > 1) {
+            $args['meta_query'] = $meta_query;
         }
 
         $query = new WP_Query($args);
@@ -1059,12 +1082,13 @@ class Prag_Core_Bridge {
                 'tier'    => get_post_meta($post->ID, 'partnership_tier', true)  ?: '',
                 'type'    => get_post_meta($post->ID, 'business_type', true)     ?: '',
                 'message' => get_post_meta($post->ID, 'applicant_message', true) ?: '',
-                'status'  => get_post_meta($post->ID, 'application_status', true) ?: 'new',
+                'status'  => get_post_meta($post->ID, 'application_status', true) ?: 'pending',
                 'date'    => get_post_meta($post->ID, 'submitted_at', true)      ?: $post->post_date,
             ];
         }, $query->posts);
 
-        $response = rest_ensure_response(['data' => $data, 'total' => $total]);
+        // Return an array (WP list-endpoint convention). Total stays in header for pagination.
+        $response = rest_ensure_response($data);
         $response->header('X-WP-Total', $total);
         return $response;
     }

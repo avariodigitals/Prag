@@ -19,10 +19,10 @@ export default function OrderFailedModal({ orderId, retryQuery }: Props) {
             <div className="p-2.5 bg-rose-600/10 rounded-full">
               <XCircle className="w-14 h-14 text-rose-600" />
             </div>
-            <h2 className="text-neutral-950 text-xl md:text-2xl font-medium font-['Space_Grotesk'] leading-7 text-center">
+            <h2 className="text-neutral-950 text-xl md:text-2xl font-medium font-['Montserrat'] leading-7 text-center">
               Payment Failed
             </h2>
-            <p className="text-zinc-500 text-sm font-normal font-['Space_Grotesk'] leading-5 text-center">
+            <p className="text-zinc-500 text-base md:text-lg font-normal font-['Montserrat'] leading-5 text-center">
               Your payment was not completed.
             </p>
           </div>
@@ -30,16 +30,16 @@ export default function OrderFailedModal({ orderId, retryQuery }: Props) {
 
         <div className="w-full px-4 md:px-8 py-4 md:py-6 flex flex-col items-center gap-6 md:gap-8">
           <div className="w-full flex justify-between items-start">
-            <span className="text-neutral-950 text-base font-medium font-['Space_Grotesk'] leading-6">
+            <span className="text-neutral-950 text-base font-medium font-['Montserrat'] leading-6">
               Order Number
             </span>
-            <span className="text-rose-700 text-lg md:text-2xl font-medium font-['Space_Grotesk'] leading-7 text-right break-all">
+            <span className="text-rose-700 text-lg md:text-2xl font-medium font-['Montserrat'] leading-7 text-right break-all">
               {orderId ? `#${orderId}` : '—'}
             </span>
           </div>
 
           <div className="w-full p-4 md:p-6 bg-rose-600/10 rounded-xl flex justify-center items-center">
-            <p className="text-center text-rose-700 text-sm md:text-lg font-medium font-['Space_Grotesk'] leading-6 md:leading-7">
+            <p className="text-center text-rose-700 text-base md:text-lg font-medium font-['Montserrat'] leading-6 md:leading-7">
               We could not confirm your payment. Please try again or contact support if this persists.
             </p>
           </div>
@@ -49,7 +49,7 @@ export default function OrderFailedModal({ orderId, retryQuery }: Props) {
               href={retryHref}
               className="flex-1 h-12 md:h-16 px-6 py-3 md:py-4 bg-sky-700 rounded-[30px] flex justify-center items-center hover:bg-sky-800 transition-colors"
             >
-              <span className="text-white text-base md:text-lg font-medium font-['Space_Grotesk'] leading-7">
+              <span className="text-white text-base md:text-lg font-medium font-['Montserrat'] leading-7">
                 Try Payment Again
               </span>
             </Link>
@@ -57,7 +57,7 @@ export default function OrderFailedModal({ orderId, retryQuery }: Props) {
               href="/contact"
               className="flex-1 h-12 md:h-16 px-6 py-3 md:py-4 rounded-[30px] border border-sky-700 flex justify-center items-center hover:bg-sky-50 transition-colors"
             >
-              <span className="text-sky-700 text-base md:text-lg font-medium font-['Space_Grotesk'] leading-7">
+              <span className="text-sky-700 text-base md:text-lg font-medium font-['Montserrat'] leading-7">
                 Contact Support
               </span>
             </Link>

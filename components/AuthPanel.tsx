@@ -23,10 +23,10 @@ export default function AuthPanel({ headline, subtext }: Props) {
           alt="PRAG" width={100} height={24} style={{ height: 'auto', width: '100px' }}
         />
         <div className="flex flex-col gap-4">
-          <h1 className="text-white text-2xl xl:text-3xl font-bold font-['Onest'] leading-tight">{headline}</h1>
-          <p className="text-white/80 text-sm font-normal font-['Space_Grotesk'] leading-relaxed">{subtext}</p>
+          <h1 className="text-white text-2xl xl:text-3xl font-bold font-['Montserrat'] leading-tight">{headline}</h1>
+          <p className="text-white/80 text-sm font-normal font-['Montserrat'] leading-relaxed">{subtext}</p>
         </div>
-        <p className="text-white/40 text-xs font-['Space_Grotesk']">© 2026 PRAG. All rights reserved.</p>
+        <p className="text-white/40 text-xs font-['Montserrat']">© 2026 PRAG. All rights reserved.</p>
       </div>
     </div>
   );

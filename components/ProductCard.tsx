@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Heart } from 'lucide-react';
 import { formatPrice, productUrl } from '@/lib/woocommerce';
 import { useWishlist } from '@/lib/WishlistContext';
@@ -18,6 +19,7 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false, priority = false, priceColor }: ProductCardProps) {
   const { isWishlisted, toggle, authed } = useWishlist();
+  const router = useRouter();
   const [saving, setSaving] = useState(false);
   const image = product.images?.[0];
 

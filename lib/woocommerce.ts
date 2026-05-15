@@ -3,6 +3,8 @@ import type { Product, Category, Tag, Store } from './types';
 
 const PRODUCTS_FETCH_PAGE_SIZE = 100;
 const FETCH_TIMEOUT_MS = 7000;
+const PUBLIC_PRODUCTS_REVALIDATE_SECONDS = 300;
+const PUBLIC_CONTENT_REVALIDATE_SECONDS = 3600;
 
 function authParams() {
   return `consumer_key=${process.env.WC_CONSUMER_KEY}&consumer_secret=${process.env.WC_CONSUMER_SECRET}`;
@@ -17,6 +19,7 @@ async function fetchWithRetry(url: string, init: RequestInit, timeoutMs = FETCH_
   for (let attempt = 0; attempt <= retries; attempt += 1) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), timeoutMs);
+    const startedAt = Date.now();
     try {
       const res = await fetch(url, {
         ...init,
@@ -28,9 +31,15 @@ async function fetchWithRetry(url: string, init: RequestInit, timeoutMs = FETCH_
         },
       });
       clearTimeout(timeout);
+      const durationMs = Date.now() - startedAt;
+      if (!res.ok || durationMs > 1200) {
+        console.warn(`[perf:b2c-fetch] ${durationMs}ms ${res.ok ? 'ok' : 'error'} ${url}`);
+      }
       if (res.ok || attempt === retries) return res;
     } catch {
       clearTimeout(timeout);
+      const durationMs = Date.now() - startedAt;
+      console.warn(`[perf:b2c-fetch] ${durationMs}ms error ${url}`);
     }
   }
   return null;
@@ -401,7 +410,7 @@ export async function searchProducts(query: string, sort?: string, page = 1, per
 
   if (!hasExplicitSort) {
     try {
-      const { products: allProducts } = await fetchAllProductsForDefaultSort(baseQs, 0);
+      const { products: allProducts } = await fetchAllProductsForDefaultSort(baseQs, PUBLIC_PRODUCTS_REVALIDATE_SECONDS);
       const filteredProducts = allProducts.filter((product) => isAccurateSearchMatch(product, query));
       const start = (page - 1) * per_page;
       const end = start + per_page;
@@ -412,7 +421,7 @@ export async function searchProducts(query: string, sort?: string, page = 1, per
   }
 
   try {
-    const allProducts = await fetchAllProducts(baseQs, 0);
+    const allProducts = await fetchAllProducts(baseQs, PUBLIC_PRODUCTS_REVALIDATE_SECONDS);
     const filteredProducts = allProducts.filter((product) => isAccurateSearchMatch(product, query));
     const start = (page - 1) * per_page;
     const end = start + per_page;
@@ -459,7 +468,12 @@ async function wpFetch<T>(path: string, fallback: T): Promise<T> {
 export async function getStores(): Promise<Store[]> {
   try {
     const url = `${wpBase()}/prag_store?per_page=100&_fields=id,title,meta`;
-    const res = await fetch(url, { cache: 'no-store' });
+    const res = await fetch(url, {
+      next: {
+        revalidate: PUBLIC_CONTENT_REVALIDATE_SECONDS,
+        tags: ['wc-stores', 'wordpress-content'],
+      },
+    });
     if (!res.ok) return [];
     const data = await res.json() as Array<{ id: number; title: { rendered: string }; meta: Record<string, string> }>;
     return data.map((s) => ({
@@ -676,7 +690,12 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_WP_API_URL ?? 'https://central.prag.global/wp-json'}/prag-core/v1/settings`,
-      { next: { revalidate: 1 } }
+      {
+        next: {
+          revalidate: PUBLIC_CONTENT_REVALIDATE_SECONDS,
+          tags: ['wc-settings', 'wordpress-content'],
+        },
+      }
     );
     if (!res.ok) return SETTINGS_FALLBACK;
     const data = await res.json();

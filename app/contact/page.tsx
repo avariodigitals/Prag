@@ -1,4 +1,5 @@
-export const dynamic = 'force-dynamic';
+// Public contact page is ISR-cached.
+export const revalidate = 900;
 
 import ContactForm from '@/components/ContactForm';
 import StoresGrid from '@/components/StoresGrid';

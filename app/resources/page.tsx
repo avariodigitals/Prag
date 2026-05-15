@@ -1,4 +1,5 @@
-export const dynamic = 'force-dynamic';
+// Public resources page is ISR-cached.
+export const revalidate = 1800;
 
 import TechResourcesView from '@/components/TechResourcesView';
 import { getProducts } from '@/lib/woocommerce';

@@ -1,4 +1,5 @@
-export const revalidate = 1;
+// Public landing page uses ISR to avoid live CMS dependency on every request.
+export const revalidate = 1800;
 
 import HeroBanner from '@/components/HeroBanner';
 import CategoryGrid from '@/components/CategoryGrid';

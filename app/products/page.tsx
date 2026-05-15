@@ -1,4 +1,5 @@
-export const dynamic = 'force-dynamic';
+// Product listing uses ISR with cached WooCommerce reads.
+export const revalidate = 300;
 
 import ProductsSidebar from '@/components/ProductsSidebar';
 import ProductsGrid from '@/components/ProductsGrid';

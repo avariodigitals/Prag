@@ -1,4 +1,5 @@
-export const dynamic = 'force-dynamic';
+// Product detail page uses ISR while preserving fresh review/doc windows.
+export const revalidate = 300;
 
 import ProductDetailView from '@/components/ProductDetailView';
 import { getProductBySlug, getProducts, getProductReviews, getTechDocuments } from '@/lib/woocommerce';

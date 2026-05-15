@@ -1,4 +1,5 @@
-export const dynamic = 'force-dynamic';
+// Public legal page is ISR-cached.
+export const revalidate = 3600;
 
 import { getPage } from '@/lib/woocommerce';
 import PolicyPageLayout from '@/components/PolicyPageLayout';

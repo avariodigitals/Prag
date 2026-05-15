@@ -1,4 +1,5 @@
-export const dynamic = 'force-dynamic';
+// Public store directory is ISR-cached.
+export const revalidate = 1800;
 
 import StoresGrid from '@/components/StoresGrid';
 import { getStores } from '@/lib/woocommerce';

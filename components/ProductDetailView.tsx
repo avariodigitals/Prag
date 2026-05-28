@@ -159,18 +159,18 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
         {/* Info */}
         <div className="flex-1 min-w-0 flex flex-col gap-5 md:gap-6 max-w-[620px]">
           <div className="flex flex-col gap-3 md:gap-4">
-            <h1 className="text-black text-[30px] md:text-[38px] font-bold font-['Montserrat'] leading-[34px] md:leading-[38px]">{product.name}</h1>
+            <h1 className="text-black text-[28px] md:text-[40px] font-bold font-['Montserrat'] leading-tight">{product.name}</h1>
             <div className="flex items-center gap-2">
               {product.on_sale && product.regular_price && (
-                <span className="text-zinc-400 text-base md:text-lg font-normal font-['Montserrat'] line-through">{formatPrice(product.regular_price)}</span>
+                <span className="text-zinc-400 text-[22px] font-normal font-['Montserrat'] line-through">{formatPrice(product.regular_price)}</span>
               )}
               {hasValidPrice ? (
-                <p className="text-sky-700 text-[16px] font-normal font-['Montserrat'] leading-[28px]">{formatPrice(product.price)}</p>
+                <p className="text-sky-700 text-[20px] font-normal font-['Montserrat'] leading-none">{formatPrice(product.price)}</p>
               ) : (
                 <p className="text-rose-700 text-[13px] font-semibold font-['Montserrat'] uppercase tracking-wide">Out of stock</p>
               )}
             </div>
-            <div className="wp-content text-zinc-500 text-sm md:text-base leading-relaxed"
+            <div className="wp-content text-zinc-500 text-[18px] font-normal leading-relaxed"
               dangerouslySetInnerHTML={{ __html: cleanWpContent(product.short_description) }} />
           </div>
 
@@ -221,43 +221,54 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
           </a>
 
           <div className="flex items-center gap-2.5">
-            <span className="text-zinc-500 text-base md:text-lg font-medium font-['Montserrat']">Share to</span>
+            <span className="text-zinc-500 text-[18px] font-medium font-['Montserrat']">Share to</span>
             <div className="flex items-center gap-2.5">
               <a
                 href={`https://wa.me/?text=${encodeURIComponent(`${product.name} ${pageUrl}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Share on WhatsApp"
-                className="w-7 h-7 rounded-full border border-zinc-300 flex items-center justify-center text-neutral-700 hover:text-sky-700 hover:border-sky-700 transition-colors"
+                className="w-10 h-10 rounded-full border border-zinc-300 flex items-center justify-center text-neutral-700 hover:text-sky-700 hover:border-sky-700 transition-colors"
               >
-                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.52 3.48A11.8 11.8 0 0012.04 0C5.62 0 .39 5.23.39 11.65c0 2.06.54 4.08 1.57 5.86L0 24l6.66-1.88a11.6 11.6 0 005.37 1.37h.01c6.42 0 11.65-5.22 11.65-11.64a11.6 11.6 0 00-3.17-8.37zM12.05 21.5h-.01a9.66 9.66 0 01-4.93-1.35l-.35-.21-3.95 1.12 1.06-3.85-.23-.39a9.67 9.67 0 01-1.49-5.16c0-5.34 4.35-9.68 9.7-9.68 2.59 0 5.02 1.01 6.85 2.84a9.61 9.61 0 012.84 6.84c0 5.34-4.35 9.69-9.69 9.69zm5.31-7.27c-.29-.15-1.72-.85-1.99-.94-.27-.1-.46-.15-.66.15-.19.29-.76.94-.93 1.13-.17.19-.34.22-.63.08-.29-.15-1.22-.45-2.33-1.44-.86-.77-1.45-1.72-1.62-2.01-.17-.29-.02-.45.13-.6.13-.13.29-.34.43-.5.14-.17.19-.29.29-.48.1-.19.05-.36-.02-.5-.08-.15-.66-1.6-.9-2.19-.24-.57-.49-.49-.66-.5l-.56-.01c-.19 0-.5.07-.76.36-.26.29-1 1-1 2.43 0 1.44 1.05 2.83 1.2 3.02.14.19 2.07 3.16 5.01 4.43.7.3 1.25.48 1.67.61.7.23 1.33.19 1.83.12.56-.09 1.72-.71 1.96-1.39.24-.68.24-1.26.17-1.39-.07-.12-.26-.19-.56-.34z"/></svg>
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.52 3.48A11.8 11.8 0 0012.04 0C5.62 0 .39 5.23.39 11.65c0 2.06.54 4.08 1.57 5.86L0 24l6.66-1.88a11.6 11.6 0 005.37 1.37h.01c6.42 0 11.65-5.22 11.65-11.64a11.6 11.6 0 00-3.17-8.37zM12.05 21.5h-.01a9.66 9.66 0 01-4.93-1.35l-.35-.21-3.95 1.12 1.06-3.85-.23-.39a9.67 9.67 0 01-1.49-5.16c0-5.34 4.35-9.68 9.7-9.68 2.59 0 5.02 1.01 6.85 2.84a9.61 9.61 0 012.84 6.84c0 5.34-4.35 9.69-9.69 9.69zm5.31-7.27c-.29-.15-1.72-.85-1.99-.94-.27-.1-.46-.15-.66.15-.19.29-.76.94-.93 1.13-.17.19-.34.22-.63.08-.29-.15-1.22-.45-2.33-1.44-.86-.77-1.45-1.72-1.62-2.01-.17-.29-.02-.45.13-.6.13-.13.29-.34.43-.5.14-.17.19-.29.29-.48.1-.19.05-.36-.02-.5-.08-.15-.66-1.6-.9-2.19-.24-.57-.49-.49-.66-.5l-.56-.01c-.19 0-.5.07-.76.36-.26.29-1 1-1 2.43 0 1.44 1.05 2.83 1.2 3.02.14.19 2.07 3.16 5.01 4.43.7.3 1.25.48 1.67.61.7.23 1.33.19 1.83.12.56-.09 1.72-.71 1.96-1.39.24-.68.24-1.26.17-1.39-.07-.12-.26-.19-.56-.34z"/></svg>
               </a>
               <a
                 href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Share on Facebook"
-                className="w-7 h-7 rounded-full border border-zinc-300 flex items-center justify-center text-neutral-700 hover:text-sky-700 hover:border-sky-700 transition-colors"
+                className="w-10 h-10 rounded-full border border-zinc-300 flex items-center justify-center text-neutral-700 hover:text-sky-700 hover:border-sky-700 transition-colors"
               >
-                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
               </a>
               <a
                 href="https://www.instagram.com/prag_ng/"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
-                className="w-7 h-7 rounded-full border border-zinc-300 flex items-center justify-center text-neutral-700 hover:text-sky-700 hover:border-sky-700 transition-colors"
+                className="w-10 h-10 rounded-full border border-zinc-300 flex items-center justify-center text-neutral-700 hover:text-sky-700 hover:border-sky-700 transition-colors"
               >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/></svg>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/></svg>
               </a>
               <a
                 href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(pageUrl)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Share on LinkedIn"
-                className="w-7 h-7 rounded-full border border-zinc-300 flex items-center justify-center text-neutral-700 hover:text-sky-700 hover:border-sky-700 transition-colors"
+                className="w-10 h-10 rounded-full border border-zinc-300 flex items-center justify-center text-neutral-700 hover:text-sky-700 hover:border-sky-700 transition-colors"
               >
-                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+              </a>
+              <a
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(product.name)}&url=${encodeURIComponent(pageUrl)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Share on X"
+                className="w-10 h-10 rounded-full border border-zinc-300 flex items-center justify-center text-neutral-700 hover:text-sky-700 hover:border-sky-700 transition-colors"
+              >
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M18.901 2H22l-6.768 7.737L23.2 22h-6.24l-4.887-7.498L5.51 22H2.4l7.24-8.275L2 2h6.398l4.418 6.83L18.901 2zm-1.095 18h1.717L7.47 3.895H5.628L17.806 20z" />
+                </svg>
               </a>
             </div>
           </div>
@@ -269,7 +280,7 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
         <div className="border-b border-gray-200 flex overflow-x-auto">
           {VISIBLE_TABS.map((tab) => (
             <button key={tab} onClick={() => setActiveTab(tab)} className="inline-flex flex-col items-center shrink-0">
-              <span className={`px-3 md:px-4 pt-3 pb-3 text-xs md:text-sm font-medium font-['Montserrat'] whitespace-nowrap ${activeTab === tab ? 'text-sky-700' : 'text-zinc-500 hover:text-zinc-700'}`}>
+              <span className={`px-3 md:px-4 pt-3 pb-3 text-[18px] md:text-[24px] font-medium font-['Montserrat'] whitespace-nowrap ${activeTab === tab ? 'text-sky-700' : 'text-zinc-500 hover:text-zinc-700'}`}>
                 {tab}
               </span>
               <div className={`h-0.5 w-full rounded-full ${activeTab === tab ? 'bg-sky-700' : 'bg-transparent'}`} />
@@ -279,7 +290,7 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
 
         {/* Tab content */}
         {activeTab === 'Description' && (
-          <div className="wp-content text-sm md:text-base leading-relaxed"
+          <div className="wp-content text-[16px] leading-relaxed"
             dangerouslySetInnerHTML={{ __html: cleanWpContent(product.description ?? product.short_description) }} />
         )}
 
@@ -288,7 +299,7 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
             {/* Attributes from WooCommerce */}
             {product.attributes && product.attributes.length > 0 ? (
               <div className="w-full overflow-x-auto">
-                <table className="w-full text-sm font-['Montserrat']">
+                <table className="w-full text-[16px] font-['Montserrat']">
                   <tbody>
                   {(product.weight) && (
                     <tr className="border-b border-gray-100">

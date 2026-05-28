@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Montserrat } from 'next/font/google';
+import { Onest, Space_Grotesk } from 'next/font/google';
 import Script from 'next/script';
 import { CartProvider } from '@/lib/CartContext';
 import { WishlistProvider } from '@/lib/WishlistContext';
@@ -8,10 +8,16 @@ import CookieConsentLoader from '@/components/CookieConsentLoader';
 import SiteShell from '@/components/SiteShell';
 import './globals.css';
 
-const montserrat = Montserrat({
+const onest = Onest({
   subsets: ['latin'],
-  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
-  variable: '--font-montserrat',
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-onest',
+  display: 'swap',
+});
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-space-grotesk',
   display: 'swap',
 });
 
@@ -61,15 +67,8 @@ export default async function RootLayout({ children, modal }: { children: React.
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://www.google-analytics.com" />
-        {/* Preload LCP hero background (fallback) */}
-        <link
-          rel="preload"
-          as="image"
-          href="https://central.prag.global/wp-content/uploads/2026/04/421db5e8efbc14b105a33a6db7182652503c3fdd.png"
-          fetchPriority="high"
-        />
       </head>
-      <body className={`${montserrat.variable} antialiased`} suppressHydrationWarning>
+      <body className={`${onest.variable} ${spaceGrotesk.variable} antialiased`} suppressHydrationWarning>
         <Script
           async
           src="https://www.googletagmanager.com/gtag/js?id=G-K1FJPNG5K9"

@@ -81,8 +81,11 @@ export default function CheckoutView() {
     let active = true;
 
     const cookieEmail = getEmailFromUserInfoCookie();
+    let cookieTimer: number | null = null;
     if (cookieEmail) {
-      setForm((prev) => (prev.email ? prev : { ...prev, email: cookieEmail }));
+      cookieTimer = window.setTimeout(() => {
+        setForm((prev) => (prev.email ? prev : { ...prev, email: cookieEmail }));
+      }, 0);
     }
 
     fetch('/api/account/profile', { cache: 'no-store' })
@@ -104,6 +107,9 @@ export default function CheckoutView() {
 
     return () => {
       active = false;
+      if (cookieTimer !== null) {
+        window.clearTimeout(cookieTimer);
+      }
     };
   }, []);
 

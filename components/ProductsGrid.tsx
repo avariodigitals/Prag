@@ -37,9 +37,6 @@ function dedupeCategories(input: Category[]): Category[] {
 
 const SORT_OPTIONS = [
   { label: 'Default: Size + Price (Low to High)', value: '' },
-  { label: 'Price: Low to High', value: 'price' },
-  { label: 'Price: High to Low', value: 'price-desc' },
-  { label: 'Newest', value: 'date' },
 ];
 
 const PER_PAGE = 16;

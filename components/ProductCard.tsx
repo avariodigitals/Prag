@@ -53,7 +53,7 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
   const shouldShowNew = (isNew || hasNewTag) && !isOutOfStock;
 
   return (
-    <div className="w-full relative flex flex-col gap-2 md:gap-3 group rounded-xl p-1.5 bg-transparent border border-zinc-200 hover:shadow-sm transition-shadow duration-300">
+    <div className="w-full relative flex flex-col gap-2 md:gap-3 group">
       <div className={`w-full h-[300px] md:h-[330px] relative flex justify-center items-center rounded-lg overflow-hidden bg-transparent ${bg ? '' : ''}`}>
         {image ? (
           <>

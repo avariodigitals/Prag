@@ -14,24 +14,51 @@
 }
 
 @theme inline {
-  --font-montserrat: var(--font-montserrat);
+  --font-onest: var(--font-onest);
+  --font-space-grotesk: var(--font-space-grotesk);
 }
 
 body {
+  font-family: var(--font-space-grotesk), sans-serif;
   background: #ffffff;
   color: #171717;
 }
 
+/* Legacy font token mapping: keep original typography choices after rollback */
+[class*="font-['Montserrat']"] {
+  font-family: var(--font-space-grotesk), sans-serif;
+}
+
+[class*="font-['Space_Grotesk']"] {
+  font-family: var(--font-space-grotesk), sans-serif;
+}
+
+[class*="font-['Onest']"] {
+  font-family: var(--font-onest), sans-serif;
+}
+
+h1[class*="font-['Montserrat']"],
+h2[class*="font-['Montserrat']"],
+h3[class*="font-['Montserrat']"],
+h4[class*="font-['Montserrat']"],
+h5[class*="font-['Montserrat']"],
+h6[class*="font-['Montserrat']"],
+button[class*="font-['Montserrat']"],
+label[class*="font-['Montserrat']"],
+nav [class*="font-['Montserrat']"] {
+  font-family: var(--font-onest), sans-serif;
+}
+
 /* WordPress content reset — forces all WP HTML to match site theme */
 .wp-content {
-  font-family: var(--font-montserrat), sans-serif;
+  font-family: var(--font-space-grotesk), sans-serif;
   font-size: 1.1rem;
   line-height: 1.75;
   color: #475569;
 }
 
 .wp-content p {
-  font-family: var(--font-montserrat), sans-serif;
+  font-family: var(--font-space-grotesk), sans-serif;
   margin-bottom: 1rem;
   color: #475569;
   font-size: inherit;
@@ -44,7 +71,7 @@ body {
 .wp-content h4,
 .wp-content h5,
 .wp-content h6 {
-  font-family: var(--font-montserrat), sans-serif;
+  font-family: var(--font-onest), sans-serif;
   font-weight: 600;
   color: #0c0c0c;
   margin-top: 1.5rem;
@@ -57,7 +84,7 @@ body {
 
 .wp-content ul,
 .wp-content ol {
-  font-family: var(--font-montserrat), sans-serif;
+  font-family: var(--font-space-grotesk), sans-serif;
   padding-left: 1.5rem;
   margin-bottom: 1rem;
   color: #475569;
@@ -89,7 +116,7 @@ body {
 .wp-content table {
   width: 100%;
   border-collapse: collapse;
-  font-family: var(--font-montserrat), sans-serif;
+  font-family: var(--font-space-grotesk), sans-serif;
   font-size: 1rem;
   margin-bottom: 1.5rem;
 }

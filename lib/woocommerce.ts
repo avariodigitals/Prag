@@ -197,34 +197,6 @@ async function fetchAllProductsForDefaultSort(baseParams: URLSearchParams, reval
   };
 }
 
-async function fetchAllProducts(baseParams: URLSearchParams, revalidate = 300): Promise<Product[]> {
-  const firstQs = new URLSearchParams(baseParams.toString());
-  firstQs.set('per_page', String(PRODUCTS_FETCH_PAGE_SIZE));
-  firstQs.set('page', '1');
-
-  const firstPage = await fetchProductsRaw(firstQs, revalidate);
-  if (firstPage.total <= firstPage.products.length) {
-    return firstPage.products;
-  }
-
-  const totalPages = Math.ceil(firstPage.total / PRODUCTS_FETCH_PAGE_SIZE);
-  const remainingPageNumbers = Array.from({ length: Math.max(totalPages - 1, 0) }, (_, i) => i + 2);
-
-  const rest = await Promise.all(
-    remainingPageNumbers.map(async (pageNumber) => {
-      const qs = new URLSearchParams(baseParams.toString());
-      qs.set('per_page', String(PRODUCTS_FETCH_PAGE_SIZE));
-      qs.set('page', String(pageNumber));
-      return fetchProductsRaw(qs, revalidate);
-    })
-  );
-
-  return [
-    ...firstPage.products,
-    ...rest.flatMap((result) => result.products),
-  ];
-}
-
 function normalizeSearchText(value: string): string {
   return value
     .toLowerCase()
@@ -248,7 +220,7 @@ function isAccurateSearchMatch(product: Product, query: string): boolean {
 
 export const getFeaturedProducts = unstable_cache(
   async (): Promise<Product[]> => {
-    const products = await wcFetch<Product[]>(`/products?featured=true&per_page=6&status=publish&_fields=${PRODUCT_LIST_FIELDS}`, []);
+    const products = await wcFetch<Product[]>(`/products?featured=true&per_page=8&status=publish&_fields=${PRODUCT_LIST_FIELDS}`, []);
     return sortProductsByCapacityThenPrice(products);
   },
   ['featured-products'],
@@ -395,33 +367,15 @@ export const getCategoryBySlug = unstable_cache(
   { revalidate: 3600 }
 );
 
-export async function searchProducts(query: string, sort?: string, page = 1, per_page = 9): Promise<ProductsResult> {
-  const orderby = sort === 'price' || sort === 'price-desc' ? 'price' : sort || undefined;
-  const order = sort === 'price-desc' ? 'desc' : sort ? 'asc' : undefined;
+export async function searchProducts(query: string, _sort?: string, page = 1, per_page = 9): Promise<ProductsResult> {
   const baseQs = new URLSearchParams({
     search: query,
     status: 'publish',
     _fields: PRODUCT_LIST_FIELDS,
-    ...(orderby && { orderby }),
-    ...(order && { order }),
   });
 
-  const hasExplicitSort = Boolean(orderby || order);
-
-  if (!hasExplicitSort) {
-    try {
-      const { products: allProducts } = await fetchAllProductsForDefaultSort(baseQs, PUBLIC_PRODUCTS_REVALIDATE_SECONDS);
-      const filteredProducts = allProducts.filter((product) => isAccurateSearchMatch(product, query));
-      const start = (page - 1) * per_page;
-      const end = start + per_page;
-      return { products: filteredProducts.slice(start, end), total: filteredProducts.length };
-    } catch {
-      return { products: [], total: 0 };
-    }
-  }
-
   try {
-    const allProducts = await fetchAllProducts(baseQs, PUBLIC_PRODUCTS_REVALIDATE_SECONDS);
+    const { products: allProducts } = await fetchAllProductsForDefaultSort(baseQs, PUBLIC_PRODUCTS_REVALIDATE_SECONDS);
     const filteredProducts = allProducts.filter((product) => isAccurateSearchMatch(product, query));
     const start = (page - 1) * per_page;
     const end = start + per_page;

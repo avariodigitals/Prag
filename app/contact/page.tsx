@@ -37,13 +37,19 @@ export default async function ContactPage() {
   const hoursWeekday = settings.business_hours_weekday || 'Mon–Fri: 8:00 AM – 6:00 PM';
   const hoursSaturday = settings.business_hours_saturday || 'Sat: 9:00 AM – 2:00 PM';
   const socials = settings.socials;
+  const fallbackSocials = {
+    facebook: 'https://www.facebook.com/pragpowersolutions',
+    instagram: 'https://www.instagram.com/prag_ng/',
+    linkedin: 'https://www.linkedin.com/company/prag/',
+    twitter: 'https://x.com/PRAG_Ng',
+  };
   const whatsappHref = socials?.whatsapp || `https://wa.me/${phone.replace(/[^0-9]/g, '')}`;
 
   const socialLinks = [
-    { label: 'Facebook', href: socials?.facebook, network: 'facebook' as const },
-    { label: 'Instagram', href: socials?.instagram, network: 'instagram' as const },
-    { label: 'LinkedIn', href: socials?.linkedin, network: 'linkedin' as const },
-    { label: 'Twitter / X', href: socials?.twitter, network: 'twitter' as const },
+    { label: 'Facebook', href: socials?.facebook || fallbackSocials.facebook, network: 'facebook' as const },
+    { label: 'Instagram', href: socials?.instagram || fallbackSocials.instagram, network: 'instagram' as const },
+    { label: 'LinkedIn', href: socials?.linkedin || fallbackSocials.linkedin, network: 'linkedin' as const },
+    { label: 'Twitter / X', href: socials?.twitter || fallbackSocials.twitter, network: 'twitter' as const },
     { label: 'WhatsApp', href: whatsappHref, network: 'whatsapp' as const },
   ].filter((s) => Boolean(s.href));
 
@@ -108,11 +114,15 @@ export default async function ContactPage() {
                 <span className="text-zinc-900 text-base md:text-lg font-medium font-['Montserrat'] leading-5">Follow our socials</span>
                 <div className="flex flex-wrap gap-4">
                   {socialLinks.map((s) => (
-                    <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-sky-700 rounded-full flex items-center justify-center">
-                        <SocialIcon network={s.network} />
-                      </div>
-                      <span className="text-zinc-900 text-base md:text-lg font-normal font-['Montserrat'] leading-5">{s.label}</span>
+                    <a
+                      key={s.label}
+                      href={s.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={s.label}
+                      className="w-10 h-10 bg-sky-700 rounded-full flex items-center justify-center hover:bg-sky-800 transition-colors"
+                    >
+                      <SocialIcon network={s.network} />
                     </a>
                   ))}
                 </div>

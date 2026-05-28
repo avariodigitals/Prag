@@ -27,12 +27,8 @@ export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const categorySlug = searchParams.get('category') ?? '';
   const sub = searchParams.get('sub');
-  const sort = searchParams.get('sort') ?? '';
   const page = Number(searchParams.get('page') ?? 2);
   const per_page = Number(searchParams.get('per_page') ?? 16);
-
-  const orderby = sort === 'price' || sort === 'price-desc' ? 'price' : sort || undefined;
-  const order = sort === 'price-desc' ? 'desc' : sort ? 'asc' : undefined;
 
   const activeSlug = sub ?? categorySlug;
   const categoryId = KNOWN_CATEGORY_IDS[activeSlug];
@@ -40,8 +36,6 @@ export async function GET(req: NextRequest) {
   const { products, total } = await getProducts({
     category_id: categoryId,
     category: categoryId ? undefined : activeSlug,
-    orderby,
-    order,
     page,
     per_page,
   });

@@ -76,11 +76,17 @@ export default function PersonalInfoPage() {
   }
 
   useEffect(() => {
-    loadProfile()
-      .catch((error) => {
-        setErrorMessage(error instanceof Error ? error.message : 'Failed to load profile.');
-      })
-      .finally(() => setLoading(false));
+    const timer = window.setTimeout(() => {
+      loadProfile()
+        .catch((error) => {
+          setErrorMessage(error instanceof Error ? error.message : 'Failed to load profile.');
+        })
+        .finally(() => setLoading(false));
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
   }, []);
 
   async function handleSave() {

@@ -53,6 +53,7 @@ export interface Category {
   id: number;
   name: string;
   slug: string;
+  parent: number;
   count: number;
   image: { src: string; alt: string } | null;
   description: string;

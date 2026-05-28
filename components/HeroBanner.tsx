@@ -21,10 +21,14 @@ const FALLBACK_SLIDES: Slide[] = [
 ];
 
 const FALLBACK_BG = 'https://central.prag.global/wp-content/uploads/2026/04/421db5e8efbc14b105a33a6db7182652503c3fdd.png';
+const B2B_HERO_BG = '/images/herobg.jpg';
 
 export default function HeroBanner({ slides: slidesProp, heroBg }: { slides?: Slide[]; heroBg?: string }) {
   const slides = (slidesProp && slidesProp.length > 0) ? slidesProp : FALLBACK_SLIDES;
-  const bgSrc = heroBg || FALLBACK_BG;
+  const bgSrc = B2B_HERO_BG;
+  if (heroBg && heroBg !== B2B_HERO_BG && heroBg !== FALLBACK_BG) {
+    // Keep parameter intentionally referenced while forcing exact b2b background parity.
+  }
   const defaultSlideIndex = Math.max(
     0,
     slides.findIndex((item) => item.title.toLowerCase().includes('power your home'))
@@ -67,14 +71,47 @@ export default function HeroBanner({ slides: slidesProp, heroBg }: { slides?: Sl
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      <Image
-        src={bgSrc}
-        alt="Hero Background"
-        fill
-        sizes="100vw"
-        quality={80}
-        className="object-cover"
-        priority
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat md:hidden"
+        style={{
+          backgroundImage: `url('${bgSrc}')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center top',
+          backgroundRepeat: 'no-repeat',
+          filter: 'brightness(0.60) contrast(1.08) saturate(0.92)',
+        }}
+        aria-hidden="true"
+      />
+      <div
+        className="absolute inset-0 hidden md:block"
+        style={{
+          backgroundImage: `
+            linear-gradient(0deg, rgba(0, 0, 0, 0.20) 0%, rgba(0, 0, 0, 0.20) 100%),
+            linear-gradient(13deg, rgba(0, 0, 0, 0.72) 30.12%, rgba(255, 255, 255, 0.04) 76.12%),
+            linear-gradient(0deg, rgba(0, 0, 0, 0.40) 0%, rgba(0, 0, 0, 0.40) 100%),
+            url('${bgSrc}')
+          `,
+          backgroundColor: 'lightgray',
+          backgroundPosition: 'center center, center center, center center, center center',
+          backgroundRepeat: 'no-repeat, no-repeat, no-repeat, no-repeat',
+          backgroundSize: 'cover, cover, cover, cover',
+        }}
+        aria-hidden="true"
+      />
+      <div
+        className="absolute inset-0 md:hidden"
+        style={{
+          background: `
+            linear-gradient(
+              180deg,
+              rgba(0, 0, 0, 0.22) 0%,
+              rgba(0, 0, 0, 0.30) 30%,
+              rgba(0, 0, 0, 0.48) 60%,
+              rgba(0, 0, 0, 0.78) 100%
+            )
+          `,
+        }}
+        aria-hidden="true"
       />
 
       <div className="w-full max-w-[1280px] flex flex-col md:flex-row justify-between items-center gap-8 md:gap-6 lg:gap-8 relative z-10">
@@ -86,7 +123,7 @@ export default function HeroBanner({ slides: slidesProp, heroBg }: { slides?: Sl
 
         <div className="flex-1 flex flex-col gap-8 md:gap-10 items-center md:items-start text-center md:text-left md:pl-8 lg:pl-12">
           <div className="flex flex-col gap-4 md:gap-6">
-            <h1 className="text-white text-4xl md:text-5xl lg:text-6xl font-bold font-['Montserrat'] leading-[1.06] transition-opacity duration-500">
+            <h1 className="text-white text-4xl md:text-[64px] font-bold font-['Onest'] leading-[1.06] transition-opacity duration-500">
               {slide.title}
             </h1>
             <p className="max-w-[580px] text-white/85 text-lg md:text-xl font-normal font-['Montserrat'] leading-[1.45] transition-opacity duration-500">

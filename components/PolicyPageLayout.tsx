@@ -15,6 +15,7 @@ export default function PolicyPageLayout({ title, breadcrumb, sections, highligh
     <main className="w-full bg-white flex flex-col">
       {/* Breadcrumb + title */}
       <div className="w-full px-4 md:px-20 py-6 md:py-10 bg-stone-50 flex flex-col gap-4 md:gap-6">
+        <p className="text-zinc-500 text-xs md:text-sm font-medium font-['Montserrat'] uppercase tracking-wide">{breadcrumb}</p>
         <h1 className="text-black text-2xl md:text-3xl font-medium font-['Montserrat']">{title}</h1>
       </div>
 

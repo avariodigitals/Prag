@@ -19,15 +19,6 @@ interface EcommerceConfigResponse {
   scripts: EcommerceTrackingScripts | null;
 }
 
-function adminBaseUrl() {
-  return (
-    process.env.ECOMMERCE_ADMIN_API_URL
-    || process.env.NEXT_PUBLIC_ADMIN_API_URL
-    || process.env.NEXT_PUBLIC_ADMIN_URL
-    || ''
-  ).trim();
-}
-
 function normalizeHost(host: string) {
   const trimmed = host.trim().toLowerCase();
   if (!trimmed) return '';

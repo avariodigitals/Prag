@@ -45,7 +45,7 @@ export default function CategoryGrid({ settings }: { settings?: SiteSettings }) 
                 className={`object-contain transition-transform duration-300 p-8 pb-24 md:p-10 md:pb-28 ${cat.slug === 'batteries' ? 'scale-110 md:scale-115' : 'group-hover:scale-105'}`}
               />
               <div className="absolute left-0 right-0 bottom-[24px] px-5 text-center">
-                <span className="text-white text-[30px] md:text-[28px] font-semibold font-['Montserrat'] leading-tight whitespace-nowrap">{cat.name}</span>
+                <span className="text-white text-[30px] md:text-[28px] font-semibold font-['Onest'] leading-tight whitespace-nowrap">{cat.name}</span>
               </div>
               <div className="absolute right-[18px] top-[18px] p-3 bg-sky-700 rounded-full group-hover:bg-sky-800 group-hover:scale-110 transition-all shadow-lg cursor-pointer">
                 <ArrowUpRight className="w-5 h-5 text-white" />

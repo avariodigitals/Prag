@@ -21,16 +21,16 @@ export default function BrandBanner({ settings }: { settings?: SiteSettings }) {
     <section className="w-full px-4 md:px-20 py-8 flex flex-col justify-center items-center gap-6 overflow-hidden">
       <div className="w-full max-w-[1229px] p-6 md:p-8 bg-slate-100 rounded-3xl flex flex-col md:flex-row justify-start items-center gap-6 md:gap-12">
         <Image
-          className="w-40 h-48 md:w-56 md:h-64 object-contain"
+          className="w-48 h-56 md:w-72 md:h-80 object-contain"
           src={image}
           alt="Inverter"
-          width={224}
-          height={256}
+          width={288}
+          height={320}
           quality={80}
           loading="lazy"
         />
         <div className="flex-1 flex flex-col justify-start items-center md:items-start gap-4 text-center md:text-left">
-          <div className="w-full text-black text-2xl md:text-4xl font-bold font-['Montserrat'] leading-tight">
+          <div className="w-full text-black text-2xl md:text-[56px] font-bold font-['Onest'] leading-tight">
             {title}
           </div>
           <div className="w-full max-w-[631px] text-zinc-600 text-base md:text-lg font-normal font-['Montserrat'] leading-relaxed">

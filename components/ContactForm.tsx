@@ -133,7 +133,7 @@ export default function ContactForm() {
         <button
           type="submit"
           disabled={sending}
-          className="w-full py-2.5 bg-sky-700 rounded-lg text-white text-sm font-semibold font-['DM_Sans'] leading-6 hover:bg-sky-800 transition-colors disabled:opacity-60"
+          className="w-full py-2.5 bg-sky-700 rounded-lg text-white text-sm font-semibold font-['Montserrat'] leading-6 hover:bg-sky-800 transition-colors disabled:opacity-60"
         >
           {sending ? 'Sending...' : 'Send Enquiry'}
         </button>

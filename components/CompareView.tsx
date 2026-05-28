@@ -82,10 +82,10 @@ export default function CompareView({ products }: Props) {
     ? [
         {
           label: 'Price',
-          values: selected.map((p) => {
+          values: selected.map((p, idx) => {
             const n = Number(String(p?.price ?? '').replace(/,/g, ''));
             return n > 0 ? (
-              <span className="text-sky-700 font-bold text-base font-['Montserrat']">{formatPrice(p!.price)}</span>
+              <span key={`price-${p?.id ?? idx}`} className="text-sky-700 font-bold text-base font-['Montserrat']">{formatPrice(p!.price)}</span>
             ) : (
               '—'
             );
@@ -97,11 +97,11 @@ export default function CompareView({ products }: Props) {
         })),
         {
           label: 'Features',
-          values: selected.map((p) => {
+          values: selected.map((p, idx) => {
             const features = getFeatures(p);
             if (!features.length) return '—';
             return (
-              <ul className="flex flex-col gap-1">
+              <ul key={`features-${p?.id ?? idx}`} className="flex flex-col gap-1">
                 {features.map((f, idx) => (
                   <li key={`${f}-${idx}`} className="flex items-center gap-1.5 text-sm font-['Montserrat'] text-zinc-700">
                     <Check className="w-3.5 h-3.5 text-sky-700 shrink-0" />
@@ -114,11 +114,11 @@ export default function CompareView({ products }: Props) {
         },
         {
           label: 'Applications',
-          values: selected.map((p) => {
+          values: selected.map((p, idx) => {
             const apps = getApplications(p);
             if (!apps.length) return '—';
             return (
-              <div className="flex flex-wrap gap-1.5">
+              <div key={`applications-${p?.id ?? idx}`} className="flex flex-wrap gap-1.5">
                 {apps.map((a, idx) => (
                   <span
                     key={`${a}-${idx}`}

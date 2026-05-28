@@ -4,22 +4,13 @@ import { useEffect, useEffectEvent, useRef, useState, useTransition } from 'reac
 import { useRouter, useSearchParams } from 'next/navigation';
 import ProductCard from './ProductCard';
 import type { Product } from '@/lib/types';
-import { ChevronDown } from 'lucide-react';
 
 interface Props {
   products: Product[];
   total: number;
   categorySlug: string;
   activeSub?: string;
-  activeSort?: string;
 }
-
-const SORT_OPTIONS = [
-  { label: 'Default: Size + Price (Low to High)', value: '' },
-  { label: 'Price: Low to High', value: 'price' },
-  { label: 'Price: High to Low', value: 'price-desc' },
-  { label: 'Newest', value: 'date' },
-];
 
 const PER_PAGE = 16;
 
@@ -60,13 +51,11 @@ export default function CategoryProductsGrid({
   total,
   categorySlug,
   activeSub,
-  activeSort,
 }: Props) {
   const searchParams = useSearchParams();
   const resetKey = [
     categorySlug,
     activeSub ?? '',
-    activeSort ?? '',
     String(total),
     initialProducts.map((product) => product.id).join(','),
     searchParams.toString(),
@@ -79,7 +68,6 @@ export default function CategoryProductsGrid({
       total={total}
       categorySlug={categorySlug}
       activeSub={activeSub}
-      activeSort={activeSort}
     />
   );
 }
@@ -89,7 +77,6 @@ function CategoryProductsGridContent({
   total,
   categorySlug,
   activeSub,
-  activeSort,
 }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -110,7 +97,6 @@ function CategoryProductsGridContent({
       params.set('page', String(page));
       params.set('per_page', String(PER_PAGE));
       if (activeSub) params.set('sub', activeSub);
-      if (activeSort) params.set('sort', activeSort);
 
       const res = await fetch(`/api/products/category?${params.toString()}`, {
         priority: 'high',
@@ -144,7 +130,7 @@ function CategoryProductsGridContent({
     );
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [hasMore, loading, page, activeSub, activeSort]);
+  }, [hasMore, loading, page, activeSub]);
 
   function navigate(updates: Record<string, string | undefined>) {
     const params = new URLSearchParams(searchParams.toString());
@@ -153,6 +139,7 @@ function CategoryProductsGridContent({
       else params.delete(k);
     });
     params.delete('page');
+    params.delete('sort');
     // track which tab was clicked
     if ('sub' in updates) setPendingTab(updates.sub ?? 'all');
     startTransition(() => {
@@ -173,74 +160,50 @@ function CategoryProductsGridContent({
     <div className="flex flex-col gap-6 relative">
       {/* Toolbar */}
       <div className="flex flex-col gap-3 md:gap-4">
-        <div className="md:hidden flex items-center gap-2 w-full">
-          <div className="relative flex-1 min-w-0">
-            <select
-              value={activeSub ?? ''}
-              onChange={(e) => navigate({ sub: e.target.value || undefined })}
-              className="appearance-none w-full h-10 px-3 pr-8 bg-white rounded-full outline outline-1 outline-sky-700/60 text-sky-700 text-xs font-medium font-['Montserrat'] cursor-pointer"
-            >
-              {tabs.map((tab) => (
-                <option key={tab.key} value={tab.slug ?? ''}>{tab.label}</option>
-              ))}
-            </select>
-            <ChevronDown className="w-4 h-4 text-sky-700 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-          </div>
-
-          <div className="relative w-[112px] shrink-0">
-            <select
-              value={activeSort ?? ''}
-              onChange={(e) => navigate({ sort: e.target.value || undefined })}
-              className="appearance-none w-full h-10 px-3 pr-8 bg-white rounded-md outline outline-[0.3px] outline-neutral-400 text-neutral-500 text-xs font-medium font-['Montserrat'] cursor-pointer"
-            >
-              {SORT_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
-              ))}
-            </select>
-            <ChevronDown className="w-4 h-4 text-neutral-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+        <div className="md:hidden -mx-6 px-6 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex w-max items-center gap-3 pr-6">
+            {tabs.map((tab) => {
+              const isActive = tab.slug ? activeSub === tab.slug : !activeSub;
+              return (
+                <button
+                  key={tab.key}
+                  type="button"
+                  onClick={() => navigate({ sub: tab.slug })}
+                  className={`shrink-0 rounded-full px-6 py-3.5 text-lg font-semibold font-['Onest'] leading-none whitespace-nowrap transition-colors ${isActive ? 'bg-sky-700 text-white' : 'bg-sky-50 text-sky-700 hover:bg-sky-100'}`}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        <div className="hidden md:flex justify-between items-start md:items-center gap-3">
-          <div className="flex border-b border-gray-200 overflow-x-auto w-full md:w-auto scrollbar-hide">
-          {tabs.map((tab) => {
-            const isActive = tab.slug ? activeSub === tab.slug : !activeSub;
-            const tabKey = tab.slug ?? 'all';
-            const isTabPending = activePendingTab === tabKey;
-            return (
-              <button
-                key={tab.key}
-                onClick={() => navigate({ sub: tab.slug })}
-                className="inline-flex flex-col items-center shrink-0"
-              >
-                <span className={`px-3 md:px-4 pt-3 pb-3 text-xs md:text-sm font-medium font-['Montserrat'] whitespace-nowrap transition-colors flex items-center gap-1.5 ${
-                  isActive ? 'text-sky-700' : 'text-zinc-500 hover:text-zinc-700'
-                }`}>
-                  {tab.label}
-                  {isTabPending && (
-                    <svg className="w-3 h-3 text-sky-700 animate-spin shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
-                      <path className="opacity-80" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-                    </svg>
-                  )}
-                </span>
-                <div className={`h-0.5 w-full rounded-full ${isActive ? 'bg-sky-700' : 'bg-transparent'}`} />
-              </button>
-            );
-          })}
-          </div>
-
-          <div className="relative shrink-0">
-            <select
-              value={activeSort ?? ''}
-              onChange={(e) => navigate({ sort: e.target.value || undefined })}
-              className="appearance-none p-2.5 pr-8 bg-white rounded-lg outline outline-[0.3px] outline-neutral-500 text-neutral-500 text-sm font-medium font-['Montserrat'] cursor-pointer"
-            >
-              {SORT_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
-              ))}
-            </select>
-            <ChevronDown className="w-4 h-4 text-neutral-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+        <div className="hidden md:flex items-start gap-4 overflow-x-auto">
+          {sectionSubs.length > 0 && (
+            <span className="text-[#0166a5] text-base font-medium font-['Space_Grotesk'] whitespace-nowrap pt-3 shrink-0 capitalize">
+              {allLabel.replace(/^All /, '')}:
+            </span>
+          )}
+          <div className="flex items-stretch gap-0 border-b border-[#e4e7ec] flex-1 overflow-x-auto">
+            {tabs.map((tab) => {
+              const isActive = tab.slug ? activeSub === tab.slug : !activeSub;
+              const tabKey = tab.slug ?? 'all';
+              const isTabPending = activePendingTab === tabKey;
+              return (
+                <button key={tab.key} onClick={() => navigate({ sub: tab.slug })} className="inline-flex flex-col items-center shrink-0">
+                  <span className={`px-4 py-3 text-sm font-medium font-['Space_Grotesk'] whitespace-nowrap ${isActive ? 'text-[#0166a5]' : 'text-[#888888] hover:text-[#444444]'}`}>
+                    {tab.label}
+                    {isTabPending && (
+                      <svg className="ml-1 inline w-3 h-3 text-[#0166a5] animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                        <path className="opacity-80" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                      </svg>
+                    )}
+                  </span>
+                  <div className={`h-[2px] w-full ${isActive ? 'bg-[#0166a5]' : 'bg-[#e4e7ec]'}`} />
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>

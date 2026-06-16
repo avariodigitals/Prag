@@ -90,13 +90,11 @@ export async function POST(req: Request) {
     );
   }
 
-  // Sync to B2B admin intake
+  // Sync to B2B admin intake (best-effort)
   const adminUrl = resolveB2BAdminUrl();
-  let syncedToAdmin = false;
-
   if (adminUrl) {
     try {
-      const intakeRes = await fetch(`${adminUrl}/api/admin/b2b/intake`, {
+      await fetch(`${adminUrl}/api/admin/b2b/intake`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -106,14 +104,14 @@ export async function POST(req: Request) {
           subject: body.enquiry_type || 'Technical Support',
         }),
       });
-      syncedToAdmin = intakeRes.ok;
     } catch {
-      syncedToAdmin = false;
+      // Ignore remote sync failures; local fallback handles dev
     }
   }
 
-  // Fallback: write directly to local store file if not deployed
-  if (!syncedToAdmin && !process.env.VERCEL) {
+  // Always persist locally in dev so local Prag-Admin sees submissions.
+  // In production (Vercel) the intake API is the only path.
+  if (!process.env.VERCEL) {
     try {
       await persistSupportLocally(body);
     } catch {

@@ -96,5 +96,5 @@ export default async function PrivacyPage() {
       </main>
     );
   }
-  return <PolicyPageLayout title="Privacy Policy" breadcrumb="Privacy Policy" sections={SECTIONS} />;
+  return <PolicyPageLayout title="Privacy Policy" sections={SECTIONS} />;
 }

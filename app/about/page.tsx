@@ -4,10 +4,9 @@ import CountUp from '@/components/CountUp';
 export const metadata = { title: 'About Us - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more' };
 
 const STATS = [
-  { value: 50000, display: 50, suffix: 'K+', label: 'Systems Installed' },
-  { value: 20, display: 20, suffix: '+', label: 'Years Active' },
-  { value: 500, display: 500, suffix: '+', label: 'Happy Clients' },
-  { value: 36, display: 36, suffix: '', label: 'States Covered' },
+  { value: 50, suffix: 'K+', label: 'Systems Installed' },
+  { value: 20, suffix: '+', label: 'Years Active' },
+  { value: 36, suffix: '', label: 'States Covered' },
 ];
 
 const VALUES = [
@@ -30,116 +29,148 @@ export default function AboutPage() {
 
       {/* Hero */}
       <div className="w-full px-4 md:px-14 pt-10 md:pt-20 pb-8 md:pb-10 bg-stone-50 flex flex-col items-center gap-4 md:gap-6">
-        <h1 className="text-sky-700 text-2xl md:text-3xl font-bold font-['Montserrat'] text-center leading-snug">
+        <h1 className="text-black text-2xl md:text-3xl font-bold font-['Montserrat'] text-center leading-snug">
           Engineering Reliable Power Solutions for Real-World Challenges
         </h1>
-        <p className="max-w-[531px] text-center text-sky-700 text-sm md:text-base font-normal font-['Montserrat'] leading-relaxed">
+        <p className="max-w-[531px] text-center text-black text-sm md:text-base font-normal font-['Montserrat'] leading-relaxed">
           PRAG is a power solutions company focused on designing and delivering systems that solve unstable electricity problems for homes, businesses, and industries.
         </p>
       </div>
 
       {/* About section */}
-      <section className="w-full px-4 md:px-20 py-12 md:py-24 flex flex-col gap-10">
-        <div className="flex flex-col md:flex-row items-start gap-8 md:gap-20">
-          <div className="flex items-center gap-1.5 shrink-0">
-            <div className="w-3 h-3 bg-sky-700" />
-            <span className="text-zinc-900 text-xs font-medium font-['Montserrat'] uppercase tracking-widest">ABOUT PRAG</span>
-          </div>
-          <div className="flex-1 flex flex-col gap-10 md:gap-16">
-            <div className="flex flex-col gap-4">
-              <h2 className="text-zinc-900 text-xl md:text-3xl font-semibold font-['Montserrat'] leading-snug">
-                Built on Engineering, Driven by Real Power Challenges
-              </h2>
-              <p className="text-zinc-500 text-base md:text-lg font-normal font-['Montserrat'] leading-relaxed">
-                PRAG was founded to address one core problem, unreliable electricity. Instead of simply supplying equipment, we set out to design complete power solutions that ensure stability, efficiency, and long-term performance.
-                <br /><br />
-                Today, we work with homeowners, businesses, and industrial clients to deliver systems tailored to their specific needs, backed by technical expertise and real-world experience.
-              </p>
+      <section className="w-full px-6 md:px-20 py-8 md:py-24">
+        <div className="max-w-[1280px] mx-auto">
+          <div className="flex flex-col md:flex-row items-start gap-8 md:gap-20">
+
+            {/* Kicker — left column */}
+            <div className="flex items-center gap-[6px] shrink-0 pt-2">
+              <div className="w-4 h-4 bg-sky-700 rounded-sm shrink-0" aria-hidden="true" />
+              <span className="text-zinc-900 text-xs font-medium font-['Montserrat'] uppercase tracking-widest">About PRAG</span>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-0 w-full">
-              {STATS.map((stat) => (
-                <div key={stat.label} className="flex flex-col items-center gap-0.5 w-full">
-                  <span className="text-sky-700 text-3xl md:text-4xl font-bold font-['Montserrat'] text-center">
-                    <CountUp value={stat.display} suffix={stat.suffix} />
-                  </span>
-                  <span className="text-zinc-500 text-xs md:text-sm font-normal font-['Montserrat'] text-center">{stat.label}</span>
+            {/* Content — right column */}
+            <div className="flex-1 flex flex-col gap-20">
+              {/* Heading + body */}
+              <div className="flex flex-col gap-6">
+                <h2 className="text-zinc-900 text-[32px] md:text-[48px] font-medium font-['Montserrat'] leading-tight">
+                  Built on Engineering, Driven by Real Power Challenges
+                </h2>
+                <div className="flex flex-col gap-6">
+                  <p className="text-zinc-500 text-[18px] md:text-[20px] font-normal font-['Montserrat'] leading-relaxed">
+                    PRAG was founded to address one core problem, unreliable electricity. Instead of simply supplying equipment, we set out to design complete power solutions that ensure stability, efficiency, and long-term performance.
+                  </p>
+                  <p className="text-zinc-500 text-[18px] md:text-[20px] font-normal font-['Montserrat'] leading-relaxed">
+                    Today, we work with homeowners, businesses, and industrial clients to deliver systems tailored to their specific needs, backed by technical expertise and real-world experience.
+                  </p>
                 </div>
-              ))}
-            </div>
+              </div>
 
-            {/* Team image */}
-            <div className="relative w-full h-64 md:h-[499px] rounded-3xl overflow-hidden">
+              {/* Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 justify-items-center text-center">
+                {STATS.map((stat) => (
+                  <div key={stat.label} className="flex flex-col items-center gap-[2px]">
+                    <span className="text-sky-700 text-[40px] md:text-[48px] font-light font-['Montserrat'] leading-none">
+                      <CountUp value={stat.value} suffix={stat.suffix} />
+                    </span>
+                    <span className="text-sky-700 text-[20px] md:text-[28px] font-normal font-['Montserrat'] leading-tight">
+                      {stat.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Image */}
+              <div className="relative w-full h-64 md:h-[499px] rounded-3xl overflow-hidden">
+                <Image
+                  src="https://central.prag.global/wp-content/uploads/2026/04/51105cfa2d7e118079c6acdb18a81c8b54dc18e6.png"
+                  alt="PRAG solar installation"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 1082px"
+                  className="object-cover"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Our Story */}
+      <section className="w-full px-6 md:px-20 py-8 md:py-24">
+        <div className="max-w-[1280px] mx-auto flex flex-col items-center gap-10">
+
+          {/* Kicker + heading — centered */}
+          <div className="flex flex-col items-center gap-4 text-center">
+            <div className="flex items-center gap-[6px]">
+              <div className="w-4 h-4 bg-sky-700 rounded-sm shrink-0" aria-hidden="true" />
+              <span className="text-zinc-900 text-xs font-medium font-['Montserrat'] uppercase tracking-widest">Our Story</span>
+            </div>
+            <h2 className="text-zinc-900 text-[32px] md:text-[48px] font-medium font-['Montserrat'] leading-tight max-w-[1082px]">
+              Nigeria&apos;s Leading Provider of Voltage Regulation, Power Backup, Storage, and Renewable Energy Solutions.
+            </h2>
+          </div>
+
+          {/* Image (left) + text (right) */}
+          <div className="flex flex-col md:flex-row items-start gap-8 md:gap-10 w-full">
+            <div className="relative w-full md:w-[539px] h-64 md:h-[499px] rounded-3xl overflow-hidden shrink-0">
               <Image
-                src="https://central.prag.global/wp-content/uploads/2026/04/51105cfa2d7e118079c6acdb18a81c8b54dc18e6.png"
-                alt="PRAG Team"
+                src="https://central.prag.global/wp-content/uploads/2026/04/51105cfa2d7e118079c6acdb18a81c8b54dc18e6-1.png"
+                alt="Our Story"
                 fill
-                sizes="(max-width: 768px) 100vw, 1082px"
+                sizes="(max-width: 768px) 100vw, 539px"
                 className="object-cover"
               />
             </div>
+
+            <div className="flex-1 flex flex-col gap-6">
+              {STORY_PARAS.map((para, i) => (
+                <p key={i} className="text-zinc-500 text-[18px] md:text-[20px] font-normal font-['Montserrat'] leading-relaxed">
+                  {para}
+                </p>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Our story */}
-      <section className="w-full px-4 md:px-20 py-12 md:py-24 flex flex-col items-center gap-8 md:gap-10">
-        <div className="flex flex-col items-center gap-4 md:gap-6">
-          <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 bg-sky-700" />
-            <span className="text-zinc-900 text-xs font-medium font-['Montserrat'] uppercase tracking-widest">OUR STORY</span>
+      {/* Core Values */}
+      <section className="w-full px-6 md:px-20 py-8 md:py-24 bg-stone-50">
+        <div className="max-w-[1280px] mx-auto flex flex-col items-center gap-12">
+
+          {/* Kicker + heading + subtitle — centered */}
+          <div className="flex flex-col items-center gap-6 text-center">
+            <div className="flex items-center gap-[6px]">
+              <div className="w-4 h-4 bg-sky-700 rounded-sm shrink-0" aria-hidden="true" />
+              <span className="text-zinc-900 text-xs font-medium font-['Montserrat'] uppercase tracking-widest">Our Core Values</span>
+            </div>
+            <h2 className="text-zinc-900 text-[32px] md:text-[48px] font-bold font-['Montserrat'] tracking-[-2px] leading-tight max-w-xl">
+              Built on Principles That Deliver Reliable Results
+            </h2>
+            <p className="text-zinc-500 text-[18px] md:text-[20px] font-normal font-['Montserrat'] max-w-lg">
+              Our work is guided by a commitment to quality, precision, and long-term performance.
+            </p>
           </div>
-          <h2 className="max-w-[1082px] text-center text-zinc-900 text-xl md:text-3xl font-semibold font-['Montserrat'] leading-snug">
-            Nigeria&apos;s Leading Provider of Voltage Regulation, Power Backup, Storage, and Renewable Energy Solutions.
-          </h2>
-        </div>
-        {/* Story: text first, image below on mobile; side-by-side on desktop */}
-        <div className="flex flex-col md:flex-row items-start md:items-center gap-8 md:gap-10">
-          <div className="relative w-full md:w-[539px] h-64 md:h-[499px] rounded-3xl overflow-hidden shrink-0 order-2 md:order-1">
-            <Image
-              src="https://central.prag.global/wp-content/uploads/2026/04/51105cfa2d7e118079c6acdb18a81c8b54dc18e6-1.png"
-              alt="Our Story"
-              fill
-              sizes="(max-width: 768px) 100vw, 539px"
-              className="object-cover"
-            />
-          </div>
-          <div className="flex-1 flex flex-col gap-6 order-1 md:order-2">
-            {STORY_PARAS.map((para, i) => (
-              <p key={i} className="text-zinc-500 text-base md:text-lg font-normal font-['Montserrat'] leading-relaxed">{para}</p>
+
+          {/* Value cards grid */}
+          <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {VALUES.map((val, i) => (
+              <div
+                key={`${val.title}-${i}`}
+                className="p-6 bg-white rounded-3xl border border-zinc-400 flex flex-col gap-10 md:gap-[60px]"
+              >
+                <div className="flex flex-col gap-3">
+                  <div className="w-10 h-10 rounded-full bg-sky-700 flex items-center justify-center shrink-0">
+                    <div className="w-4 h-4 bg-white rounded-sm" />
+                  </div>
+                  <h3 className="text-zinc-900 text-[20px] font-medium font-['Montserrat'] leading-snug">
+                    {val.title}
+                  </h3>
+                </div>
+                <p className="text-zinc-500 text-[16px] font-normal font-['Montserrat'] leading-relaxed">
+                  {val.body}
+                </p>
+              </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Core values */}
-      <section className="w-full px-4 md:px-20 py-12 md:py-24 bg-stone-50 flex flex-col items-center gap-10 md:gap-20">
-        <div className="flex flex-col items-center gap-4 md:gap-7">
-          <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 bg-sky-700" />
-            <span className="text-zinc-900 text-xs font-medium font-['Montserrat'] uppercase tracking-widest">OUR CORE VALUES</span>
-          </div>
-          <h2 className="max-w-[631px] text-center text-zinc-900 text-xl md:text-3xl font-bold font-['Montserrat'] leading-snug">
-            Built on Principles That Deliver Reliable Results
-          </h2>
-          <p className="text-center text-neutral-500 text-base md:text-lg font-normal font-['Montserrat'] leading-relaxed">
-            Our work is guided by a commitment to quality, precision, and long-term performance.
-          </p>
-        </div>
-
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
-          {VALUES.map((val) => (
-            <div key={val.title} className="p-6 bg-white rounded-3xl outline outline-[0.3px] outline-zinc-500/50 flex flex-col gap-16 md:gap-36">
-              <div className="flex flex-col gap-3">
-                <div className="p-3 bg-sky-700 rounded-full w-fit">
-                  <div className="w-4 h-4 bg-white rounded-sm" />
-                </div>
-                <h3 className="text-zinc-900 text-base md:text-lg font-semibold font-['Montserrat'] leading-snug">{val.title}</h3>
-              </div>
-              <p className="text-neutral-500 text-base md:text-lg font-normal font-['Montserrat'] leading-relaxed">{val.body}</p>
-            </div>
-          ))}
         </div>
       </section>
 

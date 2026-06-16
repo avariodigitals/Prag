@@ -57,7 +57,7 @@ function FormToast({ toast, onClose }: { toast: Toast; onClose: () => void }) {
   );
 }
 
-const inputCls = "w-full h-12 p-2.5 bg-white rounded-lg border-[1.31px] border-zinc-100 text-zinc-900 text-sm font-normal font-['Montserrat'] focus:border-sky-700 outline-none transition-colors";
+const inputCls = "w-full h-12 p-2.5 bg-white rounded-lg border-[1.31px] border-zinc-300 text-zinc-900 text-sm font-normal font-['Montserrat'] focus:border-sky-700 outline-none transition-colors";
 
 export default function DistributorForm() {
   const [form, setForm] = useState(EMPTY_FORM);
@@ -112,7 +112,7 @@ export default function DistributorForm() {
   return (
     <>
       {toast && <FormToast toast={toast} onClose={() => setToast(null)} />}
-      <form onSubmit={handleSubmit} noValidate className="w-full max-w-[884px] p-4 md:p-8 bg-white rounded-xl outline outline-1 outline-zinc-100 flex flex-col gap-5">
+      <form onSubmit={handleSubmit} noValidate className="w-full max-w-[884px] p-4 md:p-8 bg-white rounded-xl outline outline-1 outline-zinc-300 flex flex-col gap-5">
         <div className="flex flex-col md:flex-row gap-5">
           <div className="flex-1 flex flex-col gap-2">
             <label className="text-zinc-900 text-base md:text-lg font-normal font-['Montserrat'] leading-5">Full Name *</label>
@@ -144,16 +144,16 @@ export default function DistributorForm() {
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <label className="text-zinc-900 text-base md:text-lg font-medium font-['Montserrat'] leading-5">Preferred Partnership Tier</label>
+          <label className="text-zinc-900 text-base md:text-lg font-medium font-['Montserrat'] leading-5">Preferred Partnership Type</label>
           <select value={form.tier} onChange={set('tier')} className={inputCls}>
-            <option value="">Select tier</option>
+            <option value="">Select Type</option>
             {TIERS.map((t) => <option key={t} value={t}>{t}</option>)}
           </select>
         </div>
         <div className="flex flex-col gap-2">
           <label className="text-zinc-900 text-base md:text-lg font-medium font-['Montserrat'] leading-5">Tell Us About Your Business</label>
           <textarea value={form.message} onChange={set('message')} rows={5} maxLength={2000}
-            className="w-full p-2.5 bg-white rounded-lg border-[1.31px] border-zinc-100 text-zinc-900 text-sm font-normal font-['Montserrat'] focus:border-sky-700 outline-none transition-colors resize-none" />
+            className="w-full p-2.5 bg-white rounded-lg border-[1.31px] border-zinc-300 text-zinc-900 text-sm font-normal font-['Montserrat'] focus:border-sky-700 outline-none transition-colors resize-none" />
         </div>
 
         <button type="submit" disabled={sending}

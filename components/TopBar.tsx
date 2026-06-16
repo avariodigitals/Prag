@@ -5,98 +5,54 @@ import Link from 'next/link';
 import { Search, ShoppingCart, X, Menu } from 'lucide-react';
 import MobileMenu from './MobileMenu';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect, useRef, startTransition } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useCart } from '@/lib/CartContext';
-import type { Product } from '@/lib/types';
-import { productUrl } from '@/lib/woocommerce';
 
-function useDebounce(value: string, delay: number) {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const t = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(t);
-  }, [value, delay]);
-  return debounced;
-}
-
-function SearchBox({ mobile = false }: { mobile?: boolean }) {
+function SearchBox() {
   const router = useRouter();
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<Product[]>([]);
-  const [open, setOpen] = useState(false);
-  const debouncedQuery = useDebounce(query, 300);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const loading = query.length >= 2 && results.length === 0 && open === false;
-
-  useEffect(() => {
-    if (debouncedQuery.length < 2) {
-      startTransition(() => {
-        setResults([]);
-        setOpen(false);
-      });
-      return;
-    }
-    fetch(`/api/products/search?q=${encodeURIComponent(debouncedQuery)}`)
-      .then((r) => r.json())
-      .then((data) => {
-        startTransition(() => {
-          setResults(data.products?.slice(0, 6) ?? []);
-          setOpen(true);
-        });
-      });
-  }, [debouncedQuery]);
-
-  // Close on outside click
-  useEffect(() => {
-    function handler(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
+  const [showTip, setShowTip] = useState(false);
+  const tipTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (query.trim()) {
-      setOpen(false);
       router.push(`/search?q=${encodeURIComponent(query.trim())}`);
     }
   }
 
-  function handleSelect(product: Product) {
-    setOpen(false);
-    setQuery('');
-    router.push(productUrl(product));
-  }
-
   function clear() {
     setQuery('');
-    setResults([]);
-    setOpen(false);
+    setShowTip(false);
+    if (tipTimer.current) clearTimeout(tipTimer.current);
   }
 
-  if (mobile) return null;
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = e.target.value;
+    setQuery(val);
+    if (val.trim().length > 0) {
+      setShowTip(true);
+      if (tipTimer.current) clearTimeout(tipTimer.current);
+      tipTimer.current = setTimeout(() => setShowTip(false), 3000);
+    } else {
+      setShowTip(false);
+      if (tipTimer.current) clearTimeout(tipTimer.current);
+    }
+  }
 
-  const inputCls = mobile
-    ? "flex-1 text-sky-700 text-[15px] sm:text-base font-normal font-['Space_Grotesk'] leading-5 outline-none placeholder:text-sky-700/70 bg-transparent"
-    : "flex-1 text-gray-600 text-base font-normal font-['Space_Grotesk'] outline-none bg-transparent";
-
-  const wrapperCls = mobile
-    ? "flex-1 h-12 sm:h-14 px-4 sm:px-5 py-2.5 bg-white rounded-xl sm:rounded-2xl border border-white/70 flex items-center gap-3 overflow-visible relative shadow-sm"
-    : "hidden lg:flex flex-1 max-w-[566px] min-w-[240px] xl:min-w-[320px] h-12 px-3 py-2 bg-white rounded-md border border-gray-300 items-center gap-3 relative";
+  useEffect(() => {
+    return () => { if (tipTimer.current) clearTimeout(tipTimer.current); };
+  }, []);
 
   return (
-    <div ref={containerRef} className="hidden lg:block relative flex-1 max-w-[566px]">
-      <form onSubmit={handleSubmit} className={wrapperCls}>
+    <div className="hidden lg:block relative flex-1 max-w-[566px]">
+      <form onSubmit={handleSubmit} className="hidden lg:flex flex-1 max-w-[566px] min-w-[240px] xl:min-w-[320px] h-12 px-3 py-2 bg-white rounded-md border border-gray-300 items-center gap-3 relative">
         <input
           type="text"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => results.length > 0 && setOpen(true)}
+          onChange={handleChange}
           placeholder="Search for any product..."
-          className={inputCls}
+          className="flex-1 text-gray-600 text-base font-normal font-['Space_Grotesk'] outline-none bg-transparent"
           autoComplete="off"
         />
         {query && (
@@ -104,58 +60,18 @@ function SearchBox({ mobile = false }: { mobile?: boolean }) {
             <X className="w-4 h-4 text-gray-400" />
           </button>
         )}
-        <button type="submit" aria-label="Search">
-          <Search className={`w-5 h-5 ${mobile ? 'text-slate-500' : 'text-slate-500'}`} />
-        </button>
-      </form>
-
-      {/* Dropdown */}
-      {open && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden">
-          {loading && (
-            <div className="px-4 py-3 text-sm text-gray-400 font-['Onest']">Searching...</div>
-          )}
-          {!loading && results.length === 0 && debouncedQuery.length >= 2 && (
-            <div className="px-4 py-3 text-sm text-gray-400 font-['Onest']">No products found</div>
-          )}
-          {!loading && results.map((product) => {
-            const image = product.images?.[0];
-            return (
-              <button
-                key={product.id}
-                type="button"
-                onClick={() => handleSelect(product)}
-                className="w-full px-4 py-3 flex items-center gap-3 hover:bg-sky-50 transition-colors text-left"
-              >
-                <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center shrink-0 overflow-hidden">
-                  {image ? (
-                    <Image src={image.src} alt={product.name} width={40} height={40} className="object-contain w-full h-full" />
-                  ) : (
-                    <div className="w-6 h-6 bg-zinc-200 rounded" />
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-zinc-900 text-base md:text-lg font-medium font-['Onest'] truncate">{product.name}</p>
-                  {product.price && (
-                    <p className="text-sky-700 text-xs font-['Onest']">
-                      ₦{Number(product.price).toLocaleString('en-NG')}
-                    </p>
-                  )}
-                </div>
-              </button>
-            );
-          })}
-          {!loading && results.length > 0 && (
-            <button
-              type="button"
-              onClick={() => { setOpen(false); router.push(`/search?q=${encodeURIComponent(query)}`); }}
-              className="w-full px-4 py-2.5 text-center text-sky-700 text-xs font-medium font-['Onest'] border-t border-gray-100 hover:bg-sky-50 transition-colors"
-            >
-              See all results for &quot;{query}&quot;
-            </button>
+        <div className="relative">
+          <button type="submit" aria-label="Search">
+            <Search className="w-5 h-5 text-slate-500" />
+          </button>
+          {showTip && (
+            <div className="absolute top-full right-0 mt-2 px-3 py-1.5 bg-sky-700 text-white text-xs font-medium font-['Montserrat'] rounded-md shadow-lg whitespace-nowrap z-50 animate-bounce">
+              Click here
+              <div className="absolute -top-1 right-2 w-2 h-2 bg-sky-700 rotate-45" />
+            </div>
           )}
         </div>
-      )}
+      </form>
     </div>
   );
 }

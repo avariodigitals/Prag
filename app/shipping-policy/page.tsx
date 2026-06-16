@@ -88,7 +88,6 @@ export default async function ShippingPolicyPage() {
   return (
     <PolicyPageLayout
       title="Shipping Policy"
-      breadcrumb="Shipping Policy"
       sections={[
         {
           heading: 'Shipping Areas',

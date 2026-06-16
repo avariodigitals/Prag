@@ -57,7 +57,7 @@ export default function BlogGrid({ featured, posts, categories, activeCategory }
 
       {/* Featured post */}
       {featured && (
-        <div className="flex flex-col md:flex-row rounded-2xl overflow-hidden border border-zinc-500/20">
+        <Link href={`/knowledge-center/${featured.slug}`} className="flex flex-col md:flex-row rounded-2xl overflow-hidden border border-zinc-500/20 group hover:shadow-lg transition-shadow">
           {postImage(featured) && (
             <div className="relative w-full md:w-[640px] h-56 md:h-[385px] shrink-0">
               <Image
@@ -65,7 +65,7 @@ export default function BlogGrid({ featured, posts, categories, activeCategory }
                 alt={featured.title.rendered}
                 fill
                 sizes="(max-width: 768px) 100vw, 640px"
-                className="object-cover"
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
                 priority
               />
             </div>
@@ -85,12 +85,11 @@ export default function BlogGrid({ featured, posts, categories, activeCategory }
                 {stripHtml(featured.excerpt.rendered)}
               </p>
             </div>
-            <Link href={`/knowledge-center/${featured.slug}`}
-              className="flex items-center gap-2 text-sky-700 text-base font-normal font-['Montserrat'] hover:underline mt-auto">
+            <span className="flex items-center gap-2 text-sky-700 text-base font-normal font-['Montserrat'] group-hover:underline mt-auto">
               Read full Article <ArrowRight className="w-5 h-5" />
-            </Link>
+            </span>
           </div>
-        </div>
+        </Link>
       )}
 
       {/* Category filter */}
@@ -118,10 +117,10 @@ export default function BlogGrid({ featured, posts, categories, activeCategory }
                 const img = postImage(post);
                 const catName = categories.find(c => post.categories.includes(c.id))?.name ?? 'Article';
                 return (
-                  <div key={post.id} className="rounded-2xl flex flex-col overflow-hidden border border-zinc-500/20">
+                  <Link href={`/knowledge-center/${post.slug}`} key={post.id} className="rounded-2xl flex flex-col overflow-hidden border border-zinc-500/20 group hover:shadow-lg transition-shadow">
                     {img && (
                       <div className="relative h-56 shrink-0">
-                        <Image src={img} alt={post.title.rendered} fill sizes="(max-width: 768px) 100vw, 411px" className="object-cover" />
+                        <Image src={img} alt={post.title.rendered} fill sizes="(max-width: 768px) 100vw, 411px" className="object-cover group-hover:scale-105 transition-transform duration-300" />
                       </div>
                     )}
                     <div className="px-6 py-6 bg-white flex flex-col gap-6 flex-1">
@@ -137,14 +136,13 @@ export default function BlogGrid({ featured, posts, categories, activeCategory }
                         </p>
                       </div>
                       <div className="flex justify-between items-center mt-auto">
-                        <Link href={`/knowledge-center/${post.slug}`}
-                          className="flex items-center gap-2 text-sky-700 text-base font-normal font-['Montserrat'] hover:underline">
+                        <span className="flex items-center gap-2 text-sky-700 text-base font-normal font-['Montserrat'] group-hover:underline">
                           Read full Article <ArrowRight className="w-5 h-5" />
-                        </Link>
+                        </span>
                         <span className="text-zinc-500 text-base md:text-lg font-normal font-['Montserrat']" suppressHydrationWarning>{postDate(post)}</span>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 );
               })}
             </div>

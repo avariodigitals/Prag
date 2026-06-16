@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type TouchEvent } from 'react';
+import { useState, useEffect, type TouchEvent } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -63,6 +63,13 @@ export default function HeroBanner({ slides: slidesProp, heroBg }: { slides?: Sl
     if (delta > 0) nextSlide();
     else prevSlide();
   }
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % slides.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [slides.length]);
 
   return (
     <section

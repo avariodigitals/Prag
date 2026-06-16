@@ -236,96 +236,108 @@ export const getFlashSaleProducts = unstable_cache(
   { revalidate: 300 }
 );
 
-export async function getCategories(): Promise<Category[]> {
-  return wcFetch<Category[]>(`/products/categories?per_page=100&hide_empty=true&_fields=${CATEGORY_FIELDS}`, []);
-}
+export const getCategories = unstable_cache(
+  async (): Promise<Category[]> => {
+    return wcFetch<Category[]>(`/products/categories?per_page=100&hide_empty=true&_fields=${CATEGORY_FIELDS}`, []);
+  },
+  ['product-categories'],
+  { revalidate: 3600 }
+);
 
-export async function getProductBySlug(slug: string): Promise<Product | null> {
-  try {
-    const res = await fetchWithRetry(
-      `${baseUrl()}/products?slug=${slug}&_fields=id,name,slug,price,regular_price,sale_price,on_sale,status,stock_status,short_description,description,images,categories,tags,featured,date_created,attributes,dimensions,weight&${authParams()}`,
-      { next: { revalidate: 120 } },
-      FETCH_TIMEOUT_MS,
-      1
-    );
-    if (!res) return null;
-    if (!res.ok) return null;
-    const text = await res.text();
-    if (!text.startsWith('[')) return null;
-    const products = JSON.parse(text) as Product[];
-    return products[0] ?? null;
-  } catch {
-    return null;
-  }
-}
+export const getProductBySlug = unstable_cache(
+  async (slug: string): Promise<Product | null> => {
+    try {
+      const res = await fetchWithRetry(
+        `${baseUrl()}/products?slug=${slug}&_fields=id,name,slug,price,regular_price,sale_price,on_sale,status,stock_status,short_description,description,images,categories,tags,featured,date_created,attributes,dimensions,weight&${authParams()}`,
+        { next: { revalidate: 120 } },
+        FETCH_TIMEOUT_MS,
+        1
+      );
+      if (!res) return null;
+      if (!res.ok) return null;
+      const text = await res.text();
+      if (!text.startsWith('[')) return null;
+      const products = JSON.parse(text) as Product[];
+      return products[0] ?? null;
+    } catch {
+      return null;
+    }
+  },
+  ['product-by-slug'],
+  { revalidate: 3600 }
+);
 
 export interface ProductsResult {
   products: Product[];
   total: number;
 }
 
-export async function getProducts({
-  category,
-  category_id,
-  min_price,
-  max_price,
-  tag,
-  orderby,
-  order,
-  page = 1,
-  per_page = 9,
-}: {
-  category?: string;
-  category_id?: number | string;
-  min_price?: string;
-  max_price?: string;
-  tag?: string;
-  orderby?: string;
-  order?: string;
-  page?: number;
-  per_page?: number;
-}): Promise<ProductsResult> {
-  // Resolve category slug to ID using cached lookup
-  let categoryId: string | undefined = category_id ? String(category_id) : undefined;
-  if (!categoryId && category) {
-    const cat = await getCategoryBySlug(category);
-    categoryId = cat?.id ? String(cat.id) : category;
-  }
+export const getProducts = unstable_cache(
+  async ({
+    category,
+    category_id,
+    min_price,
+    max_price,
+    tag,
+    orderby,
+    order,
+    page = 1,
+    per_page = 9,
+  }: {
+    category?: string;
+    category_id?: number | string;
+    min_price?: string;
+    max_price?: string;
+    tag?: string;
+    orderby?: string;
+    order?: string;
+    page?: number;
+    per_page?: number;
+  }): Promise<ProductsResult> => {
+    // Resolve category slug to ID using cached lookup
+    let categoryId: string | undefined = category_id ? String(category_id) : undefined;
+    if (!categoryId && category) {
+      const cat = await getCategoryBySlug(category);
+      categoryId = cat?.id ? String(cat.id) : category;
+    }
 
-  const baseQs = new URLSearchParams({
-    status: 'publish',
-    _fields: PRODUCT_LIST_FIELDS,
-    ...(categoryId && { category: categoryId }),
-    ...(min_price && { min_price }),
-    ...(max_price && { max_price }),
-    ...(tag && { tag }),
-    ...(orderby && { orderby }),
-    ...(order && { order }),
-  });
+    const baseQs = new URLSearchParams({
+      status: 'publish',
+      _fields: PRODUCT_LIST_FIELDS,
+      ...(categoryId && { category: categoryId }),
+      ...(min_price && { min_price }),
+      ...(max_price && { max_price }),
+      ...(tag && { tag }),
+      ...(orderby && { orderby }),
+      ...(order && { order }),
+    });
 
-  const hasExplicitSort = Boolean(orderby || order);
+    const hasExplicitSort = Boolean(orderby || order);
 
-  if (!hasExplicitSort) {
+    if (!hasExplicitSort) {
+      try {
+        const { products: allProducts, total } = await fetchAllProductsForDefaultSort(baseQs, 300);
+        const start = (page - 1) * per_page;
+        const end = start + per_page;
+        return { products: allProducts.slice(start, end), total };
+      } catch {
+        return { products: [], total: 0 };
+      }
+    }
+
+    const qs = new URLSearchParams(baseQs.toString());
+    qs.set('per_page', String(per_page));
+    qs.set('page', String(page));
+
     try {
-      const { products: allProducts, total } = await fetchAllProductsForDefaultSort(baseQs, 300);
-      const start = (page - 1) * per_page;
-      const end = start + per_page;
-      return { products: allProducts.slice(start, end), total };
+      return await fetchProductsRaw(qs, 300);
     } catch {
       return { products: [], total: 0 };
     }
-  }
-
-  const qs = new URLSearchParams(baseQs.toString());
-  qs.set('per_page', String(per_page));
-  qs.set('page', String(page));
-
-  try {
-    return await fetchProductsRaw(qs, 300);
-  } catch {
-    return { products: [], total: 0 };
-  }
-}
+  },
+  ['products-list'],
+  { revalidate: 300 }
+);
 
 export interface ProductReview {
   id: number;
@@ -336,23 +348,27 @@ export interface ProductReview {
   verified: boolean;
 }
 
-export async function getProductReviews(productId: number): Promise<ProductReview[]> {
-  try {
-    const res = await fetchWithRetry(
-      `${baseUrl()}/products/reviews?product=${productId}&per_page=10&status=approved&${authParams()}`,
-      { next: { revalidate: 120 } },
-      FETCH_TIMEOUT_MS,
-      1
-    );
-    if (!res) return [];
-    if (!res.ok) return [];
-    const text = await res.text();
-    if (!text.startsWith('[')) return [];
-    return JSON.parse(text) as ProductReview[];
-  } catch {
-    return [];
-  }
-}
+export const getProductReviews = unstable_cache(
+  async (productId: number): Promise<ProductReview[]> => {
+    try {
+      const res = await fetchWithRetry(
+        `${baseUrl()}/products/reviews?product=${productId}&per_page=10&status=approved&${authParams()}`,
+        { next: { revalidate: 120 } },
+        FETCH_TIMEOUT_MS,
+        1
+      );
+      if (!res) return [];
+      if (!res.ok) return [];
+      const text = await res.text();
+      if (!text.startsWith('[')) return [];
+      return JSON.parse(text) as ProductReview[];
+    } catch {
+      return [];
+    }
+  },
+  ['product-reviews'],
+  { revalidate: 3600 }
+);
 
 export async function getProductTags(): Promise<Tag[]> {
   return wcFetch<Tag[]>('/products/tags?per_page=20&hide_empty=true', []);
@@ -419,36 +435,40 @@ async function wpFetch<T>(path: string, fallback: T): Promise<T> {
   }
 }
 
-export async function getStores(): Promise<Store[]> {
-  try {
-    const url = `${wpBase()}/prag_store?per_page=100&_fields=id,title,meta`;
-    const res = await fetch(url, {
-      next: {
-        revalidate: PUBLIC_CONTENT_REVALIDATE_SECONDS,
-        tags: ['wc-stores', 'wordpress-content'],
-      },
-    });
-    if (!res.ok) return [];
-    const data = await res.json() as Array<{ id: number; title: { rendered: string }; meta: Record<string, string> }>;
-    return data.map((s) => ({
-      id: s.id,
-      name: s.title?.rendered ?? '',
-      city: s.meta?.city ?? '',
-      address: s.meta?.address ?? '',
-      phone: s.meta?.phone ?? '',
-      map_url: s.meta?.map_url ?? '',
-      type: (s.meta?.store_type as Store['type']) ?? 'prag',
-      logo: s.meta?.logo_url
-        ? {
-            src: s.meta.logo_url,
-            alt: s.meta?.logo_alt ?? s.title?.rendered ?? '',
-          }
-        : undefined,
-    }));
-  } catch {
-    return [];
-  }
-}
+export const getStores = unstable_cache(
+  async (): Promise<Store[]> => {
+    try {
+      const url = `${wpBase()}/prag_store?per_page=100&_fields=id,title,meta`;
+      const res = await fetch(url, {
+        next: {
+          revalidate: PUBLIC_CONTENT_REVALIDATE_SECONDS,
+          tags: ['wc-stores', 'wordpress-content'],
+        },
+      });
+      if (!res.ok) return [];
+      const data = await res.json() as Array<{ id: number; title: { rendered: string }; meta: Record<string, string> }>;
+      return data.map((s) => ({
+        id: s.id,
+        name: s.title?.rendered ?? '',
+        city: s.meta?.city ?? '',
+        address: s.meta?.address ?? '',
+        phone: s.meta?.phone ?? '',
+        map_url: s.meta?.map_url ?? '',
+        type: (s.meta?.store_type as Store['type']) ?? 'prag',
+        logo: s.meta?.logo_url
+          ? {
+              src: s.meta.logo_url,
+              alt: s.meta?.logo_alt ?? s.title?.rendered ?? '',
+            }
+          : undefined,
+      }));
+    } catch {
+      return [];
+    }
+  },
+  ['prag-stores'],
+  { revalidate: 3600 }
+);
 
 export async function getProductsForCompare(slugs: string[]): Promise<Product[]> {
   if (!slugs.length) return [];
@@ -465,10 +485,14 @@ export interface WPPage {
   yoast_head_json?: { title?: string; description?: string };
 }
 
-export async function getPage(slug: string): Promise<WPPage | null> {
-  const pages = await wpFetch<WPPage[]>(`/pages?slug=${slug}&_fields=id,slug,title,content,excerpt,yoast_head_json`, []);
-  return pages[0] ?? null;
-}
+export const getPage = unstable_cache(
+  async (slug: string): Promise<WPPage | null> => {
+    const pages = await wpFetch<WPPage[]>(`/pages?slug=${slug}&_fields=id,slug,title,content,excerpt,yoast_head_json`, []);
+    return pages[0] ?? null;
+  },
+  ['wp-page'],
+  { revalidate: 3600 }
+);
 
 export interface ContactFormData {
   name: string;
@@ -513,36 +537,48 @@ export interface WPCategory {
   count: number;
 }
 
-export async function getPosts({
-  category,
-  per_page = 9,
-  page = 1,
-}: { category?: string; per_page?: number; page?: number } = {}): Promise<{ posts: WPPost[]; total: number }> {
-  const qs = new URLSearchParams({
-    per_page: String(per_page),
-    page: String(page),
-    _embed: '1',
-    ...(category && { categories: category }),
-  });
-  try {
-    const res = await fetch(`${wpBase()}/posts?${qs}`, { next: { revalidate: 60 } });
-    if (!res.ok) return { posts: [], total: 0 };
-    const text = await res.text();
-    if (!text.startsWith('[')) return { posts: [], total: 0 };
-    return { posts: JSON.parse(text) as WPPost[], total: Number(res.headers.get('X-WP-Total') ?? 0) };
-  } catch {
-    return { posts: [], total: 0 };
-  }
-}
+export const getPosts = unstable_cache(
+  async ({
+    category,
+    per_page = 9,
+    page = 1,
+  }: { category?: string; per_page?: number; page?: number } = {}): Promise<{ posts: WPPost[]; total: number }> => {
+    const qs = new URLSearchParams({
+      per_page: String(per_page),
+      page: String(page),
+      _embed: '1',
+      ...(category && { categories: category }),
+    });
+    try {
+      const res = await fetch(`${wpBase()}/posts?${qs}`, { next: { revalidate: 300 } });
+      if (!res.ok) return { posts: [], total: 0 };
+      const text = await res.text();
+      if (!text.startsWith('[')) return { posts: [], total: 0 };
+      return { posts: JSON.parse(text) as WPPost[], total: Number(res.headers.get('X-WP-Total') ?? 0) };
+    } catch {
+      return { posts: [], total: 0 };
+    }
+  },
+  ['wp-posts'],
+  { revalidate: 300 }
+);
 
-export async function getPostBySlug(slug: string): Promise<WPPost | null> {
-  const posts = await wpFetch<WPPost[]>(`/posts?slug=${slug}&_embed=1`, []);
-  return posts[0] ?? null;
-}
+export const getPostBySlug = unstable_cache(
+  async (slug: string): Promise<WPPost | null> => {
+    const posts = await wpFetch<WPPost[]>(`/posts?slug=${slug}&_embed=1`, []);
+    return posts[0] ?? null;
+  },
+  ['wp-post-by-slug'],
+  { revalidate: 3600 }
+);
 
-export async function getPostCategories(): Promise<WPCategory[]> {
-  return wpFetch<WPCategory[]>('/categories?per_page=20&hide_empty=true', []);
-}
+export const getPostCategories = unstable_cache(
+  async (): Promise<WPCategory[]> => {
+    return wpFetch<WPCategory[]>('/categories?per_page=20&hide_empty=true', []);
+  },
+  ['wp-post-categories'],
+  { revalidate: 3600 }
+);
 
 export interface TechDocument {
   id: number;
@@ -554,29 +590,33 @@ export interface TechDocument {
   product_id: number;
 }
 
-export async function getTechDocuments(productId?: number): Promise<TechDocument[]> {
-  try {
-    const path = '/prag_document?per_page=100&_fields=id,title,meta';
-    const docs = await wpFetch<Array<{ id: number; title: { rendered: string }; meta: Record<string, string> }>>(path, []);
-    const normalized = docs.map((d) => ({
-      id: d.id,
-      title: d.title?.rendered ?? '',
-      file_url: d.meta?.file_url ?? '',
-      file_type: d.meta?.file_type ?? '',
-      file_size: d.meta?.file_size ?? '',
-      pages: d.meta?.pages ?? '',
-      product_id: Number(d.meta?.product_id ?? 0),
-    })).filter((d) => d.file_url);
+export const getTechDocuments = unstable_cache(
+  async (productId?: number): Promise<TechDocument[]> => {
+    try {
+      const path = '/prag_document?per_page=100&_fields=id,title,meta';
+      const docs = await wpFetch<Array<{ id: number; title: { rendered: string }; meta: Record<string, string> }>>(path, []);
+      const normalized = docs.map((d) => ({
+        id: d.id,
+        title: d.title?.rendered ?? '',
+        file_url: d.meta?.file_url ?? '',
+        file_type: d.meta?.file_type ?? '',
+        file_size: d.meta?.file_size ?? '',
+        pages: d.meta?.pages ?? '',
+        product_id: Number(d.meta?.product_id ?? 0),
+      })).filter((d) => d.file_url);
 
-    if (!productId) return normalized;
+      if (!productId) return normalized;
 
-    // Always enforce product-level filtering client-side to avoid shared/global docs
-    // when the WordPress endpoint ignores meta_key/meta_value query arguments.
-    return normalized.filter((d) => d.product_id === productId);
-  } catch {
-    return [];
-  }
-}
+      // Always enforce product-level filtering client-side to avoid shared/global docs
+      // when the WordPress endpoint ignores meta_key/meta_value query arguments.
+      return normalized.filter((d) => d.product_id === productId);
+    } catch {
+      return [];
+    }
+  },
+  ['tech-documents'],
+  { revalidate: 3600 }
+);
 
 export interface SiteSettings {
   contact_phone: string;
@@ -640,31 +680,35 @@ const SETTINGS_FALLBACK: SiteSettings = {
   ],
 };
 
-export async function getSiteSettings(): Promise<SiteSettings> {
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_WP_API_URL ?? 'https://central.prag.global/wp-json'}/prag-core/v1/settings`,
-      {
-        next: {
-          revalidate: PUBLIC_CONTENT_REVALIDATE_SECONDS,
-          tags: ['wc-settings', 'wordpress-content'],
-        },
-      }
-    );
-    if (!res.ok) return SETTINGS_FALLBACK;
-    const data = await res.json();
-    // Deep merge: fallback fills any missing keys
-    return {
-      ...SETTINGS_FALLBACK,
-      ...data,
-      socials: { ...SETTINGS_FALLBACK.socials, ...(data.socials ?? {}) },
-      slides: Array.isArray(data.slides) && data.slides.length > 0 ? data.slides : SETTINGS_FALLBACK.slides,
-      categories: Array.isArray(data.categories) && data.categories.length > 0 ? data.categories : SETTINGS_FALLBACK.categories,
-    };
-  } catch {
-    return SETTINGS_FALLBACK;
-  }
-}
+export const getSiteSettings = unstable_cache(
+  async (): Promise<SiteSettings> => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_WP_API_URL ?? 'https://central.prag.global/wp-json'}/prag-core/v1/settings`,
+        {
+          next: {
+            revalidate: PUBLIC_CONTENT_REVALIDATE_SECONDS,
+            tags: ['wc-settings', 'wordpress-content'],
+          },
+        }
+      );
+      if (!res.ok) return SETTINGS_FALLBACK;
+      const data = await res.json();
+      // Deep merge: fallback fills any missing keys
+      return {
+        ...SETTINGS_FALLBACK,
+        ...data,
+        socials: { ...SETTINGS_FALLBACK.socials, ...(data.socials ?? {}) },
+        slides: Array.isArray(data.slides) && data.slides.length > 0 ? data.slides : SETTINGS_FALLBACK.slides,
+        categories: Array.isArray(data.categories) && data.categories.length > 0 ? data.categories : SETTINGS_FALLBACK.categories,
+      };
+    } catch {
+      return SETTINGS_FALLBACK;
+    }
+  },
+  ['site-settings'],
+  { revalidate: 3600 }
+);
 
 export function shopUrl(slug: string) {
   return `${process.env.NEXT_PUBLIC_SHOP_URL}/product/${slug}`;

@@ -156,5 +156,5 @@ export default async function TermsPage() {
       </main>
     );
   }
-  return <PolicyPageLayout title="Terms of Use" breadcrumb="Terms of use" sections={SECTIONS} />;
+  return <PolicyPageLayout title="Terms of Use" sections={SECTIONS} />;
 }

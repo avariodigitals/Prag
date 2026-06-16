@@ -27,7 +27,6 @@ export default async function ReturnPolicyPage() {
   return (
     <PolicyPageLayout
       title="Return Policy"
-      breadcrumb="Return Policy"
       sections={[
         {
           heading: 'Return Eligibility',

@@ -138,7 +138,7 @@ export default function CompareView({ products }: Props) {
     <div className="w-full max-w-5xl mx-auto px-6 md:px-10 py-12 flex flex-col gap-10">
       {/* Header */}
       <div className="flex flex-col items-center gap-3 text-center">
-        <h1 className="text-sky-700 text-3xl md:text-4xl font-bold font-['Montserrat']">Compare Up to 2 Products</h1>
+        <h1 className="text-black text-3xl md:text-4xl font-bold font-['Montserrat']">Compare Up to 2 Products</h1>
         <p className="text-zinc-500 text-sm font-['Montserrat'] max-w-md">
           Select two products to compare their specifications, features, and pricing side-by-side.
         </p>

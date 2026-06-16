@@ -18,8 +18,8 @@ export default async function SearchPage({ searchParams }: Props) {
   return (
     <main className="w-full bg-white flex flex-col">
       {/* Hero */}
-      <div className="w-full px-4 md:px-20 py-6 md:py-10 bg-stone-50 flex flex-col gap-4 md:gap-6">
-        <h1 className="text-black text-2xl md:text-3xl font-medium font-['Montserrat']">Search Results</h1>
+      <div className="w-full px-4 md:px-20 py-6 md:py-10 bg-stone-50 flex flex-col items-center gap-4 md:gap-6">
+        <h1 className="text-black text-2xl md:text-3xl font-medium font-['Montserrat'] text-center">Search Results</h1>
       </div>
 
       {/* Results */}

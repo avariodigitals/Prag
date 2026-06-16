@@ -140,9 +140,6 @@ function SearchResultsGridContent({ products, total, query }: Props) {
         </div>
       )}
 
-      {!hasMore && items.length > 0 && (
-        <p className="text-center text-zinc-400 text-xs font-['Montserrat'] py-2">All products loaded</p>
-      )}
     </div>
   );
 }

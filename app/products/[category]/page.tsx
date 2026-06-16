@@ -92,8 +92,8 @@ export default async function CategoryPage({ params, searchParams }: Props) {
     <main className="w-full bg-white flex flex-col">
       {/* Hero */}
       <div className="w-full px-4 md:px-14 pt-10 md:pt-20 pb-8 md:pb-10 bg-stone-50 flex flex-col items-center gap-4 md:gap-6">
-        <h1 className="text-sky-700 text-[48px] font-bold font-['Montserrat'] text-center leading-snug">{displayName}</h1>
-        <p className="max-w-[900px] text-center text-sky-700 text-[18px] font-normal font-['Montserrat'] leading-relaxed">{displayDescription}</p>
+        <h1 className="text-black text-[48px] font-bold font-['Montserrat'] text-center leading-snug">{displayName}</h1>
+        <p className="max-w-[900px] text-center text-black text-[18px] font-normal font-['Montserrat'] leading-relaxed">{displayDescription}</p>
       </div>
 
       {/* Products */}

@@ -215,10 +215,6 @@ function ProductsGridContent({ products, total, categories = [], tags = [] }: Pr
         </div>
       )}
 
-      {!hasMore && items.length > 0 && (
-        <p className="text-center text-zinc-400 text-xs font-['Montserrat'] py-2">All products loaded</p>
-      )}
-
       {/* Mobile Filter Drawer */}
       {drawerOpen && (
         <div className="fixed inset-0 z-50 md:hidden">

@@ -34,7 +34,7 @@ export default function TechResourcesView({ products, selectedSlug }: Props) {
           <span className="text-zinc-900 text-2xl md:text-3xl font-bold font-['Montserrat'] leading-[48px] shrink-0">Product:</span>
           <div className="relative w-full md:w-[500px]">
             <select value={slug} onChange={handleSelect}
-              className="w-full h-14 md:h-16 pl-4 md:pl-6 pr-10 bg-white rounded-2xl outline outline-2 outline-sky-700 text-zinc-700 text-sm md:text-base font-normal font-['Montserrat'] appearance-none focus:outline-sky-700 outline-none">
+              className="w-full h-14 md:h-16 pl-4 md:pl-6 pr-10 bg-white rounded-2xl outline outline-2 outline-sky-700 text-zinc-700 text-sm md:text-base font-normal font-['Montserrat'] appearance-none focus:outline-sky-700">
               <option value="">Select a product...</option>
               {products.map((p) => (
                 <option key={p.id} value={p.slug}>{p.name}</option>

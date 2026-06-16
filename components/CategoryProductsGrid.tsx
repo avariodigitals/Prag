@@ -248,9 +248,6 @@ function CategoryProductsGridContent({
         </div>
       )}
 
-      {!hasMore && products.length > 0 && (
-        <p className="text-center text-zinc-400 text-xs font-['Montserrat'] py-4">All products loaded</p>
-      )}
     </div>
   );
 }

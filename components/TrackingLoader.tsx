@@ -35,17 +35,17 @@ export default function TrackingLoader() {
 
   useEffect(() => {
     const host = window.location.hostname;
-    fetch(`/api/tracking?host=${encodeURIComponent(host)}`, { cache: 'no-store' })
-      .then((r) => (r.ok ? (r.json() as Promise<TrackingConfig>) : null))
-      .then((data) => data && setCfg(data))
-      .catch(() => {});
-  }, []);
-
-  useEffect(() => {
-    fetch('/api/settings', { cache: 'no-store' })
-      .then((r) => (r.ok ? (r.json() as Promise<SiteSettings>) : null))
-      .then((data) => setFallbackWhatsapp((data?.whatsapp ?? '').trim()))
-      .catch(() => {});
+    Promise.all([
+      fetch(`/api/tracking?host=${encodeURIComponent(host)}`, { cache: 'no-store' })
+        .then((r) => (r.ok ? (r.json() as Promise<TrackingConfig>) : null))
+        .catch(() => null),
+      fetch('/api/settings', { cache: 'no-store' })
+        .then((r) => (r.ok ? (r.json() as Promise<SiteSettings>) : null))
+        .catch(() => null),
+    ]).then(([trackingData, settingsData]) => {
+      if (trackingData) setCfg(trackingData);
+      if (settingsData) setFallbackWhatsapp((settingsData.whatsapp ?? '').trim());
+    });
   }, []);
 
   if (!cfg) return null;

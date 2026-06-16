@@ -21,11 +21,11 @@ export default function DistributorPage() {
   return (
     <main className="w-full bg-white flex flex-col">
       {/* Hero */}
-      <div className="w-full px-4 pt-8 md:pt-12 pb-6 md:pb-8 bg-stone-50 flex flex-col items-center gap-3">
-        <h1 className="text-sky-700 text-2xl md:text-3xl font-bold font-['Montserrat'] text-center">
+      <div className="w-full px-4 md:px-20 py-6 md:py-10 bg-stone-50 flex flex-col items-center gap-4 md:gap-6">
+        <h1 className="text-black text-2xl md:text-3xl font-bold font-['Montserrat'] text-center leading-snug">
           Sell the Solutions Nigeria Needs.
         </h1>
-        <p className="max-w-[531px] text-center text-sky-700 text-base md:text-lg font-normal font-['Montserrat']">
+        <p className="max-w-[531px] text-center text-black text-sm md:text-base font-normal font-['Montserrat'] leading-relaxed">
           Partner with PRAG and build a profitable business distributing Nigeria&apos;s most trusted power engineering products.
         </p>
       </div>
@@ -57,10 +57,10 @@ export default function DistributorPage() {
         <div className="flex flex-col items-center gap-3">
           <div className="flex items-center gap-1.5">
             <div className="w-4 h-4 bg-sky-700" />
-            <span className="text-zinc-900 text-base font-normal font-['Montserrat']">PARTNERSHIP TIER</span>
+            <span className="text-zinc-900 text-base font-normal font-['Montserrat']">PARTNERSHIP TYPE</span>
           </div>
           <h2 className="max-w-[631px] text-center text-zinc-900 text-2xl md:text-4xl font-bold font-['Montserrat']">
-            Choose the Tier That Fits Your Business
+            Choose the Type That Fits Your Business
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { getPostBySlug, getPostCategories, getPosts } from '@/lib/woocommerce';
 import type { WPPost, WPCategory } from '@/lib/woocommerce';
 import { ArrowLeft } from 'lucide-react';
+import ShareButtons from '@/components/ShareButtons';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -73,6 +74,7 @@ export default async function KnowledgeCenterPost({ params }: Props) {
           className="w-full max-w-none text-zinc-700 text-base md:text-lg font-['Montserrat'] leading-relaxed wp-content"
           dangerouslySetInnerHTML={{ __html: sanitize(post.content.rendered) }}
         />
+        <ShareButtons title={post.title.rendered.replace(/<[^>]+>/g, '')} />
       </div>
 
       {/* Related posts */}

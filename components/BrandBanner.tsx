@@ -33,7 +33,7 @@ export default function BrandBanner({ settings }: { settings?: SiteSettings }) {
           <div className="w-full text-black text-2xl md:text-[56px] font-bold font-['Onest'] leading-tight">
             {title}
           </div>
-          <div className="w-full max-w-[631px] text-zinc-600 text-base md:text-lg font-normal font-['Montserrat'] leading-relaxed">
+          <div className="w-full max-w-[631px] text-zinc-600 text-base md:text-lg font-normal font-['Montserrat'] leading-relaxed whitespace-pre-wrap">
             {description}
           </div>
           <Link

@@ -33,7 +33,7 @@ export default function Footer({ settings }: { settings?: SiteSettings }) {
               style={{ height: 'auto', width: 'auto' }}
             /> 
           </Link> 
-          <div className="w-full text-white/70 text-base font-normal font-['Space_Grotesk']">
+          <div className="w-full text-white/70 text-base font-normal font-['Space_Grotesk'] whitespace-pre-wrap">
             {desc}
           </div> 
           <div className="w-full max-w-52 flex flex-col justify-start items-start gap-2"> 

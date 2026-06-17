@@ -133,7 +133,7 @@ export default function HeroBanner({ slides: slidesProp, heroBg }: { slides?: Sl
             <h1 className="text-white text-4xl md:text-[64px] font-bold font-['Onest'] leading-[1.06] transition-opacity duration-500">
               {slide.title}
             </h1>
-            <p className="max-w-[580px] text-white/85 text-lg md:text-xl font-normal font-['Montserrat'] leading-[1.45] transition-opacity duration-500">
+            <p className="max-w-[580px] text-white/85 text-lg md:text-xl font-normal font-['Montserrat'] leading-[1.45] transition-opacity duration-500 whitespace-pre-wrap">
               {slide.description}
             </p>
             <div className="flex justify-center md:justify-start">

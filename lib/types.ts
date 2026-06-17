@@ -37,6 +37,7 @@ export interface Product {
   on_sale: boolean;
   status: string;
   stock_status: 'instock' | 'outofstock' | 'onbackorder';
+  sku?: string;
   short_description: string;
   images: ProductImage[];
   categories: ProductCategory[];

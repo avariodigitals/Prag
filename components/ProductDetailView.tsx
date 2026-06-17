@@ -160,6 +160,9 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
         <div className="flex-1 min-w-0 flex flex-col gap-5 md:gap-6 max-w-[620px]">
           <div className="flex flex-col gap-3 md:gap-4">
             <h1 className="text-black text-[28px] md:text-[40px] font-bold font-['Montserrat'] leading-tight">{product.name}</h1>
+            {product.sku && (
+              <span className="text-zinc-400 text-sm font-medium font-['Montserrat']">SKU: {product.sku}</span>
+            )}
             <div className="flex items-center gap-2">
               {product.on_sale && product.regular_price && (
                 <span className="text-zinc-400 text-[22px] font-normal font-['Montserrat'] line-through">{formatPrice(product.regular_price)}</span>

@@ -6,22 +6,20 @@ export const metadata = { title: 'About Us – Prag' };
 const STATS = [
   { value: 50000, display: 50, suffix: 'K+', label: 'Systems Installed' },
   { value: 20, display: 20, suffix: '+', label: 'Years Active' },
-  { value: 500, display: 500, suffix: '+', label: 'Happy Clients' },
   { value: 36, display: 36, suffix: '', label: 'States Covered' },
 ];
 
 const VALUES = [
-  { title: 'Engineering for Reliable Power', body: 'Engineering Power Systems with Precision, Technical Expertise, and a Focus on Long-Term Performance' },
+  { title: 'Engineering Excellence', body: 'Engineering Power Systems with Precision, Technical Expertise, and a Focus on Long-Term Performance' },
   { title: 'Reliable Power Systems You Trust', body: 'Building Reliable Power Solutions That Perform Consistently Under Real-World Conditions' },
   { title: 'Practical Solutions for Real Conditions', body: 'Delivering Practical Power Solutions Designed for Real Environments, Not Just Ideal Scenarios' },
   { title: 'Designed to Meet Your Needs', body: 'Putting Client Needs First by Designing Power Systems Around Real Challenges and Requirements' },
 ];
 
 const STORY_PARAS = [
-  'PRAG Power Engineering was founded in 2005 by a team of electrical engineers who were frustrated with the poor quality of power solutions being installed across Nigeria. They saw expensive imported equipment failing because installers didn\'t understand Nigerian power conditions. They saw families and businesses suffering from systems that were never properly designed.',
-  'We started with a simple mission: engineer power systems that actually work in Nigerian conditions. Not imported cookie-cutter solutions, but systems designed specifically for the voltage fluctuations, frequent outages, and harsh environments we face here.',
-  'Twenty years later, we\'ve installed over 50,000 systems across 36 states. Our engineers hold COREN certifications and international qualifications. Our systems are running in homes, hospitals, hotels, banks, factories, and data centers across Nigeria.',
-  'We\'ve grown, but our mission hasn\'t changed: reliable power engineering, done right.',
+  'PRAG was founded with a clear mission: to help homes and businesses overcome the challenges of unreliable electricity.\nPoor voltage conditions, unreliable backup systems, and improperly designed solar installations often result in equipment damage, downtime, and unnecessary costs.',
+  'We set out to address these challenges through sound engineering and practical system design.\nSince 2012, we have helped customers across Nigeria protect their equipment, maintain business continuity, and improve power reliability.',
+  'Today, PRAG provides voltage stabilization, backup power, solar energy, and energy storage solutions backed by technical expertise and real-world experience.\nOur focus remains the same: delivering reliable power solutions designed for the realities of Nigerian power conditions.',
 ];
 
 export default function AboutPage() {
@@ -31,10 +29,10 @@ export default function AboutPage() {
       {/* Hero */}
       <div className="w-full px-4 md:px-14 pt-10 md:pt-20 pb-8 md:pb-10 bg-stone-50 flex flex-col items-center gap-4 md:gap-6">
         <h1 className="text-black text-2xl md:text-4xl font-bold font-['Onest'] text-center leading-snug">
-          Engineering Reliable Power Solutions for Real-World Challenges
+          Engineering Reliable Power<br />Solutions for Real-World Challenges
         </h1>
         <p className="max-w-[531px] text-center text-black text-base md:text-lg font-normal font-['Space_Grotesk'] leading-relaxed">
-          PRAG is a power solutions company focused on designing and delivering systems that solve unstable electricity problems for homes, businesses, and industries.
+          PRAG delivers power stabilization, backup power, solar energy, and energy storage solutions designed for Nigerian power conditions.
         </p>
       </div>
 
@@ -51,9 +49,12 @@ export default function AboutPage() {
                 Built on Engineering, Driven by Real Power Challenges
               </h2>
               <p className="text-zinc-500 text-base md:text-lg font-normal font-['Space_Grotesk'] leading-relaxed">
-                PRAG was founded to address one core problem, unreliable electricity. Instead of simply supplying equipment, we set out to design complete power solutions that ensure stability, efficiency, and long-term performance.
+                At PRAG, we believe reliable power starts with proper engineering.
+                Rather than simply supplying equipment, we design complete power systems tailored to each client&apos;s needs, ensuring long-term performance, protection, and efficiency.
                 <br /><br />
-                Today, we work with homeowners, businesses, and industrial clients to deliver systems tailored to their specific needs, backed by technical expertise and real-world experience.
+                We help homes, businesses, and industries achieve reliable, efficient, and sustainable power through engineering-led system design and implementation.
+                <br /><br />
+                Our solutions are backed by years of practical experience and thousands of successful installations across Nigeria.
               </p>
             </div>
 

@@ -79,7 +79,11 @@ export async function POST(req: Request) {
   const wpRes = await fetch(`${WP_API}/prag-core/v1/contact`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
+    body: JSON.stringify({
+      ...body,
+      route: '/technical-support',
+      subject: body.enquiry_type || 'Technical Support',
+    }),
   });
 
   if (!wpRes.ok) {

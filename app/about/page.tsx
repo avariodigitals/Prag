@@ -1,5 +1,8 @@
+'use client';
+
 import Image from 'next/image';
 import CountUp from '@/components/CountUp';
+import { useEffect, useState } from 'react';
 
 export const metadata = { title: 'About Us - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more' };
 

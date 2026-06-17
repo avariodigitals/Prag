@@ -45,8 +45,34 @@ async function getPageContent(): Promise<PageContent | null> {
   return null;
 }
 
-export default async function AboutPage() {
-  const pageContent = await getPageContent();
+export default function AboutPage() {
+  const [pageContent, setPageContent] = useState<PageContent | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      if (!cancelled) {
+        const content = await getPageContent();
+        if (!cancelled) {
+          setPageContent(content);
+          setLoading(false);
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (loading) {
+    return (
+      <main className="w-full bg-white flex flex-col items-center justify-center min-h-screen">
+        <div className="text-gray-500">Loading...</div>
+      </main>
+    );
+  }
+
   return (
     <main className="w-full bg-white flex flex-col">
 

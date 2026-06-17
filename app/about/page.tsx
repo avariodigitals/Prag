@@ -23,7 +23,30 @@ const STORY_PARAS = [
   'We\'ve grown, but our mission hasn\'t changed: reliable power engineering, done right.',
 ];
 
-export default function AboutPage() {
+interface PageContent {
+  slug: string;
+  title: string;
+  content: string;
+  lastUpdated: string;
+}
+
+async function getPageContent(): Promise<PageContent | null> {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/pages/content`, {
+      cache: 'no-store',
+    });
+    if (res.ok) {
+      const pages = await res.json() as PageContent[];
+      return pages.find((p: PageContent) => p.slug === 'about') || null;
+    }
+  } catch (error) {
+    console.error('Failed to fetch page content:', error);
+  }
+  return null;
+}
+
+export default async function AboutPage() {
+  const pageContent = await getPageContent();
   return (
     <main className="w-full bg-white flex flex-col">
 

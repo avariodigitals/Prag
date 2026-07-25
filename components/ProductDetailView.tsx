@@ -321,11 +321,13 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
           <div className="flex flex-col gap-4">
             {/* Custom tab content from WordPress (YIKES Custom Product Tabs) */}
             {customTabs.length > 0 ? (
-              <div className="wp-content text-[16px] font-['Montserrat'] leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: cleanWpContent(customTabs.map(t => t.content).join('\n')) }} />
+              <div className="w-full overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+                <div className="wp-content text-[16px] font-['Montserrat'] leading-relaxed min-w-[320px]"
+                  dangerouslySetInnerHTML={{ __html: cleanWpContent(customTabs.map(t => t.content).join('\n')) }} />
+              </div>
             ) : product.attributes && product.attributes.length > 0 ? (
-              <div className="w-full overflow-x-auto">
-                <table className="w-full text-[16px] font-['Montserrat']">
+              <div className="w-full overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+                <table className="w-full min-w-[320px] text-[16px] font-['Montserrat']">
                   <tbody>
                   {(product.weight) && (
                     <tr className="border-b border-gray-100">

@@ -136,6 +136,20 @@ nav [class*="font-['Montserrat']"] {
   color: #475569;
 }
 
+@media (max-width: 640px) {
+  .wp-content table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+
+  .wp-content table th,
+  .wp-content table td {
+    word-break: break-word;
+  }
+}
+
 .wp-content img {
   max-width: 100%;
   height: auto;

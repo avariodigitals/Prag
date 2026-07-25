@@ -1,20 +1,11 @@
-// Product detail page uses ISR while preserving fresh review/doc windows.
-export const revalidate = 3600;
+export const dynamic = 'force-dynamic';
 
 import ProductDetailView from '@/components/ProductDetailView';
-import { getProductBySlug, getProducts, getProductReviews, getTechDocuments, getProductCustomTabs, getAllProductSlugs } from '@/lib/woocommerce';
+import { getProductBySlug, getProducts, getProductReviews, getTechDocuments, getProductCustomTabs } from '@/lib/woocommerce';
 import { notFound } from 'next/navigation';
 
 interface Props {
   params: Promise<{ category: string; slug: string }>;
-}
-
-export async function generateStaticParams() {
-  const allSlugs = await getAllProductSlugs();
-  return allSlugs.map(({ slug, category }) => ({
-    category,
-    slug,
-  }));
 }
 
 export async function generateMetadata({ params }: Props) {

@@ -263,6 +263,20 @@ class Prag_Core_Bridge {
             ],
         ]);
 
+        // Product Custom Tabs (YIKES Custom Product Tabs data)
+        register_rest_route($namespace, '/products/(?P<id>\d+)/custom-tabs', [
+            [
+                'methods'             => 'GET',
+                'callback'            => [$this, 'get_product_custom_tabs'],
+                'permission_callback' => '__return_true',
+            ],
+            [
+                'methods'             => 'POST',
+                'callback'            => [$this, 'update_product_custom_tabs'],
+                'permission_callback' => [$this, 'check_admin_permissions'],
+            ],
+        ]);
+
         // B2B Enquiries (contact form submissions)
         register_rest_route($namespace, '/b2b/enquiries', [
             'methods'             => 'GET',
@@ -919,6 +933,74 @@ class Prag_Core_Bridge {
             'file_size' => $file_size ?: '',
             'pages' => '',
             'product_id' => $product_id,
+        ]);
+    }
+
+    // -----------------------------------------------------------------------
+    // Product Custom Tabs (YIKES Custom Product Tabs for WooCommerce)
+    // -----------------------------------------------------------------------
+
+    /**
+     * Get product custom tabs as JSON (parsed from yikes_woo_products_tabs serialized meta).
+     */
+    public function get_product_custom_tabs($request) {
+        $product_id = intval($request->get_param('id'));
+        if (!$product_id) {
+            return new WP_Error('missing_id', 'Product ID is required', ['status' => 400]);
+        }
+
+        $raw = get_post_meta($product_id, 'yikes_woo_products_tabs', true);
+        if (empty($raw)) {
+            return rest_ensure_response([]);
+        }
+
+        $tabs = maybe_unserialize($raw);
+        if (!is_array($tabs)) {
+            return rest_ensure_response([]);
+        }
+
+        // Normalize: ensure each tab has title, id, content
+        $normalized = array_map(function($tab) {
+            return [
+                'title'   => isset($tab['title']) ? (string) $tab['title'] : '',
+                'id'      => isset($tab['id']) ? (string) $tab['id'] : '',
+                'content' => isset($tab['content']) ? (string) $tab['content'] : '',
+            ];
+        }, array_values($tabs));
+
+        return rest_ensure_response($normalized);
+    }
+
+    /**
+     * Update product custom tabs (saves back as serialized yikes_woo_products_tabs meta).
+     */
+    public function update_product_custom_tabs($request) {
+        $product_id = intval($request->get_param('id'));
+        if (!$product_id) {
+            return new WP_Error('missing_id', 'Product ID is required', ['status' => 400]);
+        }
+
+        $params = $request->get_json_params();
+        if (!is_array($params)) {
+            return new WP_Error('invalid_body', 'Expected an array of tab objects', ['status' => 400]);
+        }
+
+        // Build the array in the format YIKES plugin expects
+        $tabs = [];
+        foreach ($params as $tab) {
+            $tabs[] = [
+                'title'   => sanitize_text_field($tab['title'] ?? 'Specifications'),
+                'id'      => sanitize_title($tab['id'] ?? 'specifications'),
+                'content' => $tab['content'] ?? '',
+            ];
+        }
+
+        update_post_meta($product_id, 'yikes_woo_products_tabs', maybe_serialize($tabs));
+
+        return rest_ensure_response([
+            'success' => true,
+            'message' => 'Custom tabs updated',
+            'tabs'    => $tabs,
         ]);
     }
 

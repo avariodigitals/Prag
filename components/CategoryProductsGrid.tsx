@@ -32,7 +32,6 @@ const SECTION_TABS: Record<string, { label: string; slug: string }[]> = {
   'inverters': [
     { label: 'Hybrid Inverters',      slug: 'hybrid-inverters' },
     { label: 'Heavy-Duty Inverters',  slug: 'heavy-duty-inverters' },
-    { label: 'Pure Sine Wave',        slug: 'pure-sine-inverters' },
   ],
   'solar': [
     { label: 'Solar Panels',          slug: 'solar-panels' },
@@ -41,7 +40,7 @@ const SECTION_TABS: Record<string, { label: string; slug: string }[]> = {
   ],
   'batteries': [
     { label: 'Tubular Batteries',     slug: 'tubular-batteries' },
-    { label: 'Lithium Batteries',     slug: 'lithium-battery' },
+    { label: 'Lithium Batteries',     slug: 'lithium-batteries' },
     { label: 'Battery Racks',         slug: 'battery-rack' },
   ],
 };
@@ -169,7 +168,7 @@ function CategoryProductsGridContent({
                   key={tab.key}
                   type="button"
                   onClick={() => navigate({ sub: tab.slug })}
-                  className={`shrink-0 rounded-full px-6 py-3.5 text-lg font-semibold font-['Onest'] leading-none whitespace-nowrap transition-colors ${isActive ? 'bg-sky-700 text-white' : 'bg-sky-50 text-sky-700 hover:bg-sky-100'}`}
+                  className={`shrink-0 rounded-full px-6 py-3.5 text-lg font-semibold font-['Onest'] leading-none whitespace-nowrap transition-colors ${isActive ? 'bg-sky-700 text-white' : 'bg-sky-50 text-[#1a1a1a] hover:bg-sky-100'}`}
                 >
                   {tab.label}
                 </button>
@@ -179,11 +178,6 @@ function CategoryProductsGridContent({
         </div>
 
         <div className="hidden md:flex items-start gap-4 overflow-x-auto">
-          {sectionSubs.length > 0 && (
-            <span className="text-[#0166a5] text-base font-medium font-['Space_Grotesk'] whitespace-nowrap pt-3 shrink-0 capitalize">
-              {allLabel.replace(/^All /, '')}:
-            </span>
-          )}
           <div className="flex items-stretch gap-0 border-b border-[#e4e7ec] flex-1 overflow-x-auto">
             {tabs.map((tab) => {
               const isActive = tab.slug ? activeSub === tab.slug : !activeSub;
@@ -191,7 +185,7 @@ function CategoryProductsGridContent({
               const isTabPending = activePendingTab === tabKey;
               return (
                 <button key={tab.key} onClick={() => navigate({ sub: tab.slug })} className="inline-flex flex-col items-center shrink-0">
-                  <span className={`px-4 py-3 text-sm font-medium font-['Space_Grotesk'] whitespace-nowrap ${isActive ? 'text-[#0166a5]' : 'text-[#888888] hover:text-[#444444]'}`}>
+                  <span className={`px-4 py-3 text-sm font-medium font-['Space_Grotesk'] whitespace-nowrap ${isActive ? 'text-[#0166a5]' : 'text-[#1a1a1a] hover:text-[#0166a5]'}`}>
                     {tab.label}
                     {isTabPending && (
                       <svg className="ml-1 inline w-3 h-3 text-[#0166a5] animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

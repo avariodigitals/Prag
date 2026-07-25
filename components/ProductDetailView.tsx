@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useState, type FormEvent } from 'react';
 import { Minus, Plus } from 'lucide-react';
 import type { Product } from '@/lib/types';
-import type { ProductReview, TechDocument } from '@/lib/woocommerce';
+import type { ProductReview, TechDocument, CustomTab } from '@/lib/woocommerce';
 import { formatPrice } from '@/lib/woocommerce';
 import { useCart } from '@/lib/CartContext';
 import { usePathname, useRouter } from 'next/navigation';
@@ -44,9 +44,10 @@ interface Props {
   relatedProducts: Product[];
   reviews: ProductReview[];
   techDocs: TechDocument[];
+  customTabs?: CustomTab[];
 }
 
-export default function ProductDetailView({ product, relatedProducts, reviews, techDocs }: Props) {
+export default function ProductDetailView({ product, relatedProducts, reviews, techDocs, customTabs = [] }: Props) {
   const numericPrice = Number(String(product.price ?? '').replace(/,/g, ''));
   const hasValidPrice = Number.isFinite(numericPrice) && numericPrice > 0;
   const isOutOfStock = product.stock_status === 'outofstock' || !hasValidPrice;
@@ -61,7 +62,9 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
   const { add } = useCart();
   const router = useRouter();
   const pathname = usePathname();
-  const image = product.images?.[0];
+  const images = product.images ?? [];
+  const [activeImage, setActiveImage] = useState(0);
+  const image = images[activeImage] ?? images[0];
   const pageUrl = pathname ? `https://prag.global${pathname}` : '';
 
   const [addedToCart, setAddedToCart] = useState(false);
@@ -149,10 +152,27 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
       <div className="w-full max-w-[1280px] mx-auto flex flex-col gap-6 md:gap-8">
       {/* Product hero */}
       <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start md:items-start">
-        {/* Image */}
-        <div className="w-full md:w-[520px] h-72 md:h-[430px] relative bg-white rounded-2xl overflow-hidden shrink-0">
-          {image && (
-            <Image src={image.src} alt={image.alt || product.name} fill sizes="(max-width: 768px) 100vw, 520px" priority className="object-contain p-4 md:p-6" />
+        {/* Image + Gallery */}
+        <div className="w-full md:w-[520px] shrink-0 flex flex-col gap-3">
+          <div className="w-full h-72 md:h-[430px] relative rounded-2xl overflow-hidden">
+            {image && (
+              <Image key={image.src} src={image.src} alt={image.alt || product.name} fill sizes="(max-width: 768px) 100vw, 520px" priority className="object-contain p-4 md:p-6" />
+            )}
+          </div>
+          {images.length > 1 && (
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+              {images.map((img, i) => (
+                <button
+                  key={img.id}
+                  onClick={() => setActiveImage(i)}
+                  className={`relative w-16 h-16 md:w-20 md:h-20 rounded-lg overflow-hidden shrink-0 border-2 transition-colors ${
+                    i === activeImage ? 'border-sky-600' : 'border-gray-100 hover:border-gray-300'
+                  }`}
+                >
+                  <Image src={img.src} alt={img.alt || product.name} fill sizes="80px" className="object-contain p-1" />
+                </button>
+              ))}
+            </div>
           )}
         </div>
 
@@ -170,7 +190,7 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
               {hasValidPrice ? (
                 <p className="text-sky-700 text-[20px] font-normal font-['Montserrat'] leading-none">{formatPrice(product.price)}</p>
               ) : (
-                <p className="text-rose-700 text-[13px] font-semibold font-['Montserrat'] uppercase tracking-wide">Out of stock</p>
+                <p className="text-sky-700 text-[13px] font-semibold font-['Montserrat'] uppercase tracking-wide">Call for Price</p>
               )}
             </div>
             <div className="wp-content text-zinc-500 text-[18px] font-normal leading-relaxed"
@@ -299,8 +319,11 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
 
         {activeTab === 'Specifications' && (
           <div className="flex flex-col gap-4">
-            {/* Attributes from WooCommerce */}
-            {product.attributes && product.attributes.length > 0 ? (
+            {/* Custom tab content from WordPress (YIKES Custom Product Tabs) */}
+            {customTabs.length > 0 ? (
+              <div className="wp-content text-[16px] font-['Montserrat'] leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: cleanWpContent(customTabs.map(t => t.content).join('\n')) }} />
+            ) : product.attributes && product.attributes.length > 0 ? (
               <div className="w-full overflow-x-auto">
                 <table className="w-full text-[16px] font-['Montserrat']">
                   <tbody>

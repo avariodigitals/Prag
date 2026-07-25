@@ -21,14 +21,10 @@ const FALLBACK_SLIDES: Slide[] = [
 ];
 
 const FALLBACK_BG = 'https://central.prag.global/wp-content/uploads/2026/04/421db5e8efbc14b105a33a6db7182652503c3fdd.png';
-const B2B_HERO_BG = '/images/herobg.jpg';
 
 export default function HeroBanner({ slides: slidesProp, heroBg }: { slides?: Slide[]; heroBg?: string }) {
   const slides = (slidesProp && slidesProp.length > 0) ? slidesProp : FALLBACK_SLIDES;
-  const bgSrc = B2B_HERO_BG;
-  if (heroBg && heroBg !== B2B_HERO_BG && heroBg !== FALLBACK_BG) {
-    // Keep parameter intentionally referenced while forcing exact b2b background parity.
-  }
+  const bgSrc = heroBg || FALLBACK_BG;
   const defaultSlideIndex = Math.max(
     0,
     slides.findIndex((item) => item.title.toLowerCase().includes('power your home'))

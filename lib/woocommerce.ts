@@ -3,7 +3,7 @@ import type { Product, Category, Tag, Store } from './types';
 
 const PRODUCTS_FETCH_PAGE_SIZE = 100;
 const FETCH_TIMEOUT_MS = 7000;
-const PUBLIC_PRODUCTS_REVALIDATE_SECONDS = 300;
+const PUBLIC_PRODUCTS_REVALIDATE_SECONDS = 600;
 const PUBLIC_CONTENT_REVALIDATE_SECONDS = 3600;
 
 function authParams() {
@@ -48,7 +48,7 @@ async function fetchWithRetry(url: string, init: RequestInit, timeoutMs = FETCH_
 async function wcFetch<T>(path: string, fallback: T): Promise<T> {
   try {
     const res = await fetchWithRetry(`${baseUrl()}${path}${path.includes('?') ? '&' : '?'}${authParams()}`, {
-      next: { revalidate: 300 },
+      next: { revalidate: 600 },
     }, FETCH_TIMEOUT_MS, 1);
     if (!res) return fallback;
     if (!res.ok) return fallback;
@@ -85,17 +85,20 @@ function capacityFromText(text: string): number | null {
     }
   }
 
+  // KW — real power, ranks slightly above KVA for the same number
+  const kw = normalized.match(/(\d+(?:\.\d+)?)\s*kw\b/);
+  if (kw) return Number(kw[1]) * 1_000_000 + 100_000;
+
+  // KVA — apparent power, base scale
   const kva = normalized.match(/(\d+(?:\.\d+)?)\s*kva\b/);
   if (kva) return Number(kva[1]) * 1_000_000;
-
-  const kw = normalized.match(/(\d+(?:\.\d+)?)\s*kw\b/);
-  if (kw) return Number(kw[1]) * 100_000;
 
   const ah = normalized.match(/(\d+(?:\.\d+)?)\s*ah\b/);
   if (ah) return Number(ah[1]) * 1_000;
 
+  // Watts — convert to KW scale (3000W = 3KW)
   const watts = normalized.match(/(\d+(?:\.\d+)?)\s*w\b/);
-  if (watts) return Number(watts[1]) * 100;
+  if (watts) return (Number(watts[1]) / 1000) * 1_000_000 + 100_000;
 
   return null;
 }
@@ -112,15 +115,6 @@ function extractCapacityScore(product: Product): number {
   return Number.POSITIVE_INFINITY;
 }
 
-function extractPhaseCount(product: Product): number {
-  const attrs = (product.attributes ?? [])
-    .map((attr) => `${attr.name} ${(attr.options ?? []).join(' ')}`)
-    .join(' ');
-  const haystack = `${product.name} ${attrs}`.toLowerCase();
-  const match = haystack.match(/(\d)\s*phase\b/);
-  return match ? Number(match[1]) : 1;
-}
-
 function sortProductsByCapacityThenPrice(products: Product[]): Product[] {
   return [...products].sort((a, b) => {
     const capA = extractCapacityScore(a);
@@ -129,9 +123,6 @@ function sortProductsByCapacityThenPrice(products: Product[]): Product[] {
       if (Number.isFinite(capA) && Number.isFinite(capB)) return capA - capB;
       return Number.isFinite(capA) ? -1 : 1;
     }
-
-    const phaseDiff = extractPhaseCount(a) - extractPhaseCount(b);
-    if (phaseDiff !== 0) return phaseDiff;
 
     const priceA = toPriceNumber(a);
     const priceB = toPriceNumber(b);
@@ -224,7 +215,7 @@ export const getFeaturedProducts = unstable_cache(
     return sortProductsByCapacityThenPrice(products);
   },
   ['featured-products'],
-  { revalidate: 300 }
+  { revalidate: 600, tags: ['featured-products'] }
 );
 
 export const getFlashSaleProducts = unstable_cache(
@@ -233,7 +224,7 @@ export const getFlashSaleProducts = unstable_cache(
     return sortProductsByCapacityThenPrice(products);
   },
   ['flash-sale-products'],
-  { revalidate: 300 }
+  { revalidate: 600, tags: ['flash-sale-products'] }
 );
 
 export const getCategories = unstable_cache(
@@ -241,7 +232,7 @@ export const getCategories = unstable_cache(
     return wcFetch<Category[]>(`/products/categories?per_page=100&hide_empty=true&_fields=${CATEGORY_FIELDS}`, []);
   },
   ['product-categories'],
-  { revalidate: 3600 }
+  { revalidate: 3600, tags: ['product-categories'] }
 );
 
 export const getProductBySlug = unstable_cache(
@@ -249,7 +240,7 @@ export const getProductBySlug = unstable_cache(
     try {
       const res = await fetchWithRetry(
         `${baseUrl()}/products?slug=${slug}&_fields=id,name,slug,sku,price,regular_price,sale_price,on_sale,status,stock_status,short_description,description,images,categories,tags,featured,date_created,attributes,dimensions,weight&${authParams()}`,
-        { next: { revalidate: 120 } },
+        { next: { revalidate: 600 } },
         FETCH_TIMEOUT_MS,
         1
       );
@@ -264,7 +255,7 @@ export const getProductBySlug = unstable_cache(
     }
   },
   ['product-by-slug'],
-  { revalidate: 3600 }
+  { revalidate: 3600, tags: ['product-by-slug'] }
 );
 
 export interface ProductsResult {
@@ -316,7 +307,7 @@ export const getProducts = unstable_cache(
 
     if (!hasExplicitSort) {
       try {
-        const { products: allProducts, total } = await fetchAllProductsForDefaultSort(baseQs, 300);
+        const { products: allProducts, total } = await fetchAllProductsForDefaultSort(baseQs, PUBLIC_PRODUCTS_REVALIDATE_SECONDS);
         const start = (page - 1) * per_page;
         const end = start + per_page;
         return { products: allProducts.slice(start, end), total };
@@ -330,13 +321,13 @@ export const getProducts = unstable_cache(
     qs.set('page', String(page));
 
     try {
-      return await fetchProductsRaw(qs, 300);
+      return await fetchProductsRaw(qs, PUBLIC_PRODUCTS_REVALIDATE_SECONDS);
     } catch {
       return { products: [], total: 0 };
     }
   },
   ['products-list'],
-  { revalidate: 300 }
+  { revalidate: 600, tags: ['products-list'] }
 );
 
 export interface ProductReview {
@@ -353,7 +344,7 @@ export const getProductReviews = unstable_cache(
     try {
       const res = await fetchWithRetry(
         `${baseUrl()}/products/reviews?product=${productId}&per_page=10&status=approved&${authParams()}`,
-        { next: { revalidate: 120 } },
+        { next: { revalidate: 3600 } },
         FETCH_TIMEOUT_MS,
         1
       );
@@ -367,7 +358,7 @@ export const getProductReviews = unstable_cache(
     }
   },
   ['product-reviews'],
-  { revalidate: 3600 }
+  { revalidate: 3600, tags: ['product-reviews'] }
 );
 
 export async function getProductTags(): Promise<Tag[]> {
@@ -615,7 +606,7 @@ export const getTechDocuments = unstable_cache(
     }
   },
   ['tech-documents'],
-  { revalidate: 3600 }
+  { revalidate: 3600, tags: ['tech-documents'] }
 );
 
 export interface SiteSettings {
@@ -707,7 +698,33 @@ export const getSiteSettings = unstable_cache(
     }
   },
   ['site-settings'],
-  { revalidate: 3600 }
+  { revalidate: 3600, tags: ['site-settings'] }
+);
+
+export interface CustomTab {
+  title: string;
+  id: string;
+  content: string;
+}
+
+export const getProductCustomTabs = unstable_cache(
+  async (productId: number): Promise<CustomTab[]> => {
+    try {
+      const wpApi = process.env.NEXT_PUBLIC_WP_API_URL ?? 'https://central.prag.global/wp-json';
+      const res = await fetchWithRetry(`${wpApi}/prag-core/v1/products/${productId}/custom-tabs`, {
+        next: { revalidate: 3600 },
+      }, FETCH_TIMEOUT_MS, 1);
+      if (!res) return [];
+      if (!res.ok) return [];
+      const text = await res.text();
+      if (!text.startsWith('[')) return [];
+      return JSON.parse(text) as CustomTab[];
+    } catch {
+      return [];
+    }
+  },
+  ['product-custom-tabs'],
+  { revalidate: 3600, tags: ['product-custom-tabs'] }
 );
 
 export function shopUrl(slug: string) {
@@ -722,3 +739,37 @@ export function productUrl(product: Pick<Product, 'slug' | 'categories'>) {
 export function formatPrice(price: string) {
   return `₦${Number(price).toLocaleString('en-NG', { minimumFractionDigits: 2 })}`;
 }
+
+export const getAllProductSlugs = unstable_cache(
+  async (): Promise<{ slug: string; category: string }[]> => {
+    try {
+      const slugs: { slug: string; category: string }[] = [];
+      let page = 1;
+      const perPage = 100;
+      let hasMore = true;
+      while (hasMore) {
+        const res = await fetchWithRetry(
+          `${baseUrl()}/products?status=publish&per_page=${perPage}&page=${page}&_fields=slug,categories&${authParams()}`,
+          { next: { revalidate: 3600 } },
+          FETCH_TIMEOUT_MS,
+          1
+        );
+        if (!res || !res.ok) break;
+        const text = await res.text();
+        if (!text.startsWith('[')) break;
+        const products = JSON.parse(text) as { slug: string; categories: { slug: string }[] }[];
+        if (products.length === 0) break;
+        for (const p of products) {
+          slugs.push({ slug: p.slug, category: p.categories?.[0]?.slug ?? 'products' });
+        }
+        hasMore = products.length === perPage;
+        page += 1;
+      }
+      return slugs;
+    } catch {
+      return [];
+    }
+  },
+  ['all-product-slugs'],
+  { revalidate: 3600, tags: ['all-product-slugs'] }
+);

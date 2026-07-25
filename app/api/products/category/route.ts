@@ -4,23 +4,23 @@ import { getProducts } from '@/lib/woocommerce';
 export const runtime = 'nodejs';
 
 const KNOWN_CATEGORY_IDS: Record<string, number> = {
-  'inverters': Number(process.env.WC_CAT_INVERTERS ?? 117),
-  'solar': Number(process.env.WC_CAT_SOLAR ?? 147),
-  'batteries': Number(process.env.WC_CAT_BATTERIES ?? 151),
-  'voltage-stabilizers': 144,
-  'thyristor-stabilizers': 266,
-  'relay-voltage-stabilizers': 167,
-  'servo-voltage-stabilizers': 168,
-  'advanced-stabilizers': 178,
-  'hybrid-inverters': 171,
-  'heavy-duty-inverters': 165,
-  'pure-sine-inverters': 203,
-  'solar-panels': 169,
-  'solar-charge-controllers': 170,
-  'protective-device': 261,
-  'tubular-batteries': 220,
-  'lithium-battery': 240,
-  'battery-rack': 179,
+  'inverters': Number(process.env.WC_CAT_INVERTERS ?? 314),
+  'solar': Number(process.env.WC_CAT_SOLAR ?? 320),
+  'batteries': Number(process.env.WC_CAT_BATTERIES ?? 327),
+  'voltage-stabilizers': 322,
+  'all-prag-stabilizers': 321,
+  'thyristor-stabilizers': 349,
+  'relay-voltage-stabilizers': 323,
+  'servo-voltage-stabilizers': 324,
+  'advanced-stabilizers': 338,
+  'hybrid-inverters': 319,
+  'heavy-duty-inverters': 315,
+  'solar-panels': 326,
+  'solar-charge-controllers': 325,
+  'protective-device': 340,
+  'tubular-batteries': 348,
+  'lithium-batteries': 344,
+  'battery-rack': 339,
 };
 
 export async function GET(req: NextRequest) {
@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
     { products, hasMore },
     {
       headers: {
-        'Cache-Control': 's-maxage=300, stale-while-revalidate=60',
+        'Cache-Control': 's-maxage=600, stale-while-revalidate=120',
       },
     }
   );

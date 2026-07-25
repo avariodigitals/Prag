@@ -87,7 +87,7 @@ export default function CompareView({ products }: Props) {
             return n > 0 ? (
               <span key={`price-${p?.id ?? idx}`} className="text-sky-700 font-bold text-base font-['Montserrat']">{formatPrice(p!.price)}</span>
             ) : (
-              '—'
+              <span key={`price-${p?.id ?? idx}`} className="text-sky-700 font-bold text-sm font-['Montserrat'] uppercase tracking-wide">Call for Price</span>
             );
           }),
         },

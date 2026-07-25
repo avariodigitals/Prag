@@ -64,7 +64,7 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
 
   return (
     <div className="w-full relative flex flex-col gap-2 md:gap-3 group">
-      <div className={`w-full h-[300px] md:h-[330px] relative flex justify-center items-center rounded-lg overflow-hidden bg-transparent ${bg ? '' : ''}`}>
+      <div className={`w-full h-[300px] md:h-[330px] relative flex justify-center items-center rounded-lg overflow-hidden`}>
         {image ? (
           <>
             <Link href={productUrl(product)} aria-label={`View details for ${product.name}`} className="block w-full h-full">
@@ -77,7 +77,7 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
                 quality={80}
                 priority={priority}
                 loading={priority ? 'eager' : 'lazy'}
-                className="w-full h-full object-contain p-1 md:p-1 group-hover:scale-105 transition-transform duration-300 mix-blend-multiply"
+                className="w-full h-full object-contain p-1 md:p-1 group-hover:scale-105 transition-transform duration-300"
               />
             </Link>
 
@@ -109,7 +109,7 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
             </button>
           </>
         ) : (
-          <div className="w-40 h-40 bg-zinc-200 rounded-full flex items-center justify-center">
+          <div className="w-40 h-40 flex items-center justify-center">
             <span className="text-zinc-400 text-xs">No Image</span>
           </div>
         )}
@@ -139,8 +139,8 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
                 {formatPrice(product.price)}
               </span>
             ) : (
-              <span className="text-sm font-medium font-['Montserrat'] text-rose-700 uppercase tracking-wide">
-                Out of stock
+              <span className="text-sm font-medium font-['Montserrat'] text-sky-700 uppercase tracking-wide">
+                Call for Price
               </span>
             )}
           </div>

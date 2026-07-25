@@ -84,7 +84,7 @@ export default function FlashSales({ products }: FlashSalesProps) {
               key={product.id}
               className="snap-start shrink-0 w-full sm:w-[calc((100%-16px)/2)] md:w-[calc((100%-48px)/4)]"
             >
-              <ProductCard product={product} bg="bg-white" priceColor={LISTING_PRICE_COLOR} />
+              <ProductCard product={product} priceColor={LISTING_PRICE_COLOR} />
             </div>
           ))}
         </div>

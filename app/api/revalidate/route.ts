@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     const paths = Array.isArray(body?.paths) ? body.paths : [body?.path || '/'];
     const tags = Array.isArray(body?.tags)
       ? body.tags
-      : ['wordpress-content', 'wc-products', 'wc-settings', 'wc-stores'];
+      : ['product-categories', 'products-list', 'featured-products', 'flash-sale-products', 'product-by-slug', 'product-reviews', 'tech-documents', 'product-custom-tabs', 'all-product-slugs', 'site-settings', 'wordpress-content', 'wc-products', 'wc-settings', 'wc-stores'];
 
     for (const path of paths) {
       if (typeof path === 'string' && path.startsWith('/')) {

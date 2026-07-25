@@ -1,3 +1,5 @@
+export const revalidate = 600;
+
 import CategoryProductsGrid from '@/components/CategoryProductsGrid';
 import { getProductBySlug, getProducts, getCategoryBySlug, productUrl } from '@/lib/woocommerce';
 import { notFound, redirect } from 'next/navigation';
@@ -12,7 +14,7 @@ export async function generateMetadata({ params }: Props) {
   const DISPLAY_NAMES: Record<string, string> = {
     'voltage-stabilizers': 'Stabilizers',
     'inverters': 'Inverters',
-    'solar': 'Solar Panels',
+    'solar': 'Solar',
     'batteries': 'Batteries',
   };
   const name = DISPLAY_NAMES[category] ?? (await getCategoryBySlug(category))?.name ?? category;
@@ -24,25 +26,29 @@ export async function generateMetadata({ params }: Props) {
 
 // Known category slug → ID map to skip a network round-trip
 const KNOWN_CATEGORY_IDS: Record<string, number> = {
-  'inverters': Number(process.env.WC_CAT_INVERTERS ?? 117),
-  'solar': Number(process.env.WC_CAT_SOLAR ?? 147),
-  'batteries': Number(process.env.WC_CAT_BATTERIES ?? 151),
-  'voltage-stabilizers': 144,
+  'inverters': Number(process.env.WC_CAT_INVERTERS ?? 314),
+  'solar': Number(process.env.WC_CAT_SOLAR ?? 320),
+  'batteries': Number(process.env.WC_CAT_BATTERIES ?? 327),
+  'voltage-stabilizers': 322,
+  'all-prag-stabilizers': 321,
   // subcategories
-  'thyristor-stabilizers': 266,
-  'relay-voltage-stabilizers': 167,
-  'servo-voltage-stabilizers': 168,
-  'advanced-stabilizers': 178,
-  'hybrid-inverters': 171,
-  'heavy-duty-inverters': 165,
-  'pure-sine-inverters': 203,
-  'solar-panels': 169,
-  'solar-charge-controllers': 170,
-  'protective-device': 261,
-  'tubular-batteries': 220,
-  'lithium-battery': 240,
-  'battery-rack': 179,
+  'thyristor-stabilizers': 349,
+  'relay-voltage-stabilizers': 323,
+  'servo-voltage-stabilizers': 324,
+  'advanced-stabilizers': 338,
+  'hybrid-inverters': 319,
+  'heavy-duty-inverters': 315,
+  'solar-panels': 326,
+  'solar-charge-controllers': 325,
+  'protective-device': 340,
+  'tubular-batteries': 348,
+  'lithium-batteries': 344,
+  'battery-rack': 339,
 };
+
+export async function generateStaticParams() {
+  return Object.keys(KNOWN_CATEGORY_IDS).map((category) => ({ category }));
+}
 
 export default async function CategoryPage({ params, searchParams }: Props) {
   const { category } = await params;
@@ -76,7 +82,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const DISPLAY_NAMES: Record<string, string> = {
     'voltage-stabilizers': 'Stabilizers',
     'inverters': 'Inverters',
-    'solar': 'Solar Panels',
+    'solar': 'Solar',
     'batteries': 'Batteries',
   };
   const CATEGORY_DESCRIPTIONS: Record<string, string> = {

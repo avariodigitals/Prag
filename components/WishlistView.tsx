@@ -106,7 +106,11 @@ export default function WishlistView() {
                     {item.on_sale && item.regular_price && (
                       <span className="text-zinc-400 text-base font-light font-['Montserrat'] line-through">{formatPrice(item.regular_price)}</span>
                     )}
-                    <span className="text-zinc-900 text-base font-light font-['Montserrat']">{formatPrice(item.price)}</span>
+                    {Number(String(item.price ?? '').replace(/,/g, '')) > 0 ? (
+                      <span className="text-zinc-900 text-base font-light font-['Montserrat']">{formatPrice(item.price)}</span>
+                    ) : (
+                      <span className="text-sky-700 text-base font-medium font-['Montserrat'] uppercase tracking-wide">Call for Price</span>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-3.5">

@@ -642,43 +642,6 @@ class Prag_Core_Bridge {
             ],
         ]);
 
-        $site_name  = get_bloginfo('name');
-        $from_email = 'noreply@' . parse_url(get_site_url(), PHP_URL_HOST);
-        $recipients = $this->get_form_recipients('contact');
-
-        $headers = [
-            'Content-Type: text/plain; charset=UTF-8',
-            'From: ' . $site_name . ' <' . $from_email . '>',
-            'Reply-To: ' . $name . ' <' . $email . '>',
-        ];
-
-        // --- Notification to staff ---
-        $subject  = '[Contact Form] ' . ($enquiry_type ?: 'General Enquiry') . ' from ' . $name;
-        $body     = "New contact form submission.\r\n\r\n";
-        $body    .= "Name:         {$name}\r\n";
-        $body    .= "Email:        {$email}\r\n";
-        if ($phone)        { $body .= "Phone:        {$phone}\r\n"; }
-        if ($company)      { $body .= "Company:      {$company}\r\n"; }
-        if ($enquiry_type) { $body .= "Enquiry Type: {$enquiry_type}\r\n"; }
-        $body    .= "\r\nMessage:\r\n{$message}\r\n\r\n";
-        $body    .= "-- \r\n{$site_name}\r\n";
-
-        wp_mail($recipients, $subject, $body, $headers);
-
-        // --- Acknowledgment to customer (best-effort) ---
-        $ack_subject = 'We received your message – ' . $site_name;
-        $ack_body    = "Hi {$name},\r\n\r\n";
-        $ack_body   .= "Thank you for reaching out. We have received your message and will get back to you shortly.\r\n\r\n";
-        $ack_body   .= "Your message:\r\n{$message}\r\n\r\n";
-        $ack_body   .= "-- \r\n{$site_name}\r\n";
-
-        $ack_headers = [
-            'Content-Type: text/plain; charset=UTF-8',
-            'From: ' . $site_name . ' <' . $from_email . '>',
-        ];
-
-        wp_mail($email, $ack_subject, $ack_body, $ack_headers);
-
         return ['success' => true, 'message' => 'Message received', 'id' => $post_id];
     }
 
@@ -720,43 +683,6 @@ class Prag_Core_Bridge {
                 'submitted_at'       => current_time('mysql'),
             ],
         ]);
-
-        // Email notification to staff
-        $site_name  = get_bloginfo('name');
-        $recipients = $this->get_form_recipients('distributor');
-        $from_email = 'noreply@' . parse_url(get_site_url(), PHP_URL_HOST);
-
-        $subject = 'New Distributor Application – ' . $name;
-        $body  = "New distributor application received.\r\n\r\n";
-        $body .= "Name:             {$name}\r\n";
-        $body .= "Email:            {$email}\r\n";
-        $body .= "Phone:            {$phone}\r\n";
-        $body .= "Business:         {$business}\r\n";
-        $body .= "City:             {$city}\r\n";
-        $body .= "Business Type:    {$type}\r\n";
-        $body .= "Partnership Tier: {$tier}\r\n\r\n";
-        $body .= "Message:\r\n{$message}\r\n\r\n";
-        $body .= "-- \r\n{$site_name}\r\n";
-
-        $headers = [
-            'Content-Type: text/plain; charset=UTF-8',
-            'From: ' . $site_name . ' <' . $from_email . '>',
-            'Reply-To: ' . $name . ' <' . $email . '>',
-        ];
-
-        wp_mail($recipients, $subject, $body, $headers);
-
-        // Confirmation email to applicant
-        $confirm_subject = 'We received your PRAG partnership application';
-        $confirm_body  = "Hi {$name},\r\n\r\n";
-        $confirm_body .= "Thank you for applying to become a PRAG distributor.\r\n";
-        $confirm_body .= "Our partnership team will review your application and contact you within 2 business days.\r\n\r\n";
-        $confirm_body .= "Application summary:\r\n";
-        $confirm_body .= "Business: {$business}\r\n";
-        $confirm_body .= "Tier: {$tier}\r\n\r\n";
-        $confirm_body .= "-- \r\n{$site_name}\r\n";
-
-        wp_mail($email, $confirm_subject, $confirm_body, $headers);
 
         return ['success' => true, 'message' => 'Application received'];
     }

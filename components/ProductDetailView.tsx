@@ -66,6 +66,13 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
   const [activeImage, setActiveImage] = useState(0);
   const image = images[activeImage] ?? images[0];
   const pageUrl = pathname ? `https://prag.global${pathname}` : '';
+  const isRecentlyCreated = (() => {
+    if (!product.date_created) return false;
+    const created = new Date(product.date_created);
+    const now = new Date();
+    const diffDays = (now.getTime() - created.getTime()) / (1000 * 60 * 60 * 24);
+    return diffDays <= 30;
+  })();
 
   const [addedToCart, setAddedToCart] = useState(false);
   const [adding, setAdding] = useState(false);
@@ -158,6 +165,18 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
             {image && (
               <Image key={image.src} src={image.src} alt={image.alt || product.name} fill sizes="(max-width: 768px) 100vw, 520px" priority className="object-contain p-4 md:p-6" />
             )}
+            <div className="absolute left-3 top-3 md:left-4 md:top-4 z-10 flex flex-col gap-2">
+              {product.on_sale && (
+                <span className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-red-600 text-white text-sm md:text-base font-bold font-['Montserrat'] uppercase tracking-tight flex items-center justify-center leading-none shadow-sm">
+                  Sale
+                </span>
+              )}
+              {isRecentlyCreated && !product.on_sale && (
+                <span className="px-3 py-1.5 rounded-full bg-lime-700 text-white text-xs font-semibold font-['Montserrat'] uppercase tracking-wide shadow-sm">
+                  New
+                </span>
+              )}
+            </div>
           </div>
           {images.length > 1 && (
             <div className="flex gap-2 overflow-x-auto scrollbar-hide">

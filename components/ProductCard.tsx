@@ -60,7 +60,14 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
   const isActuallyOutOfStock = product.stock_status === 'outofstock';
   const isOutOfStock = isActuallyOutOfStock || !hasValidPrice;
   const hasNewTag = product.tags?.some((tag) => tag.slug === 'new' || tag.name.toLowerCase().includes('new'));
-  const shouldShowNew = (isNew || hasNewTag) && !isOutOfStock;
+  const isRecentlyCreated = (() => {
+    if (!product.date_created) return false;
+    const created = new Date(product.date_created);
+    const now = new Date();
+    const diffDays = (now.getTime() - created.getTime()) / (1000 * 60 * 60 * 24);
+    return diffDays <= 30;
+  })();
+  const shouldShowNew = (isNew || hasNewTag || isRecentlyCreated) && !isOutOfStock;
 
   return (
     <div className="w-full relative flex flex-col gap-2 md:gap-3 group">

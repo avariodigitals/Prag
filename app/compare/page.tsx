@@ -1,17 +1,12 @@
 import CompareView from '@/components/CompareView';
 import { getProducts } from '@/lib/woocommerce';
-import type { Product } from '@/lib/types';
+
+export const revalidate = 600;
 
 export const metadata = { title: 'Product Comparison - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more' };
 
 export default async function ComparePage() {
-  let products: Product[] = [];
-  try {
-    const result = await getProducts({ per_page: 100 });
-    products = result.products;
-  } catch {
-    products = [];
-  }
+  const { products } = await getProducts({ per_page: 100 });
 
   return (
     <main className="w-full bg-white flex flex-col">

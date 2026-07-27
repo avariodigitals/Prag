@@ -2,7 +2,7 @@ import { unstable_cache } from 'next/cache';
 import type { Product, Category, Tag, Store } from './types';
 
 const PRODUCTS_FETCH_PAGE_SIZE = 100;
-const FETCH_TIMEOUT_MS = 10000;
+const FETCH_TIMEOUT_MS = 7000;
 const PUBLIC_PRODUCTS_REVALIDATE_SECONDS = 600;
 const PUBLIC_CONTENT_REVALIDATE_SECONDS = 3600;
 

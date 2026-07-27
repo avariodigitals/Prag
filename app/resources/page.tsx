@@ -3,7 +3,6 @@ export const revalidate = 1800;
 
 import TechResourcesView from '@/components/TechResourcesView';
 import { getProducts } from '@/lib/woocommerce';
-import type { Product } from '@/lib/types';
 
 export const metadata = { title: 'Technical Resources - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more' };
 
@@ -13,13 +12,7 @@ interface Props {
 
 export default async function ResourcesPage({ searchParams }: Props) {
   const sp = await searchParams;
-  let products: Product[] = [];
-  try {
-    const result = await getProducts({ per_page: 50 });
-    products = result.products;
-  } catch {
-    products = [];
-  }
+  const { products } = await getProducts({ per_page: 50 });
 
   return (
     <main className="w-full bg-white flex flex-col">

@@ -37,18 +37,14 @@ export default async function ProductsPage({
           }),
           total: 0,
         };
-      }).catch(() => ({ products: [] as Product[], total: 0 }))
+      })
     : validRequestedCats.length > 0
       ? Promise.all(
           validRequestedCats.map(async (slug) => {
             const cat = categories.find((c) => c.slug === slug);
             if (!cat) return [] as Product[];
-            try {
-              const { products } = await getProducts({ category_id: cat.id, per_page: 100 });
-              return products;
-            } catch {
-              return [] as Product[];
-            }
+            const { products } = await getProducts({ category_id: cat.id, per_page: 100 });
+            return products;
           })
         ).then((groups) => {
           const deduped = new Map<number, Product>();
@@ -57,14 +53,14 @@ export default async function ProductsPage({
           });
           return { products: Array.from(deduped.values()), total: deduped.size };
         })
-      : getProducts({ per_page: 100 }).catch(() => ({ products: [] as Product[], total: 0 }));
+      : getProducts({ per_page: 100 });
 
   const [{ products: allProducts }, ...categoryResults] = await Promise.all([
     baseAllProductsPromise,
     ...CATEGORY_SLUGS.map((slug) => {
       const cat = categories.find((category) => category.slug === slug);
       return cat
-        ? getProducts({ category_id: cat.id, per_page: 50 }).catch(() => ({ products: [] as Product[], total: 0 }))
+        ? getProducts({ category_id: cat.id, per_page: 50 })
         : Promise.resolve({ products: [] as Product[], total: 0 });
     }),
   ]);
@@ -82,7 +78,7 @@ export default async function ProductsPage({
   );
 
   const subResults = await Promise.all(
-    subcategories.map((subcategory) => getProducts({ category_id: subcategory.id, per_page: 50 }).catch(() => ({ products: [] as Product[], total: 0 })))
+    subcategories.map((subcategory) => getProducts({ category_id: subcategory.id, per_page: 50 }))
   );
   subcategories.forEach((subcategory, index) => {
     productsByCategory[subcategory.slug] = subResults[index].products;

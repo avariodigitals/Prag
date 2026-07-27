@@ -1,5 +1,5 @@
-// Public landing page uses ISR to avoid live CMS dependency on every request.
-export const revalidate = 1800;
+// Public landing page renders on-demand with cached WooCommerce reads.
+export const dynamic = 'force-dynamic';
 
 import HeroBanner from '@/components/HeroBanner';
 import CategoryGrid from '@/components/CategoryGrid';

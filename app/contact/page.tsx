@@ -1,5 +1,5 @@
-// Public contact page is ISR-cached.
-export const revalidate = 900;
+// Public contact page renders on-demand with cached WooCommerce reads.
+export const dynamic = 'force-dynamic';
 
 import ContactForm from '@/components/ContactForm';
 import StoresGrid from '@/components/StoresGrid';

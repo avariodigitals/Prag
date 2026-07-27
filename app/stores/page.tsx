@@ -1,5 +1,5 @@
-// Public store directory is ISR-cached.
-export const revalidate = 1800;
+// Public store directory renders on-demand with cached WooCommerce reads.
+export const dynamic = 'force-dynamic';
 
 import StoresGrid from '@/components/StoresGrid';
 import { getStores } from '@/lib/woocommerce';

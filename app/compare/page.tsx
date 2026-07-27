@@ -1,7 +1,7 @@
 import CompareView from '@/components/CompareView';
 import { getProducts } from '@/lib/woocommerce';
 
-export const revalidate = 600;
+export const dynamic = 'force-dynamic';
 
 export const metadata = { title: 'Product Comparison - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more' };
 

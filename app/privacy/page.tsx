@@ -1,5 +1,5 @@
-// Public legal page is ISR-cached.
-export const revalidate = 3600;
+// Public legal page renders on-demand with cached WooCommerce reads.
+export const dynamic = 'force-dynamic';
 
 import { getPage } from '@/lib/woocommerce';
 import PolicyPageLayout from '@/components/PolicyPageLayout';

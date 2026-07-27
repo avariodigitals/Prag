@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getProducts } from '@/lib/woocommerce';
+import type { Product } from '@/lib/types';
 
 export const runtime = 'nodejs';
 
@@ -33,12 +34,21 @@ export async function GET(req: NextRequest) {
   const activeSlug = sub ?? categorySlug;
   const categoryId = KNOWN_CATEGORY_IDS[activeSlug];
 
-  const { products, total } = await getProducts({
-    category_id: categoryId,
-    category: categoryId ? undefined : activeSlug,
-    page,
-    per_page,
-  });
+  let products: Product[] = [];
+  let total = 0;
+  try {
+    const result = await getProducts({
+      category_id: categoryId,
+      category: categoryId ? undefined : activeSlug,
+      page,
+      per_page,
+    });
+    products = result.products;
+    total = result.total;
+  } catch {
+    products = [];
+    total = 0;
+  }
 
   const hasMore = page * per_page < total;
 

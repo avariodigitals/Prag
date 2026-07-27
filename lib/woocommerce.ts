@@ -2,7 +2,7 @@ import { unstable_cache } from 'next/cache';
 import type { Product, Category, Tag, Store } from './types';
 
 const PRODUCTS_FETCH_PAGE_SIZE = 100;
-const FETCH_TIMEOUT_MS = 7000;
+const FETCH_TIMEOUT_MS = 10000;
 const PUBLIC_PRODUCTS_REVALIDATE_SECONDS = 600;
 const PUBLIC_CONTENT_REVALIDATE_SECONDS = 3600;
 
@@ -142,12 +142,12 @@ async function fetchProductsRaw(qs: URLSearchParams, revalidate = 300): Promise<
       next: { revalidate },
     },
     FETCH_TIMEOUT_MS,
-    1
+    2
   );
-  if (!res) return { products: [], total: 0 };
-  if (!res.ok) return { products: [], total: 0 };
+  if (!res) throw new Error('Product fetch failed (no response)');
+  if (!res.ok) throw new Error(`Product fetch failed (HTTP ${res.status})`);
   const text = await res.text();
-  if (!text.startsWith('[')) return { products: [], total: 0 };
+  if (!text.startsWith('[')) throw new Error('Product fetch returned non-array response');
 
   return {
     products: JSON.parse(text) as Product[],
@@ -305,26 +305,15 @@ export const getProducts = unstable_cache(
 
     const hasExplicitSort = Boolean(orderby || order);
 
-    if (!hasExplicitSort) {
-      try {
-        const { products: allProducts, total } = await fetchAllProductsForDefaultSort(baseQs, PUBLIC_PRODUCTS_REVALIDATE_SECONDS);
-        const start = (page - 1) * per_page;
-        const end = start + per_page;
-        return { products: allProducts.slice(start, end), total };
-      } catch {
-        return { products: [], total: 0 };
-      }
-    }
-
     const qs = new URLSearchParams(baseQs.toString());
     qs.set('per_page', String(per_page));
     qs.set('page', String(page));
-
-    try {
-      return await fetchProductsRaw(qs, PUBLIC_PRODUCTS_REVALIDATE_SECONDS);
-    } catch {
-      return { products: [], total: 0 };
+    if (!hasExplicitSort) {
+      qs.set('orderby', 'menu_order');
+      qs.set('order', 'asc');
     }
+
+    return await fetchProductsRaw(qs, PUBLIC_PRODUCTS_REVALIDATE_SECONDS);
   },
   ['products-list'],
   { revalidate: 600, tags: ['products-list'] }

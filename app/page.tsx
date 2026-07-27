@@ -17,10 +17,14 @@ export default async function HomePage() {
 
   let featuredProducts = featuredResult;
   if (featuredProducts.length < 8) {
-    const recent = await getProducts({ per_page: 8 });
-    const seen = new Set(featuredProducts.map((product) => product.id));
-    const topUp = recent.products.filter((product) => !seen.has(product.id));
-    featuredProducts = [...featuredProducts, ...topUp].slice(0, 8);
+    try {
+      const recent = await getProducts({ per_page: 8 });
+      const seen = new Set(featuredProducts.map((product) => product.id));
+      const topUp = recent.products.filter((product) => !seen.has(product.id));
+      featuredProducts = [...featuredProducts, ...topUp].slice(0, 8);
+    } catch {
+      // Keep featured products as-is if fetch fails
+    }
   }
 
   return (

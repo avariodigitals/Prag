@@ -2,6 +2,7 @@ export const revalidate = 600;
 
 import CategoryProductsGrid from '@/components/CategoryProductsGrid';
 import { getProductBySlug, getProducts, getCategoryBySlug, productUrl } from '@/lib/woocommerce';
+import type { Product } from '@/lib/types';
 import { notFound, redirect } from 'next/navigation';
 
 interface Props {
@@ -70,12 +71,21 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const resolvedCatId = knownSubId ?? activeCategory?.id ?? (knownId || cat?.id);
   const productCategorySlug = sp.sub ?? category;
 
-  const { products, total } = await getProducts({
-    category: resolvedCatId ? undefined : productCategorySlug,
-    category_id: resolvedCatId,
-    page: 1,
-    per_page: 16,
-  });
+  let products: Product[] = [];
+  let total = 0;
+  try {
+    const result = await getProducts({
+      category: resolvedCatId ? undefined : productCategorySlug,
+      category_id: resolvedCatId,
+      page: 1,
+      per_page: 16,
+    });
+    products = result.products;
+    total = result.total;
+  } catch {
+    products = [];
+    total = 0;
+  }
 
   if (!knownId && !cat && products.length === 0) notFound();
 

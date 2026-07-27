@@ -2,6 +2,7 @@ export const revalidate = 300;
 
 import ProductDetailView from '@/components/ProductDetailView';
 import { getProductBySlug, getProducts, getProductReviews, getTechDocuments, getProductCustomTabs } from '@/lib/woocommerce';
+import type { Product } from '@/lib/types';
 import { notFound } from 'next/navigation';
 
 interface Props {
@@ -16,10 +17,11 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function ProductDetailPage({ params }: Props) {
   const { category, slug } = await params;
-  const [product, { products: related }] = await Promise.all([
+  const [product, relatedResult] = await Promise.all([
     getProductBySlug(slug),
-    getProducts({ category, per_page: 4 }),
+    getProducts({ category, per_page: 4 }).catch(() => ({ products: [] as Product[], total: 0 })),
   ]);
+  const related = relatedResult.products;
 
   if (!product) notFound();
 

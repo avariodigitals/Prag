@@ -224,7 +224,7 @@ export default function CheckoutView() {
             </div>
             <div className="flex justify-between">
               <span className="text-slate-600 text-base md:text-lg font-medium font-['Montserrat']">VAT (7.5%)</span>
-              <span className="text-slate-600 text-base md:text-lg font-['Montserrat']">₦0.00</span>
+              <span className="text-slate-600 text-base md:text-lg font-['Montserrat']">₦0</span>
             </div>
           </div>
 

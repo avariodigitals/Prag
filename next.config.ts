@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'placehold.co' },
     ],
     qualities: [75, 80, 85],
-    minimumCacheTTL: 86400,
+    minimumCacheTTL: 300,
     formats: ['image/avif', 'image/webp'],
   },
   env: {

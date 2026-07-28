@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic';
 import ContactForm from '@/components/ContactForm';
 import StoresGrid from '@/components/StoresGrid';
 import { getStores, getSiteSettings } from '@/lib/woocommerce';
+import { formatPhone } from '@/lib/formatPhone';
 import { Mail, Phone, MapPin, Clock } from 'lucide-react';
 import type { Store } from '@/lib/types';
 
@@ -107,7 +108,7 @@ function sortPragStores(stores: Store[]) {
               <div className="flex flex-col gap-1">
                 <span className="text-zinc-900 text-lg font-medium font-['Montserrat']">Phone</span>
                 <a href={`tel:${phone}`} className="text-zinc-900 text-lg font-['Montserrat'] hover:text-sky-700 transition-colors">
-                  {phone}
+                  {formatPhone(phone)}
                 </a>
               </div>
             </div>

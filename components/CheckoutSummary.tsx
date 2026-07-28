@@ -54,7 +54,7 @@ export default function CheckoutSummary({ ctaLabel, onCta, shippingCost, ctaDisa
         )}
         <div className="flex justify-between">
           <span className="text-slate-600 text-base font-medium font-['Montserrat']">VAT (7.5%)</span>
-          <span className="text-slate-600 text-base font-['Montserrat']">₦0.00</span>
+          <span className="text-slate-600 text-base font-['Montserrat']">₦0</span>
         </div>
       </div>
 

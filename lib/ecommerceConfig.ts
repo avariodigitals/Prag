@@ -49,7 +49,7 @@ function getAdminApiCandidates(host: string) {
     process.env.ECOMMERCE_ADMIN_API_URL,
     process.env.NEXT_PUBLIC_ADMIN_API_URL,
     process.env.NEXT_PUBLIC_ADMIN_URL,
-    'https://prag-admin.vercel.app',
+    'https://portal.prag.global',
   ]
     .map((value) => toOrigin(value ?? ''))
     .filter(Boolean);

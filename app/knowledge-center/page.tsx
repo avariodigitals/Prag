@@ -1,5 +1,5 @@
-// Public editorial page is ISR-cached.
-export const revalidate = 900;
+// Public editorial page renders on-demand with cached WooCommerce reads.
+export const dynamic = 'force-dynamic';
 
 import BlogGrid from '@/components/BlogGrid';
 import { getPosts, getPostCategories } from '@/lib/woocommerce';

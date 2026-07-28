@@ -138,12 +138,12 @@ export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false
           </Link>
           <div className="flex items-center justify-center gap-2 mt-0">
             {product.on_sale && product.regular_price && (
-              <span className="text-zinc-400 text-xs font-normal font-['Montserrat'] line-through">
+              <span className="text-zinc-400 text-sm font-normal font-['Montserrat'] line-through">
                 {formatPrice(product.regular_price)}
               </span>
             )}
             {hasValidPrice ? (
-              <span className="text-base md:text-base font-normal font-['Montserrat'] text-sky-700" style={priceColor ? { color: priceColor } : undefined}>
+              <span className="text-lg md:text-xl font-medium font-['Montserrat'] text-sky-700" style={priceColor ? { color: priceColor } : undefined}>
                 {formatPrice(product.price)}
               </span>
             ) : (

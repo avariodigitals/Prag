@@ -1,5 +1,5 @@
-// Product listing uses ISR with cached WooCommerce reads.
-export const revalidate = 300;
+// Product listing renders on-demand with cached WooCommerce reads.
+export const dynamic = 'force-dynamic';
 
 import ProductsView from '@/components/ProductsView';
 import { getCategories, getProducts } from '@/lib/woocommerce';

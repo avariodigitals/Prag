@@ -1,4 +1,4 @@
-export const revalidate = 300;
+export const dynamic = 'force-dynamic';
 
 import ProductDetailView from '@/components/ProductDetailView';
 import { getProductBySlug, getProducts, getProductReviews, getTechDocuments, getProductCustomTabs } from '@/lib/woocommerce';

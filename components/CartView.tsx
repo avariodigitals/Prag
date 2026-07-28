@@ -136,7 +136,7 @@ export default function CartView() {
             </div>
             <div className="flex justify-between">
               <span className="text-slate-600 text-base md:text-lg font-medium font-['Montserrat'] leading-5">VAT (7.5%)</span>
-              <span className="text-slate-600 text-base md:text-lg font-normal font-['Montserrat'] leading-5">₦0.00</span>
+              <span className="text-slate-600 text-base md:text-lg font-normal font-['Montserrat'] leading-5">₦0</span>
             </div>
             {discount > 0 && (
               <div className="flex justify-between">

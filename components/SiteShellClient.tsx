@@ -8,6 +8,7 @@ import NavBar from './NavBar';
 import Footer from './Footer';
 import NavigationScrollReset from './NavigationScrollReset';
 import type { SiteSettings } from '@/lib/woocommerce';
+import { formatPhone } from '@/lib/formatPhone';
 
 const AUTH_ROUTES = ['/login', '/register'];
 
@@ -47,7 +48,7 @@ export default function SiteShellClient({ children, user, settings }: Props) {
           <p className="text-slate-600 text-base md:text-lg leading-relaxed">
             {settings.under_construction_message || 'We are currently making improvements to serve you better. Please check back shortly.'}
           </p>
-          <p className="text-sm text-slate-500">For urgent enquiries, call {settings.contact_phone}.</p>
+          <p className="text-sm text-slate-500">For urgent enquiries, call {formatPhone(settings.contact_phone)}.</p>
         </div>
       </div>
     );

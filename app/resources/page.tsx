@@ -1,5 +1,5 @@
-// Public resources page is ISR-cached.
-export const revalidate = 1800;
+// Public resources page renders on-demand with cached WooCommerce reads.
+export const dynamic = 'force-dynamic';
 
 import TechResourcesView from '@/components/TechResourcesView';
 import { getProducts } from '@/lib/woocommerce';

@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import type { Store } from '@/lib/types';
+import { formatPhone } from '@/lib/formatPhone';
 
 interface StoreCardProps { store: Store }
 
@@ -18,7 +19,7 @@ function StoreCard({ store }: StoreCardProps) {
         <div className="flex flex-col gap-1">
           <span className="text-sky-700 text-base font-medium font-['Montserrat'] leading-5">Phone Number</span>
           <a href={`tel:${store.phone}`} className="text-neutral-700 text-base font-normal font-['Montserrat'] leading-6 hover:text-sky-700">
-            {store.phone}
+            {formatPhone(store.phone)}
           </a>
         </div>
       </div>

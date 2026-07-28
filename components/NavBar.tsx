@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ShieldCheck, Truck, RefreshCw } from 'lucide-react';
+import { ShieldCheck, Truck } from 'lucide-react';
 
 const NAV_CATEGORIES = [
   { label: 'Stabilizer', slug: 'all-prag-stabilizers' },
@@ -33,10 +33,6 @@ export default function NavBar() {
           <div className="flex items-center gap-2 min-w-0">
             <Truck className="w-5 h-5 text-white shrink-0" />
             <span className="text-white/80 text-sm xl:text-base font-normal font-['Onest'] whitespace-nowrap">Nationwide Delivery</span>
-          </div>
-          <div className="flex items-center gap-2 min-w-0">
-            <RefreshCw className="w-5 h-5 text-white shrink-0" />
-            <span className="text-white/80 text-sm xl:text-base font-normal font-['Onest'] whitespace-nowrap">7 Days Return Policy</span>
           </div>
         </div>
       </div>

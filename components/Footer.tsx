@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { SiteSettings } from '@/lib/woocommerce';
+import { formatPhone } from '@/lib/formatPhone';
 
 const FALLBACK_PHONE = '+2348032170129';
 const FALLBACK_EMAIL = 'sales@prag.global';
@@ -39,7 +40,7 @@ export default function Footer({ settings }: { settings?: SiteSettings }) {
           <div className="w-full max-w-52 flex flex-col justify-start items-start gap-2"> 
             <div className="w-full flex justify-start items-center gap-4"> 
               <svg className="w-5 h-5 text-white/70 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-              <a href={`tel:${phone}`} className="text-white/70 text-base font-normal font-['Space_Grotesk'] leading-7 hover:text-white transition-colors">{phone}</a> 
+              <a href={`tel:${phone}`} className="text-white/70 text-base font-normal font-['Space_Grotesk'] leading-7 hover:text-white transition-colors">{formatPhone(phone)}</a> 
             </div> 
             <div className="flex justify-start items-center gap-4"> 
               <svg className="w-5 h-4 text-white/70 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>

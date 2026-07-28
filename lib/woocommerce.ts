@@ -726,7 +726,7 @@ export function productUrl(product: Pick<Product, 'slug' | 'categories'>) {
 }
 
 export function formatPrice(price: string) {
-  return `₦${Number(price).toLocaleString('en-NG', { minimumFractionDigits: 2 })}`;
+  return `₦${Number(price).toLocaleString('en-NG', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 }
 
 export const getAllProductSlugs = unstable_cache(

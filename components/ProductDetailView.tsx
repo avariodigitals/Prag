@@ -183,7 +183,7 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
             <div className="flex gap-2 overflow-x-auto scrollbar-hide">
               {images.map((img, i) => (
                 <button
-                  key={img.id}
+                  key={`${img.id}-${i}`}
                   onClick={() => setActiveImage(i)}
                   className={`relative w-16 h-16 md:w-20 md:h-20 rounded-lg overflow-hidden shrink-0 border-2 transition-colors ${
                     i === activeImage ? 'border-sky-600' : 'border-gray-100 hover:border-gray-300'
@@ -205,10 +205,10 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
             )}
             <div className="flex items-center gap-2">
               {product.on_sale && product.regular_price && (
-                <span className="text-zinc-400 text-[22px] font-normal font-['Montserrat'] line-through">{formatPrice(product.regular_price)}</span>
+                <span className="text-zinc-400 text-[26px] font-normal font-['Montserrat'] line-through">{formatPrice(product.regular_price)}</span>
               )}
               {hasValidPrice ? (
-                <p className="text-sky-700 text-[20px] font-normal font-['Montserrat'] leading-none">{formatPrice(product.price)}</p>
+                <p className="text-sky-700 text-[24px] font-medium font-['Montserrat'] leading-none">{formatPrice(product.price)}</p>
               ) : (
                 <p className="text-sky-700 text-[13px] font-semibold font-['Montserrat'] uppercase tracking-wide">Call for Price</p>
               )}

@@ -7,6 +7,7 @@ import MobileMenu from './MobileMenu';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { useCart } from '@/lib/CartContext';
+import { formatPhone } from '@/lib/formatPhone';
 
 function SearchBox() {
   const router = useRouter();
@@ -132,7 +133,7 @@ export default function TopBar({ initialUser = null, phone = '+2348032170129', w
             </svg>
             <div className="flex flex-col leading-tight min-w-0">
               <span className="text-neutral-700 text-sm xl:text-base font-bold font-['Onest']">Hotline</span>
-              <span className="text-neutral-700 text-base md:text-lg xl:text-base font-medium font-['Onest'] whitespace-nowrap">{phone}</span>
+              <span className="text-neutral-700 text-base md:text-lg xl:text-base font-medium font-['Onest'] whitespace-nowrap">{formatPhone(phone)}</span>
             </div>
           </a>
 

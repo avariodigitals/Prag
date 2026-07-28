@@ -1,4 +1,4 @@
-export const revalidate = 600;
+export const dynamic = 'force-dynamic';
 
 import CategoryProductsGrid from '@/components/CategoryProductsGrid';
 import { getProductBySlug, getProducts, getCategoryBySlug, productUrl } from '@/lib/woocommerce';
@@ -27,18 +27,18 @@ export async function generateMetadata({ params }: Props) {
 
 // Known category slug → ID map to skip a network round-trip
 const KNOWN_CATEGORY_IDS: Record<string, number> = {
-  'inverters': Number(process.env.WC_CAT_INVERTERS ?? 314),
-  'solar': Number(process.env.WC_CAT_SOLAR ?? 320),
-  'batteries': Number(process.env.WC_CAT_BATTERIES ?? 327),
+  'inverters': 314,
+  'solar': 320,
+  'batteries': 327,
   'voltage-stabilizers': 322,
   'all-prag-stabilizers': 321,
-  // subcategories
   'thyristor-stabilizers': 349,
   'relay-voltage-stabilizers': 323,
   'servo-voltage-stabilizers': 324,
   'advanced-stabilizers': 338,
   'hybrid-inverters': 319,
   'heavy-duty-inverters': 315,
+  'pure-sine-wave-inverters': 316,
   'solar-panels': 326,
   'solar-charge-controllers': 325,
   'protective-device': 340,

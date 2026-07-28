@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import ProductCard from './ProductCard';
 import type { Product, Category, Tag } from '@/lib/types';
+import { sortProductsBySizeThenPrice } from '@/lib/productSort';
 import { ChevronDown, SlidersHorizontal, X } from 'lucide-react';
 
 interface Props {
@@ -59,7 +60,7 @@ function ProductsGridContent({ products, total, categories = [], tags = [] }: Pr
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [minPrice, setMinPrice] = useState(searchParams.get('min_price') ?? '');
   const [maxPrice, setMaxPrice] = useState(searchParams.get('max_price') ?? '');
-  const [items, setItems] = useState<Product[]>(products);
+  const [items, setItems] = useState<Product[]>(sortProductsBySizeThenPrice(products));
   const [page, setPage] = useState(2);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(products.length < total);
@@ -82,7 +83,8 @@ function ProductsGridContent({ products, total, categories = [], tags = [] }: Pr
 
       setItems((prev) => {
         const ids = new Set(prev.map((product) => product.id));
-        return [...prev, ...newProducts.filter((product) => !ids.has(product.id))];
+        const merged = [...prev, ...newProducts.filter((product) => !ids.has(product.id))];
+        return sortProductsBySizeThenPrice(merged);
       });
       setPage((currentPage) => currentPage + 1);
       setHasMore(Boolean(data.hasMore));

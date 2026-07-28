@@ -4,6 +4,7 @@ import { useEffect, useEffectEvent, useRef, useState, useTransition } from 'reac
 import { useRouter, useSearchParams } from 'next/navigation';
 import ProductCard from './ProductCard';
 import type { Product } from '@/lib/types';
+import { sortProductsBySizeThenPrice } from '@/lib/productSort';
 
 interface Props {
   products: Product[];
@@ -81,7 +82,7 @@ function CategoryProductsGridContent({
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
 
-  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [products, setProducts] = useState<Product[]>(sortProductsBySizeThenPrice(initialProducts));
   const [page, setPage] = useState(2);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(initialProducts.length < total);
@@ -106,7 +107,8 @@ function CategoryProductsGridContent({
 
       setProducts((prev) => {
         const ids = new Set(prev.map((product) => product.id));
-        return [...prev, ...newProducts.filter((product) => !ids.has(product.id))];
+        const merged = [...prev, ...newProducts.filter((product) => !ids.has(product.id))];
+        return sortProductsBySizeThenPrice(merged);
       });
       setPage((currentPage) => currentPage + 1);
       setHasMore(data.hasMore ?? false);

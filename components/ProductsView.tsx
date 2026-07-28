@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import ProductCard from './ProductCard';
 import type { Product, Category } from '@/lib/types';
+import { sortProductsBySizeThenPrice } from '@/lib/productSort';
 
 const TOP_CATEGORIES = [
   { label: 'All products', slug: 'all' },
@@ -41,6 +42,8 @@ export default function ProductsView({ allProducts, productsByCategory, categori
   } else {
     products = productsByCategory[resolvedTopSlug] ?? productsByCategory[activeTop] ?? [];
   }
+
+  products = sortProductsBySizeThenPrice(products);
 
   function handleTopChange(slug: string) {
     setActiveTop(slug);

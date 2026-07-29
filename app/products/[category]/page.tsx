@@ -17,11 +17,26 @@ export async function generateMetadata({ params }: Props) {
     'inverters': 'Inverters',
     'solar': 'Solar',
     'batteries': 'Batteries',
+    'all-prag-stabilizers': 'All Stabilizers',
+  };
+  const DISPLAY_DESCRIPTIONS: Record<string, string> = {
+    'voltage-stabilizers': 'Explore PRAG stabilizers — voltage, thyristor, servo, and relay types. Protect your appliances from voltage fluctuations.',
+    'inverters': 'Shop PRAG inverters — hybrid, heavy-duty, and pure sine wave. Reliable power backup for homes and businesses in Nigeria.',
+    'solar': 'Discover PRAG solar solutions — panels, charge controllers, and accessories. Harness solar energy for your power needs.',
+    'batteries': 'Browse PRAG batteries — tubular, lithium, and battery racks. Long-lasting energy storage for inverter and solar systems.',
+    'all-prag-stabilizers': 'Browse all PRAG stabilizers — voltage, thyristor, servo, and relay stabilizers for every load requirement.',
   };
   const name = DISPLAY_NAMES[category] ?? (await getCategoryBySlug(category))?.name ?? category;
+  const description = DISPLAY_DESCRIPTIONS[category] ?? `Browse ${name} at PRAG. Quality power engineering products with warranty and nationwide delivery.`;
   return {
     title: `${name} – PRAG`,
-    description: '',
+    description,
+    alternates: { canonical: `https://shop.prag.global/products/${category}` },
+    openGraph: {
+      title: `${name} – PRAG`,
+      description,
+      type: 'website',
+    },
   };
 }
 

@@ -1,8 +1,10 @@
 import Link from 'next/link';
+import NotFoundLogger from '@/components/NotFoundLogger';
 
 export default function NotFound() {
   return (
     <main className="w-full bg-white flex flex-col min-h-screen">
+      <NotFoundLogger />
       {/* Mobile */}
       <div className="flex md:hidden self-stretch h-[600px] px-4 py-6 flex-col justify-center items-center gap-10 overflow-hidden">
         <span className="w-full text-center text-sky-700 text-8xl font-bold font-['Montserrat'] leading-[100px]">404</span>

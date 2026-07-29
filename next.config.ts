@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import { LEGACY_REDIRECTS } from './lib/redirects';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -22,6 +23,7 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: '/favicon.ico', destination: '/favicon.png', permanent: true },
+      ...LEGACY_REDIRECTS.map((r) => ({ ...r, permanent: true })),
     ];
   },
   async headers() {

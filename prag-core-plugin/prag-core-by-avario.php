@@ -104,6 +104,27 @@ class Prag_Core_Bridge {
             ]);
         }
 
+        // prag_career — Career / Job applications
+        register_post_type('prag_career', [
+            'labels'       => ['name' => 'Careers', 'singular_name' => 'Career Application'],
+            'public'       => false,
+            'show_ui'      => true,
+            'show_in_menu' => true,
+            'supports'     => ['title', 'custom-fields'],
+            'menu_icon'    => 'dashicons-id-alt',
+            'capabilities' => ['create_posts' => 'do_not_allow'],
+            'map_meta_cap' => true,
+        ]);
+
+        foreach (['applicant_name', 'applicant_email', 'applicant_phone', 'applicant_location', 'position', 'experience', 'education', 'cover_letter', 'cv_filename', 'application_status', 'submitted_at'] as $meta) {
+            register_post_meta('prag_career', $meta, [
+                'type'          => 'string',
+                'single'        => true,
+                'show_in_rest'  => false,
+                'auth_callback' => function() { return current_user_can('edit_posts'); },
+            ]);
+        }
+
         // prag_contact — Contact form submissions
         register_post_type('prag_contact', [
             'labels'       => ['name' => 'Enquiries', 'singular_name' => 'Contact Enquiry'],
@@ -311,6 +332,32 @@ class Prag_Core_Bridge {
             [
                 'methods'             => 'DELETE',
                 'callback'            => [$this, 'delete_distributor'],
+                'permission_callback' => [$this, 'check_admin_permissions'],
+            ],
+        ]);
+
+        // Career application submission (public)
+        register_rest_route($namespace, '/careers', [
+            'methods' => 'POST',
+            'callback' => [$this, 'handle_career_application'],
+            'permission_callback' => '__return_true',
+        ]);
+
+        // B2B Career Applications (admin)
+        register_rest_route($namespace, '/b2b/careers', [
+            'methods'             => 'GET',
+            'callback'            => [$this, 'list_careers'],
+            'permission_callback' => [$this, 'check_admin_permissions'],
+        ]);
+        register_rest_route($namespace, '/b2b/careers/(?P<id>\d+)', [
+            [
+                'methods'             => 'PATCH',
+                'callback'            => [$this, 'update_career_status'],
+                'permission_callback' => [$this, 'check_admin_permissions'],
+            ],
+            [
+                'methods'             => 'DELETE',
+                'callback'            => [$this, 'delete_career'],
                 'permission_callback' => [$this, 'check_admin_permissions'],
             ],
         ]);
@@ -1119,6 +1166,148 @@ class Prag_Core_Bridge {
 
         if (!$id || get_post_type($id) !== 'prag_distributor') {
             return new WP_Error('not_found', 'Application not found', ['status' => 404]);
+        }
+
+        wp_trash_post($id);
+        return ['ok' => true];
+    }
+
+    /**
+     * Handle Career Application Submission
+     */
+    public function handle_career_application($request) {
+        $p = $request->get_json_params();
+
+        $required = ['name', 'email', 'phone', 'position'];
+        foreach ($required as $field) {
+            if (empty($p[$field])) {
+                return new WP_Error('missing_fields', ucfirst($field) . ' is required.', ['status' => 400]);
+            }
+        }
+
+        $name        = sanitize_text_field($p['name']);
+        $email       = sanitize_email($p['email']);
+        $phone       = sanitize_text_field($p['phone']);
+        $location    = sanitize_text_field($p['location'] ?? '');
+        $position    = sanitize_text_field($p['position']);
+        $experience  = sanitize_text_field($p['experience'] ?? '');
+        $education   = sanitize_text_field($p['education'] ?? '');
+        $cover_letter = sanitize_textarea_field($p['message'] ?? $p['coverLetter'] ?? '');
+        $cv_filename = sanitize_text_field($p['cvFilename'] ?? '');
+
+        $post_id = wp_insert_post([
+            'post_type'   => 'prag_career',
+            'post_title'  => $name . ' – ' . $position,
+            'post_status' => 'private',
+            'meta_input'  => [
+                'applicant_name'      => $name,
+                'applicant_email'     => $email,
+                'applicant_phone'     => $phone,
+                'applicant_location'  => $location,
+                'position'            => $position,
+                'experience'          => $experience,
+                'education'           => $education,
+                'cover_letter'        => $cover_letter,
+                'cv_filename'         => $cv_filename,
+                'application_status'  => 'new',
+                'submitted_at'        => current_time('c'),
+            ],
+        ]);
+
+        return ['success' => true, 'message' => 'Application received', 'id' => $post_id];
+    }
+
+    // -----------------------------------------------------------------------
+    // B2B Career Applications (prag_career CPT)
+    // -----------------------------------------------------------------------
+
+    public function list_careers($request) {
+        $page     = max(1, intval($request->get_param('page') ?: 1));
+        $search   = sanitize_text_field($request->get_param('search') ?: '');
+        $status   = sanitize_text_field($request->get_param('status') ?: '');
+        $per_page = max(1, intval($request->get_param('per_page') ?: 20));
+
+        $args = [
+            'post_type'      => 'prag_career',
+            'post_status'    => ['private', 'publish', 'draft', 'pending'],
+            'posts_per_page' => $per_page,
+            'paged'          => $page,
+            'orderby'        => 'date',
+            'order'          => 'DESC',
+        ];
+
+        $meta_query = ['relation' => 'AND'];
+        if ($status) {
+            if ($status === 'new') {
+                $meta_query[] = [
+                    'relation' => 'OR',
+                    ['key' => 'application_status', 'compare' => 'NOT EXISTS'],
+                    ['key' => 'application_status', 'value' => 'new', 'compare' => '='],
+                ];
+            } else {
+                $meta_query[] = [
+                    'key'     => 'application_status',
+                    'value'   => $status,
+                    'compare' => '=',
+                ];
+            }
+        }
+        if ($search) {
+            $meta_query[] = [
+                'relation' => 'OR',
+                ['key' => 'applicant_name', 'value' => $search, 'compare' => 'LIKE'],
+                ['key' => 'applicant_email', 'value' => $search, 'compare' => 'LIKE'],
+                ['key' => 'position', 'value' => $search, 'compare' => 'LIKE'],
+                ['key' => 'applicant_location', 'value' => $search, 'compare' => 'LIKE'],
+            ];
+        }
+        if (count($meta_query) > 1) {
+            $args['meta_query'] = $meta_query;
+        }
+
+        $query = new WP_Query($args);
+        $total = $query->found_posts;
+
+        $data = array_map(function($post) {
+            return [
+                'id'         => strval($post->ID),
+                'name'       => get_post_meta($post->ID, 'applicant_name', true)     ?: '',
+                'email'      => get_post_meta($post->ID, 'applicant_email', true)    ?: '',
+                'phone'      => get_post_meta($post->ID, 'applicant_phone', true)     ?: '',
+                'location'   => get_post_meta($post->ID, 'applicant_location', true)  ?: '',
+                'position'   => get_post_meta($post->ID, 'position', true)            ?: '',
+                'experience' => get_post_meta($post->ID, 'experience', true)         ?: '',
+                'education'  => get_post_meta($post->ID, 'education', true)          ?: '',
+                'message'    => get_post_meta($post->ID, 'cover_letter', true)         ?: '',
+                'cvFilename' => get_post_meta($post->ID, 'cv_filename', true)         ?: '',
+                'status'     => get_post_meta($post->ID, 'application_status', true)  ?: 'new',
+                'date'       => get_post_meta($post->ID, 'submitted_at', true)        ?: $post->post_date,
+            ];
+        }, $query->posts);
+
+        $response = rest_ensure_response($data);
+        $response->header('X-WP-Total', $total);
+        return $response;
+    }
+
+    public function update_career_status($request) {
+        $id     = intval($request->get_param('id'));
+        $body   = $request->get_json_params();
+        $status = sanitize_text_field($body['status'] ?? '');
+
+        if (!$id || get_post_type($id) !== 'prag_career') {
+            return new WP_Error('not_found', 'Career application not found', ['status' => 404]);
+        }
+
+        update_post_meta($id, 'application_status', $status);
+        return ['ok' => true];
+    }
+
+    public function delete_career($request) {
+        $id = intval($request->get_param('id'));
+
+        if (!$id || get_post_type($id) !== 'prag_career') {
+            return new WP_Error('not_found', 'Career application not found', ['status' => 404]);
         }
 
         wp_trash_post($id);

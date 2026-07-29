@@ -2,11 +2,11 @@ import type { MetadataRoute } from 'next';
 import { headers } from 'next/headers';
 import { getEcommerceScriptsForHost } from '@/lib/ecommerceConfig';
 
-const SHOP_FALLBACK_URL = process.env.NEXT_PUBLIC_SHOP_URL ?? 'https://prag.global';
+const SHOP_FALLBACK_URL = process.env.NEXT_PUBLIC_SHOP_URL ?? 'https://shop.prag.global';
 
 function normalizeBaseUrl(input: string): string {
   const trimmed = input.trim().replace(/\/$/, '');
-  if (!trimmed) return 'https://prag.global';
+  if (!trimmed) return 'https://shop.prag.global';
   if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed;
   return `https://${trimmed}`;
 }

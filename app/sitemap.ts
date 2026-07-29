@@ -20,13 +20,14 @@ type WpPostLite = {
 };
 
 const WP_API_URL = process.env.NEXT_PUBLIC_WP_API_URL ?? 'https://central.prag.global/wp-json';
-const SHOP_FALLBACK_URL = process.env.NEXT_PUBLIC_SHOP_URL ?? 'https://prag.global';
+const SHOP_FALLBACK_URL = process.env.NEXT_PUBLIC_SHOP_URL ?? 'https://shop.prag.global';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 function normalizeBaseUrl(input: string): string {
   const trimmed = input.trim().replace(/\/$/, '');
-  if (!trimmed) return 'https://prag.global';
+  if (!trimmed) return 'https://shop.prag.global';
   if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed;
   return `https://${trimmed}`;
 }

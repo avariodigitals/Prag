@@ -1,9 +1,9 @@
 export const dynamic = 'force-dynamic';
 
 import ProductDetailView from '@/components/ProductDetailView';
-import { getProductBySlug, getProducts, getProductReviews, getTechDocuments, getProductCustomTabs } from '@/lib/woocommerce';
+import { getProductBySlug, getProducts, getProductReviews, getTechDocuments, getProductCustomTabs, searchProducts, productUrl } from '@/lib/woocommerce';
 import type { Product } from '@/lib/types';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 
 interface Props {
   params: Promise<{ category: string; slug: string }>;
@@ -12,7 +12,30 @@ interface Props {
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
-  return { title: product ? `${product.name} – PRAG` : 'Product – PRAG' };
+  if (!product) return { title: 'Product – PRAG' };
+
+  const description = product.short_description?.replace(/<[^>]+>/g, '').trim().slice(0, 160)
+    || product.description?.replace(/<[^>]+>/g, '').trim().slice(0, 160)
+    || `Buy ${product.name} at PRAG. Quality power engineering products with warranty and nationwide delivery.`;
+  const imageUrl = product.images?.[0]?.src;
+
+  return {
+    title: `${product.name} – PRAG`,
+    description,
+    alternates: { canonical: `https://shop.prag.global/products/${product.categories?.[0]?.slug ?? 'products'}/${product.slug}` },
+    openGraph: {
+      title: product.name,
+      description,
+      images: imageUrl ? [{ url: imageUrl, alt: product.images?.[0]?.alt || product.name }] : undefined,
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: product.name,
+      description,
+      images: imageUrl ? [imageUrl] : undefined,
+    },
+  };
 }
 
 export default async function ProductDetailPage({ params }: Props) {
@@ -23,7 +46,21 @@ export default async function ProductDetailPage({ params }: Props) {
   ]);
   const related = relatedResult.products;
 
-  if (!product) notFound();
+  if (!product) {
+    try {
+      const searchQuery = slug.replace(/-/g, ' ');
+      const searchResult = await searchProducts(searchQuery, undefined, 1, 5);
+      const match = searchResult.products.find((p) =>
+        p.slug !== slug && p.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      if (match) {
+        redirect(productUrl(match));
+      }
+    } catch {
+      // Search failed, fall through to notFound
+    }
+    notFound();
+  }
 
   const [reviews, techDocs, customTabs] = await Promise.all([
     getProductReviews(product.id),

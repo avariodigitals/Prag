@@ -25,9 +25,28 @@ export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post) return { title: 'Article – PRAG' };
+
+  const title = post.title.rendered.replace(/<[^>]+>/g, '');
+  const description = post.excerpt.rendered.replace(/<[^>]+>/g, '').trim().slice(0, 160);
+  const imageUrl = post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
+
   return {
-    title: `${post.title.rendered.replace(/<[^>]+>/g, '')} – PRAG`,
-    description: post.excerpt.rendered.replace(/<[^>]+>/g, '').trim().slice(0, 160),
+    title: `${title} – PRAG`,
+    description,
+    alternates: { canonical: `https://shop.prag.global/knowledge-center/${post.slug}` },
+    openGraph: {
+      title,
+      description,
+      images: imageUrl ? [{ url: imageUrl, alt: title }] : undefined,
+      type: 'article',
+      publishedTime: post.date,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: imageUrl ? [imageUrl] : undefined,
+    },
   };
 }
 

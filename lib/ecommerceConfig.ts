@@ -1,3 +1,10 @@
+export interface WhatsAppChatOption {
+  label: string;
+  subtitle: string;
+  prefill: string;
+  number: string;
+}
+
 export interface EcommerceTrackingScripts {
   ecommerceDomain: string;
   googleAnalyticsId: string;
@@ -8,6 +15,7 @@ export interface EcommerceTrackingScripts {
   whatsappChatEnabled: boolean;
   whatsappChatNumber: string;
   whatsappChatText: string;
+  whatsappChatOptions: WhatsAppChatOption[];
   customHeadScripts: string;
   customBodyScripts: string;
   customFooterScripts: string;

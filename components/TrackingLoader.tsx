@@ -3,6 +3,13 @@
 import Script from 'next/script';
 import { useEffect, useState } from 'react';
 
+interface WhatsAppChatOption {
+  label?: string;
+  subtitle?: string;
+  prefill?: string;
+  number?: string;
+}
+
 interface TrackingConfig {
   googleAnalyticsId?: string;
   googleTagManagerId?: string;
@@ -12,6 +19,7 @@ interface TrackingConfig {
   whatsappChatEnabled?: boolean;
   whatsappChatNumber?: string;
   whatsappChatText?: string;
+  whatsappChatOptions?: WhatsAppChatOption[];
   customHeadScripts?: string;
   customBodyScripts?: string;
   customFooterScripts?: string;
@@ -21,11 +29,11 @@ interface SiteSettings {
   whatsapp?: string;
 }
 
-const WHATSAPP_QUICK_ACTIONS = [
-  { label: "General Enquiries", subtitle: "Ask anything", message: "Hi, I have a general enquiry about your products." },
-  { label: "Sales", subtitle: "Pricing & product advice", message: "Hi, I am interested in purchasing from PRAG." },
-  { label: "Support", subtitle: "Technical help", message: "Hello, I need support from PRAG." },
-  { label: "Delivery", subtitle: "Orders & logistics", message: "Hi, I need to inquire about delivery options." },
+const DEFAULT_WHATSAPP_OPTIONS = [
+  { label: 'General Enquiries', subtitle: 'Ask anything', prefill: 'Hi, I have a general enquiry about your products.', number: '2348032170129' },
+  { label: 'Sales', subtitle: 'Pricing & product advice', prefill: 'Hi, I am interested in purchasing from PRAG.', number: '2347036463977' },
+  { label: 'Support', subtitle: 'Technical help', prefill: 'Hello, I need support from PRAG.', number: '2348111043239' },
+  { label: 'Delivery', subtitle: 'Orders & logistics', prefill: 'Hi, I need to inquire about delivery options.', number: '2347036463977' },
 ];
 
 export default function TrackingLoader() {
@@ -51,15 +59,27 @@ export default function TrackingLoader() {
   if (!cfg) return null;
 
   const configuredWhatsapp = (cfg.whatsappChatNumber ?? '').trim();
-  const whatsappNumber = (configuredWhatsapp || fallbackWhatsapp).replace(/\D/g, '');
+  const globalNumber = (configuredWhatsapp || fallbackWhatsapp).replace(/\D/g, '');
   const isWhatsappEnabled = Boolean(cfg.whatsappChatEnabled) || (!configuredWhatsapp && Boolean(fallbackWhatsapp));
   const whatsappText = (cfg.whatsappChatText ?? '').trim() || 'Chat with us on WhatsApp';
-  const hasWhatsappNumber = Boolean(whatsappNumber);
+  const hasWhatsappNumber = Boolean(globalNumber);
 
-  function openWhatsApp(message: string) {
-    if (!whatsappNumber) return;
-    // Use wa.me shortlink which is more reliable for mobile apps and prefilled text
-    const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+  const chatOptions = (() => {
+    const configured = Array.isArray(cfg.whatsappChatOptions) ? cfg.whatsappChatOptions : [];
+    if (configured.length > 0) {
+      return configured.map((opt, idx) => ({
+        label: opt?.label?.trim() || DEFAULT_WHATSAPP_OPTIONS[idx]?.label || `Option ${idx + 1}`,
+        subtitle: opt?.subtitle?.trim() || DEFAULT_WHATSAPP_OPTIONS[idx]?.subtitle || '',
+        prefill: opt?.prefill?.trim() || DEFAULT_WHATSAPP_OPTIONS[idx]?.prefill || 'Hi PRAG, I need help.',
+        number: (opt?.number ?? '').replace(/\D/g, '') || globalNumber || DEFAULT_WHATSAPP_OPTIONS[idx]?.number || '2348032170129',
+      }));
+    }
+    return DEFAULT_WHATSAPP_OPTIONS.map((opt) => ({ ...opt, number: globalNumber || opt.number }));
+  })();
+
+  function openWhatsApp(number: string, message: string) {
+    if (!number) return;
+    const url = `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank', 'noopener,noreferrer');
     setIsMenuOpen(false);
   }
@@ -120,16 +140,16 @@ export default function TrackingLoader() {
               <div className="px-3 pt-3 pb-3">
                 <p className="px-1 pb-2 text-[11px] font-semibold tracking-wide uppercase text-zinc-500 font-['Montserrat']">Choose an option</p>
                 <div className="flex flex-col gap-2">
-                  {WHATSAPP_QUICK_ACTIONS.map((action) => (
+                  {chatOptions.map((option) => (
                     <button
-                      key={action.label}
+                      key={option.label}
                       type="button"
                       className="group rounded-xl border border-zinc-200/70 bg-white px-3 py-2 text-left transition-colors hover:border-emerald-200 hover:bg-emerald-50/60"
-                      onClick={() => openWhatsApp(action.message)}
+                      onClick={() => openWhatsApp(option.number, option.prefill)}
                     >
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-zinc-900 font-['Montserrat'] truncate">{action.label}</p>
-                        {action.subtitle && <p className="mt-0.5 text-xs text-zinc-600 font-['Montserrat'] truncate">{action.subtitle}</p>}
+                        <p className="text-sm font-semibold text-zinc-900 font-['Montserrat'] truncate">{option.label}</p>
+                        {option.subtitle && <p className="mt-0.5 text-xs text-zinc-600 font-['Montserrat'] truncate">{option.subtitle}</p>}
                       </div>
                     </button>
                   ))}
@@ -137,7 +157,7 @@ export default function TrackingLoader() {
 
                 <button
                   type="button"
-                  onClick={() => openWhatsApp("Hi PRAG, I need help.")}
+                  onClick={() => openWhatsApp(globalNumber || '2348032170129', "Hi PRAG, I need help.")}
                   className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-br from-[#25D366] to-[#12B76A] text-white px-4 py-2.5 text-sm font-semibold shadow-lg shadow-emerald-200/50 transition-transform duration-200 hover:scale-[1.02] font-['Montserrat']"
                 >
                   <svg viewBox="0 0 24 24" aria-hidden="true" className="w-4 h-4">

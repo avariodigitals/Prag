@@ -5,33 +5,58 @@ import ProductCard from './ProductCard';
 import type { Product, Category } from '@/lib/types';
 import { sortProductsBySizeThenPrice } from '@/lib/productSort';
 
-const TOP_CATEGORIES = [
-  { label: 'All products', slug: 'all' },
-  { label: 'Inverters', slug: 'inverters' },
-  { label: 'Stabilizers', slug: 'voltage-stabilizers' },
-  { label: 'Batteries', slug: 'batteries' },
-  { label: 'Solar', slug: 'solar' },
-];
-
 interface Props {
   allProducts: Product[];
   productsByCategory: Record<string, Product[]>;
   categories: Category[];
+  categoryOrder?: string[];
+  subcategoryOrder?: Record<string, string[]>;
 }
 
 const LISTING_PRICE_COLOR = 'lab(26.8019 1.35387 -4.68303)';
 
-export default function ProductsView({ allProducts, productsByCategory, categories }: Props) {
+export default function ProductsView({ allProducts, productsByCategory, categories, categoryOrder, subcategoryOrder }: Props) {
   const [activeTop, setActiveTop] = useState('all');
   const [activeSub, setActiveSub] = useState<string | null>(null);
+
+  // Build dynamic top-level tabs from categories + order
+  const orderMap = new Map((categoryOrder ?? []).map((slug, i) => [slug, i]));
+  const parentCats = categories
+    .filter(c => c.parent === 0)
+    .sort((a, b) => {
+      const aIdx = orderMap.get(a.slug);
+      const bIdx = orderMap.get(b.slug);
+      if (aIdx !== undefined && bIdx !== undefined) return aIdx - bIdx;
+      if (aIdx !== undefined) return -1;
+      if (bIdx !== undefined) return 1;
+      return a.name.localeCompare(b.name);
+    });
+
+  const TOP_CATEGORIES = [
+    { label: 'All products', slug: 'all' },
+    ...parentCats.map(c => ({ label: c.name, slug: c.slug })),
+  ];
 
   const resolvedTopSlug = activeTop === 'voltage-stabilizers' && !categories.some((category) => category.slug === 'voltage-stabilizers')
     ? 'all-prag-stabilizers'
     : activeTop;
 
   const topCat = categories.find((category) => category.slug === resolvedTopSlug);
+
+  // Subcategories of the active top category, sorted by subcategoryOrder
+  const activeParentSlug = resolvedTopSlug;
+  const subOrder = subcategoryOrder?.[activeParentSlug] ?? [];
   const subcategories = topCat
-    ? categories.filter((category) => category.parent === topCat.id && category.count > 0)
+    ? categories
+        .filter((category) => category.parent === topCat.id && category.count > 0)
+        .sort((a, b) => {
+          const aIdx = subOrder.indexOf(a.slug);
+          const bIdx = subOrder.indexOf(b.slug);
+          if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
+          if (aIdx !== -1) return -1;
+          if (bIdx !== -1) return 1;
+          return a.name.localeCompare(b.name);
+        })
     : [];
 
   let products: Product[];

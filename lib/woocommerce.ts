@@ -619,6 +619,9 @@ export interface SiteSettings {
   socials: { facebook: string; instagram: string; linkedin: string; twitter: string; whatsapp: string };
   slides: { title: string; description: string; cta: string; link: string; productImage: string; productAlt: string }[];
   categories: { name: string; slug: string; image: string }[];
+  hidden_categories: string[];
+  category_order: string[];
+  subcategory_order: Record<string, string[]>;
 }
 
 const SETTINGS_FALLBACK: SiteSettings = {
@@ -658,6 +661,9 @@ const SETTINGS_FALLBACK: SiteSettings = {
     { name: 'Solar Panels', slug: 'solar', image: 'https://central.prag.global/wp-content/uploads/2026/04/b5564cf299de3eea9dbe804a547cf74e99bc41a7.png' },
     { name: 'Batteries', slug: 'batteries', image: 'https://central.prag.global/wp-content/uploads/2026/04/dd4b835690b546ee636b7659added08cd02d9891.png' },
   ],
+  hidden_categories: [],
+  category_order: [],
+  subcategory_order: {},
 };
 
 export const getSiteSettings = unstable_cache(
@@ -681,6 +687,9 @@ export const getSiteSettings = unstable_cache(
         socials: { ...SETTINGS_FALLBACK.socials, ...(data.socials ?? {}) },
         slides: Array.isArray(data.slides) && data.slides.length > 0 ? data.slides : SETTINGS_FALLBACK.slides,
         categories: Array.isArray(data.categories) && data.categories.length > 0 ? data.categories : SETTINGS_FALLBACK.categories,
+        hidden_categories: Array.isArray(data.hidden_categories) ? data.hidden_categories : [],
+        category_order: Array.isArray(data.category_order) ? data.category_order : [],
+        subcategory_order: data.subcategory_order && typeof data.subcategory_order === 'object' ? data.subcategory_order : {},
       };
     } catch {
       return SETTINGS_FALLBACK;

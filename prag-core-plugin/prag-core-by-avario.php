@@ -799,6 +799,9 @@ class Prag_Core_Bridge {
                 ['name' => 'Solar Panels',        'slug' => 'solar',                'image' => 'https://central.prag.global/wp-content/uploads/2026/04/b5564cf299de3eea9dbe804a547cf74e99bc41a7.png'],
                 ['name' => 'Batteries',           'slug' => 'batteries',            'image' => 'https://central.prag.global/wp-content/uploads/2026/04/dd4b835690b546ee636b7659added08cd02d9891.png'],
             ],
+            'hidden_categories' => [],
+            'category_order' => [],
+            'subcategory_order' => [],
         ];
 
         $saved = get_option('prag_site_settings', []);

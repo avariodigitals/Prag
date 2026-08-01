@@ -2,7 +2,7 @@
 export const dynamic = 'force-dynamic';
 
 import ProductsView from '@/components/ProductsView';
-import { getCategories, getProducts } from '@/lib/woocommerce';
+import { getCategories, getProducts, getSiteSettings } from '@/lib/woocommerce';
 import type { Product } from '@/lib/types';
 
 const CATEGORY_SLUGS = ['inverters', 'voltage-stabilizers', 'all-prag-stabilizers', 'batteries', 'solar'];
@@ -19,11 +19,26 @@ export default async function ProductsPage({
     .map((slug) => slug.trim().toLowerCase())
     .filter(Boolean);
 
-  const categories = await getCategories();
+  const [categories, settings] = await Promise.all([
+    getCategories(),
+    getSiteSettings(),
+  ]);
+  const hiddenSet = new Set(settings.hidden_categories ?? []);
+  const orderMap = new Map((settings.category_order ?? []).map((slug, i) => [slug, i]));
+  const visibleCategories = categories.filter((c) => !hiddenSet.has(c.slug));
+  // Sort category slugs: those in category_order first (in that order), then remaining in original CATEGORY_SLUGS order
+  const visibleCategorySlugs = CATEGORY_SLUGS.filter((slug) => !hiddenSet.has(slug)).sort((a, b) => {
+    const aIdx = orderMap.get(a);
+    const bIdx = orderMap.get(b);
+    if (aIdx !== undefined && bIdx !== undefined) return aIdx - bIdx;
+    if (aIdx !== undefined) return -1;
+    if (bIdx !== undefined) return 1;
+    return 0;
+  });
   const uniqueRequestedCats = Array.from(new Set(requestedCats));
-  const validRequestedCats = uniqueRequestedCats.filter((slug) => categories.some((c) => c.slug === slug));
+  const validRequestedCats = uniqueRequestedCats.filter((slug) => visibleCategories.some((c) => c.slug === slug));
   const activeFilterNames = validRequestedCats
-    .map((slug) => categories.find((c) => c.slug === slug)?.name)
+    .map((slug) => visibleCategories.find((c) => c.slug === slug)?.name)
     .filter((name): name is string => Boolean(name));
 
   const baseAllProductsPromise = query
@@ -61,8 +76,8 @@ export default async function ProductsPage({
 
   const [{ products: allProducts }, ...categoryResults] = await Promise.all([
     baseAllProductsPromise,
-    ...CATEGORY_SLUGS.map((slug) => {
-      const cat = categories.find((category) => category.slug === slug);
+    ...visibleCategorySlugs.map((slug) => {
+      const cat = visibleCategories.find((category) => category.slug === slug);
       return cat
         ? getProducts({ category_id: cat.id, per_page: 50 }).catch(() => ({ products: [] as Product[], total: 0 }))
         : Promise.resolve({ products: [] as Product[], total: 0 });
@@ -70,16 +85,30 @@ export default async function ProductsPage({
   ]);
 
   const productsByCategory: Record<string, Product[]> = {};
-  CATEGORY_SLUGS.forEach((slug, index) => {
+  visibleCategorySlugs.forEach((slug, index) => {
     productsByCategory[slug] = categoryResults[index].products;
   });
 
-  const subcategories = categories.filter(
-    (category) => category.parent > 0 && CATEGORY_SLUGS.some((slug) => {
-      const parent = categories.find((parentCategory) => parentCategory.slug === slug);
+  const subcategories = visibleCategories.filter(
+    (category) => category.parent > 0 && visibleCategorySlugs.some((slug) => {
+      const parent = visibleCategories.find((parentCategory) => parentCategory.slug === slug);
       return parent?.id === category.parent;
     })
   );
+
+  // Sort subcategories by subcategory_order within each parent
+  const subOrderMap = settings.subcategory_order ?? {};
+  subcategories.sort((a, b) => {
+    const parentCat = visibleCategories.find((c) => c.id === a.parent);
+    const parentSlug = parentCat?.slug ?? '';
+    const subOrder = subOrderMap[parentSlug] ?? [];
+    const aIdx = subOrder.indexOf(a.slug);
+    const bIdx = subOrder.indexOf(b.slug);
+    if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
+    if (aIdx !== -1) return -1;
+    if (bIdx !== -1) return 1;
+    return a.name.localeCompare(b.name);
+  });
 
   const subResults = await Promise.all(
     subcategories.map((subcategory) => getProducts({ category_id: subcategory.id, per_page: 50 }).catch(() => ({ products: [] as Product[], total: 0 })))
@@ -108,7 +137,9 @@ export default async function ProductsPage({
         <ProductsView
           allProducts={allProducts}
           productsByCategory={productsByCategory}
-          categories={categories}
+          categories={visibleCategories}
+          categoryOrder={settings.category_order}
+          subcategoryOrder={settings.subcategory_order}
         />
       </div>
     </main>

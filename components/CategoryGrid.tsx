@@ -11,9 +11,23 @@ const FALLBACK_CATEGORIES = [
 ];
 
 export default function CategoryGrid({ settings }: { settings?: SiteSettings }) {
-  const categories = (settings?.categories && settings.categories.length > 0)
+  const hidden = new Set(settings?.hidden_categories ?? []);
+  const order = settings?.category_order ?? [];
+  const allCategories = (settings?.categories && settings.categories.length > 0)
     ? settings.categories
     : FALLBACK_CATEGORIES;
+  const visible = allCategories.filter((c) => !hidden.has(c.slug));
+
+  // Sort by category_order: categories in the order array first (in that order), then remaining in original order
+  const orderMap = new Map(order.map((slug, i) => [slug, i]));
+  const categories = [...visible].sort((a, b) => {
+    const aIdx = orderMap.get(a.slug);
+    const bIdx = orderMap.get(b.slug);
+    if (aIdx !== undefined && bIdx !== undefined) return aIdx - bIdx;
+    if (aIdx !== undefined) return -1;
+    if (bIdx !== undefined) return 1;
+    return 0;
+  });
 
   return (
     <section className="w-full px-4 md:px-20 py-10 flex flex-col items-center gap-10">

@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import CategoryProductsGrid from '@/components/CategoryProductsGrid';
-import { getProductBySlug, getProducts, getCategoryBySlug, productUrl } from '@/lib/woocommerce';
+import { getProductBySlug, getProducts, getCategoryBySlug, productUrl, getSiteSettings } from '@/lib/woocommerce';
 import type { Product } from '@/lib/types';
 import { notFound, redirect } from 'next/navigation';
 
@@ -69,6 +69,12 @@ export async function generateStaticParams() {
 export default async function CategoryPage({ params, searchParams }: Props) {
   const { category } = await params;
   const sp = await searchParams;
+
+  // Check if this category is hidden from the storefront
+  const settings = await getSiteSettings();
+  const hiddenSet = new Set(settings.hidden_categories ?? []);
+  if (hiddenSet.has(category)) notFound();
+  if (sp.sub && hiddenSet.has(sp.sub)) notFound();
 
   const knownId = KNOWN_CATEGORY_IDS[category];
   const knownSubId = sp.sub ? KNOWN_CATEGORY_IDS[sp.sub] : undefined;

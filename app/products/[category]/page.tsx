@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import CategoryProductsGrid from '@/components/CategoryProductsGrid';
-import { getProductBySlug, getProducts, getCategoryBySlug, productUrl, getSiteSettings } from '@/lib/woocommerce';
+import { getProductBySlug, getProducts, getCategoryBySlug, productUrl, getSiteSettings, getCategories } from '@/lib/woocommerce';
 import type { Product } from '@/lib/types';
 import { notFound, redirect } from 'next/navigation';
 
@@ -59,7 +59,6 @@ const KNOWN_CATEGORY_IDS: Record<string, number> = {
   'protective-device': 340,
   'tubular-batteries': 348,
   'lithium-batteries': 344,
-  'battery-rack': 339,
 };
 
 export async function generateStaticParams() {
@@ -71,10 +70,31 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const sp = await searchParams;
 
   // Check if this category is hidden from the storefront
-  const settings = await getSiteSettings();
+  const [settings, allCategories] = await Promise.all([
+    getSiteSettings(),
+    getCategories(),
+  ]);
   const hiddenSet = new Set(settings.hidden_categories ?? []);
   if (hiddenSet.has(category)) notFound();
   if (sp.sub && hiddenSet.has(sp.sub)) notFound();
+
+  // Build dynamic subcategory tabs from WooCommerce categories
+  const parentCat = allCategories.find((c) => c.slug === category);
+  const subOrder = settings.subcategory_order?.[category] ?? [];
+  const subcategories = allCategories
+    .filter((c) => parentCat && c.parent === parentCat.id && c.count > 0 && !hiddenSet.has(c.slug))
+    .filter((c) => subOrder.length === 0 || subOrder.includes(c.slug))
+    .sort((a, b) => {
+      if (subOrder.length > 0) {
+        const aIdx = subOrder.indexOf(a.slug);
+        const bIdx = subOrder.indexOf(b.slug);
+        if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
+        if (aIdx !== -1) return -1;
+        if (bIdx !== -1) return 1;
+      }
+      return a.name.localeCompare(b.name);
+    })
+    .map((c) => ({ label: c.name, slug: c.slug }));
 
   const knownId = KNOWN_CATEGORY_IDS[category];
   const knownSubId = sp.sub ? KNOWN_CATEGORY_IDS[sp.sub] : undefined;
@@ -141,6 +161,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             total={total}
             categorySlug={category}
             activeSub={sp.sub}
+            subcategories={subcategories}
           />
         </div>
       </div>

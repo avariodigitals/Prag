@@ -6,51 +6,36 @@ import ProductCard from './ProductCard';
 import type { Product } from '@/lib/types';
 import { sortProductsBySizeThenPrice } from '@/lib/productSort';
 
+interface Subcategory {
+  label: string;
+  slug: string;
+}
+
 interface Props {
   products: Product[];
   total: number;
   categorySlug: string;
   activeSub?: string;
+  subcategories?: Subcategory[];
 }
 
 const PER_PAGE = 16;
 
 const SLUG_TO_LABEL: Record<string, string> = {
   'voltage-stabilizers': 'All Stabilizers',
+  'all-prag-stabilizers': 'All Stabilizers',
   'inverters': 'All Inverters',
   'solar': 'All Solar Products',
   'batteries': 'All Batteries',
 };
 const LISTING_PRICE_COLOR = 'lab(26.8019 1.35387 -4.68303)';
 
-const SECTION_TABS: Record<string, { label: string; slug: string }[]> = {
-  'voltage-stabilizers': [
-    { label: 'Thyristor Stabilizers', slug: 'thyristor-stabilizers' },
-    { label: 'Relay Stabilizers',     slug: 'relay-voltage-stabilizers' },
-    { label: 'Servo Stabilizers',     slug: 'servo-voltage-stabilizers' },
-    { label: '3 Phase Stabilizers',   slug: 'advanced-stabilizers' },
-  ],
-  'inverters': [
-    { label: 'Hybrid Inverters',      slug: 'hybrid-inverters' },
-    { label: 'Heavy-Duty Inverters',  slug: 'heavy-duty-inverters' },
-  ],
-  'solar': [
-    { label: 'Solar Panels',          slug: 'solar-panels' },
-    { label: 'Solar Charge Controllers', slug: 'solar-charge-controllers' },
-    { label: 'Protective Devices',    slug: 'protective-device' },
-  ],
-  'batteries': [
-    { label: 'Tubular Batteries',     slug: 'tubular-batteries' },
-    { label: 'Lithium Batteries',     slug: 'lithium-batteries' },
-    { label: 'Battery Racks',         slug: 'battery-rack' },
-  ],
-};
-
 export default function CategoryProductsGrid({
   products: initialProducts,
   total,
   categorySlug,
   activeSub,
+  subcategories,
 }: Props) {
   const searchParams = useSearchParams();
   const resetKey = [
@@ -68,6 +53,7 @@ export default function CategoryProductsGrid({
       total={total}
       categorySlug={categorySlug}
       activeSub={activeSub}
+      subcategories={subcategories}
     />
   );
 }
@@ -77,6 +63,7 @@ function CategoryProductsGridContent({
   total,
   categorySlug,
   activeSub,
+  subcategories,
 }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -151,7 +138,7 @@ function CategoryProductsGridContent({
   const activePendingTab = isPending ? pendingTab : null;
 
   const allLabel = SLUG_TO_LABEL[categorySlug] ?? `All ${categorySlug.charAt(0).toUpperCase() + categorySlug.slice(1)}`;
-  const sectionSubs = SECTION_TABS[categorySlug] ?? [];
+  const sectionSubs = subcategories ?? [];
   const tabs = [
     { key: 'all', label: allLabel, slug: undefined },
     ...sectionSubs.map((s) => ({ key: s.slug, label: s.label, slug: s.slug })),

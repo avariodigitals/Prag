@@ -22,7 +22,6 @@ const KNOWN_CATEGORY_IDS: Record<string, number> = {
   'protective-device': 340,
   'tubular-batteries': 348,
   'lithium-batteries': 344,
-  'battery-rack': 339,
 };
 
 export async function GET(req: NextRequest) {

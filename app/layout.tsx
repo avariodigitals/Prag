@@ -32,9 +32,12 @@ export const metadata: Metadata = {
   title: 'PRAG - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more',
   description: 'Shop inverters, stabilizers, solar panels and batteries. Engineered for real-world loads.',
   icons: {
-    icon: [{ url: '/favicon.png', type: 'image/png' }],
-    shortcut: '/favicon.png',
-    apple: '/favicon.png',
+    icon: [
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon.png', sizes: '512x512', type: 'image/png' },
+    ],
+    shortcut: '/icon.png',
+    apple: '/icon-192.png',
   },
   openGraph: {
     title: 'PRAG – Nigeria\'s Leading Power Engineering Company',

@@ -1,9 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
-import ProductCard from './ProductCard';
-import type { Product } from '@/lib/types';
 
 const APPLIANCES = [
   { name: 'Ceiling Fan', watts: 60 },
@@ -36,22 +33,20 @@ function nearestKva(kva: number): number {
   return KVA_SIZES.find((k) => k >= kva) ?? KVA_SIZES[KVA_SIZES.length - 1];
 }
 
+const WHATSAPP_NUMBER = '2347036463977';
+
 export default function PowerCalculatorTool() {
   const [quantities, setQuantities] = useState<Record<string, number>>({});
-  const [recommendations, setRecommendations] = useState<Product[] | null>(null);
-  const [loading, setLoading] = useState(false);
 
   function update(name: string, delta: number) {
     setQuantities((prev) => {
       const next = Math.max(0, (prev[name] ?? 0) + delta);
       return { ...prev, [name]: next };
     });
-    setRecommendations(null); // reset results when selection changes
   }
 
   function reset() {
     setQuantities({});
-    setRecommendations(null);
   }
 
   const appliancesAdded = Object.values(quantities).reduce((s, q) => s + (q > 0 ? 1 : 0), 0);
@@ -60,34 +55,23 @@ export default function PowerCalculatorTool() {
   const rawKva = peakWatts / 1000 / 0.8;
   const recommendedKva = nearestKva(rawKva);
 
-  async function getRecommendations() {
-    setLoading(true);
-    setRecommendations(null);
-    try {
-      // Search for inverters matching the KVA size
-      const res = await fetch(`/api/products/search?q=${recommendedKva}KVA`);
-      const data = await res.json();
-      let products: Product[] = data.products ?? [];
+  function getRecommendation() {
+    if (appliancesAdded === 0) return;
 
-      // Filter to only inverter category products that mention the KVA in name
-      products = products.filter((p) =>
-        p.name.toLowerCase().includes(`${recommendedKva}kva`) ||
-        p.name.toLowerCase().includes(`${recommendedKva} kva`)
-      );
+    const selected = APPLIANCES
+      .filter((a) => (quantities[a.name] ?? 0) > 0)
+      .map((a) => `- ${a.name} x${quantities[a.name]} (${a.watts}W each)`)
+      .join('\n');
 
-      // If no exact match, fall back to all inverters
-      if (products.length === 0) {
-        const fallback = await fetch(`/api/products/search?q=inverter`);
-        const fallbackData = await fallback.json();
-        products = (fallbackData.products ?? []).slice(0, 6);
-      }
+    const message =
+      `Hello Prag, I'd like a power system recommendation. Here is the list of things I want to power:\n\n` +
+      `${selected}\n\n` +
+      `Peak Load: ${peakWatts}W\n` +
+      `Estimated Daily Usage: ${dailyKwh.toFixed(1)} KWh\n` +
+      `Suggested Inverter Size: ${recommendedKva} KVA`;
 
-      setRecommendations(products.slice(0, 6));
-    } catch {
-      setRecommendations([]);
-    } finally {
-      setLoading(false);
-    }
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 
   const rows: typeof APPLIANCES[] = [];
@@ -149,53 +133,17 @@ export default function PowerCalculatorTool() {
             Reset
           </button>
           <button
-            onClick={getRecommendations}
-            disabled={appliancesAdded === 0 || loading}
+            onClick={getRecommendation}
+            disabled={appliancesAdded === 0}
             className="h-10 px-5 bg-white rounded-lg text-sky-700 text-sm font-semibold font-['Montserrat'] flex items-center gap-2 hover:bg-sky-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {loading ? (
-              <>
-                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-                </svg>
-                Finding...
-              </>
-            ) : 'Get Recommendation →'}
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+            </svg>
+            Get Recommendation
           </button>
         </div>
       </div>
-
-      {/* Recommendations */}
-      {recommendations !== null && (
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-col gap-1">
-            <h2 className="text-zinc-900 text-xl font-bold font-['Montserrat']">
-              {recommendations.length > 0
-                ? `Recommended ${recommendedKva} KVA Inverters for Your Load`
-                : 'No exact matches found'}
-            </h2>
-            <p className="text-zinc-500 text-base md:text-lg font-['Montserrat']">
-              Based on your {peakWatts}W peak load, you need at least a {recommendedKva} KVA inverter.
-            </p>
-          </div>
-
-          {recommendations.length === 0 ? (
-            <div className="flex flex-col items-center gap-4 py-10">
-              <p className="text-zinc-400 font-['Montserrat']">No products matched. Browse our full inverter range.</p>
-              <Link href="/products/inverters" className="px-6 py-3 bg-sky-700 rounded-full text-white text-sm font-medium font-['Montserrat'] hover:bg-sky-800 transition-colors">
-                Browse Inverters
-              </Link>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {recommendations.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 }

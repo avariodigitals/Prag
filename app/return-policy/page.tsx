@@ -1,7 +1,10 @@
 import { getPage } from '@/lib/woocommerce';
 import PolicyPageLayout from '@/components/PolicyPageLayout';
 
-export const metadata = { title: 'Return Policy - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more' };
+export const metadata = {
+  title: 'Return Policy - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more',
+  alternates: { canonical: 'https://www.prag.global/return-policy' },
+};
 
 export default async function ReturnPolicyPage() {
   const wpPage = await getPage('return-policy');

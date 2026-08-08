@@ -75,7 +75,7 @@ export default function CompareView({ products }: Props) {
   }
 
   function getProductLandingHref(product: Product) {
-    return shopUrl(product.slug);
+    return shopUrl(product);
   }
 
   const specRows: { label: string; values: (string | React.ReactNode)[] }[] = hasComparison

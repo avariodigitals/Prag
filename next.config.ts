@@ -23,6 +23,11 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       ...LEGACY_REDIRECTS.map((r) => ({ ...r, permanent: true })),
+      // Knowledge Center exists for SEO only on www.prag.global.
+      // Permanently redirect all shop Knowledge Center URLs (index + articles)
+      // to the equivalent www URL, preserving the slug exactly.
+      { source: '/knowledge-center', destination: 'https://www.prag.global/knowledge-center', permanent: true },
+      { source: '/knowledge-center/:slug', destination: 'https://www.prag.global/knowledge-center/:slug', permanent: true },
     ];
   },
   async headers() {

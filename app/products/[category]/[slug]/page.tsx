@@ -18,8 +18,12 @@ export async function generateMetadata({ params }: Props) {
     || product.description?.replace(/<[^>]+>/g, '').trim().slice(0, 160)
     || `Buy ${product.name} at PRAG. Quality power engineering products with warranty and nationwide delivery.`;
   const imageUrl = product.images?.[0]?.src;
-  const shopBase = process.env.NEXT_PUBLIC_SHOP_URL ?? 'https://shop.prag.global';
-  const canonical = `${shopBase}/products/${category}/${product.slug}`;
+  // Shop product pages canonicalise to the www SEO/content authority.
+  // Use the product's WooCommerce category slug (matching www's own canonical)
+  // so the shop canonical points to the exact www canonical URL (no chain).
+  // The shop page itself is not redirected and remains fully functional (HTTP 200).
+  const categorySlug = product.categories?.[0]?.slug ?? category;
+  const canonical = `https://www.prag.global/products/${categorySlug}/${product.slug}`;
 
   return {
     title: `${product.name} – PRAG`,

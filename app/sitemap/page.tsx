@@ -1,6 +1,10 @@
 import Link from 'next/link';
 
-export const metadata = { title: 'Sitemap - PRAG' };
+export const metadata = {
+  title: 'Sitemap - PRAG',
+  alternates: { canonical: 'https://shop.prag.global/sitemap' },
+  robots: { index: false, follow: true },
+};
 
 const SECTIONS = [
   {

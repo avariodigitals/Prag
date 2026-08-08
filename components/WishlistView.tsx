@@ -120,7 +120,7 @@ export default function WishlistView() {
                     <span className="text-stone-50 text-base font-medium font-['Montserrat']">Learn more</span>
                     <span className="sr-only"> about {item.name}</span>
                   </Link>
-                  <a href={shopUrl(item.slug)} className="w-28 p-3 rounded-3xl flex justify-center items-center gap-2.5 hover:underline">
+                  <a href={shopUrl(item)} className="w-28 p-3 rounded-3xl flex justify-center items-center gap-2.5 hover:underline">
                     <span className="text-sky-700 text-base font-medium font-['Montserrat']">Buy &gt;</span>
                   </a>
                 </div>

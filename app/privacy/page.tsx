@@ -4,7 +4,10 @@ export const dynamic = 'force-dynamic';
 import { getPage } from '@/lib/woocommerce';
 import PolicyPageLayout from '@/components/PolicyPageLayout';
 
-export const metadata = { title: 'Privacy Policy - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more' };
+export const metadata = {
+  title: 'Privacy Policy - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more',
+  alternates: { canonical: 'https://www.prag.global/privacy' },
+};
 
 const SECTIONS = [
   {

@@ -1,7 +1,10 @@
 import { getPage } from '@/lib/woocommerce';
 import PolicyPageLayout from '@/components/PolicyPageLayout';
 
-export const metadata = { title: 'Shipping Policy - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more' };
+export const metadata = {
+  title: 'Shipping Policy - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more',
+  alternates: { canonical: 'https://www.prag.global/shipping-policy' },
+};
 
 const DELIVERY_TIMEFRAMES = [
   { area: 'Lagos & Environs', time: '1-2 business days for standard delivery' },

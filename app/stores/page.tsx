@@ -5,7 +5,10 @@ import StoresGrid from '@/components/StoresGrid';
 import { getStores } from '@/lib/woocommerce';
 import type { Store } from '@/lib/types';
 
-export const metadata = { title: 'PRAG Stores - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more' };
+export const metadata = {
+  title: 'PRAG Stores - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more',
+  alternates: { canonical: 'https://shop.prag.global/stores' },
+};
 
 const PRAG_STORE_ORDER = ['obanikoro', 'lagos island', 'alaba', 'abuja', 'port harcourt'];
 

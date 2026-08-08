@@ -8,7 +8,10 @@ import { formatPhone } from '@/lib/formatPhone';
 import { Mail, Phone, MapPin, Clock } from 'lucide-react';
 import type { Store } from '@/lib/types';
 
-export const metadata = { title: 'Customer Support - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more' };
+export const metadata = {
+  title: 'Customer Support - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more',
+  alternates: { canonical: 'https://www.prag.global/contact' },
+};
 
 function SocialIcon({ network }: { network: string }) {
   if (network === 'facebook')

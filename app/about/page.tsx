@@ -1,7 +1,10 @@
 import Image from 'next/image';
 import CountUp from '@/components/CountUp';
 
-export const metadata = { title: 'About Us – Prag' };
+export const metadata = {
+  title: 'About Us – Prag',
+  alternates: { canonical: 'https://www.prag.global/about' },
+};
 
 const STATS = [
   { value: 50000, display: 50, suffix: 'K+', label: 'Systems Installed' },

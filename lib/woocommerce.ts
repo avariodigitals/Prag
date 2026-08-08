@@ -725,8 +725,10 @@ export const getProductCustomTabs = unstable_cache(
   { revalidate: 3600, tags: ['product-custom-tabs'] }
 );
 
-export function shopUrl(slug: string) {
-  return `${process.env.NEXT_PUBLIC_SHOP_URL}/product/${slug}`;
+export function shopUrl(product: Pick<Product, 'slug' | 'categories'>) {
+  const shopBase = (process.env.NEXT_PUBLIC_SHOP_URL ?? 'https://shop.prag.global').replace(/\/$/, '');
+  const categorySlug = product.categories?.[0]?.slug ?? 'products';
+  return `${shopBase}/products/${categorySlug}/${product.slug}`;
 }
 
 export function productUrl(product: Pick<Product, 'slug' | 'categories'>) {

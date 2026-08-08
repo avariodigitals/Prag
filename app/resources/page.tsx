@@ -5,7 +5,10 @@ import TechResourcesView from '@/components/TechResourcesView';
 import { getProducts } from '@/lib/woocommerce';
 import type { Product } from '@/lib/types';
 
-export const metadata = { title: 'Technical Resources - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more' };
+export const metadata = {
+  title: 'Technical Resources - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more',
+  alternates: { canonical: 'https://www.prag.global/resources' },
+};
 
 interface Props {
   searchParams: Promise<{ product?: string }>;

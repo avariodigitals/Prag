@@ -28,8 +28,10 @@ export async function generateMetadata({ params }: Props) {
   };
   const name = DISPLAY_NAMES[category] ?? (await getCategoryBySlug(category))?.name ?? category;
   const description = DISPLAY_DESCRIPTIONS[category] ?? `Browse ${name} at PRAG. Quality power engineering products with warranty and nationwide delivery.`;
-  const shopBase = process.env.NEXT_PUBLIC_SHOP_URL ?? 'https://shop.prag.global';
-  const canonical = `${shopBase}/products/${category}`;
+  // Shop category pages canonicalise to the www SEO/content authority.
+  // Query/sort/filter params (sub, page, product_orderby, product_view, etc.)
+  // are intentionally excluded so filtered URLs canonicalise to the clean category URL.
+  const canonical = `https://www.prag.global/products/${category}`;
   return {
     title: `${name} – PRAG`,
     description,

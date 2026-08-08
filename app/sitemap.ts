@@ -2,24 +2,6 @@ import type { MetadataRoute } from 'next';
 import { headers } from 'next/headers';
 import { getEcommerceScriptsForHost } from '@/lib/ecommerceConfig';
 
-type WcProductLite = {
-  slug: string;
-  categories?: Array<{ slug?: string }>;
-  date_modified?: string;
-};
-
-type WcCategoryLite = {
-  slug: string;
-  count?: number;
-  date_modified?: string;
-};
-
-type WpPostLite = {
-  slug: string;
-  modified?: string;
-};
-
-const WP_API_URL = process.env.NEXT_PUBLIC_WP_API_URL ?? 'https://central.prag.global/wp-json';
 const SHOP_FALLBACK_URL = process.env.NEXT_PUBLIC_SHOP_URL ?? 'https://shop.prag.global';
 
 export const dynamic = 'force-dynamic';
@@ -30,10 +12,6 @@ function normalizeBaseUrl(input: string): string {
   if (!trimmed) return 'https://shop.prag.global';
   if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed;
   return `https://${trimmed}`;
-}
-
-function authQuery() {
-  return `consumer_key=${process.env.WC_CONSUMER_KEY ?? ''}&consumer_secret=${process.env.WC_CONSUMER_SECRET ?? ''}`;
 }
 
 async function resolveSiteBaseUrl(): Promise<string> {
@@ -54,142 +32,23 @@ async function resolveSiteBaseUrl(): Promise<string> {
   return normalizeBaseUrl(SHOP_FALLBACK_URL);
 }
 
-async function fetchJson(url: string): Promise<Response | null> {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 9000);
-  try {
-    const res = await fetch(url, {
-      next: { revalidate: 300 },
-      signal: controller.signal,
-    });
-    clearTimeout(timeout);
-    return res;
-  } catch {
-    clearTimeout(timeout);
-    return null;
-  }
-}
-
-async function fetchAllProductsForSitemap(): Promise<WcProductLite[]> {
-  const base = `${WP_API_URL.replace('/wp-json', '/wp-json/wc/v3')}/products`;
-  const first = await fetchJson(`${base}?per_page=100&page=1&status=publish&_fields=slug,categories,date_modified&${authQuery()}`);
-  if (!first?.ok) return [];
-
-  const firstData = (await first.json()) as WcProductLite[];
-  const totalPages = Number(first.headers.get('X-WP-TotalPages') ?? '1');
-
-  if (totalPages <= 1) return firstData;
-
-  const rest = await Promise.all(
-    Array.from({ length: totalPages - 1 }, (_, idx) => idx + 2).map((page) =>
-      fetchJson(`${base}?per_page=100&page=${page}&status=publish&_fields=slug,categories,date_modified&${authQuery()}`)
-    )
-  );
-
-  const restData = await Promise.all(
-    rest.map(async (res) => (res?.ok ? ((await res.json()) as WcProductLite[]) : []))
-  );
-
-  return [...firstData, ...restData.flat()];
-}
-
-async function fetchAllCategoriesForSitemap(): Promise<WcCategoryLite[]> {
-  const url = `${WP_API_URL.replace('/wp-json', '/wp-json/wc/v3')}/products/categories?per_page=100&hide_empty=true&_fields=slug,count,date_modified&${authQuery()}`;
-  const res = await fetchJson(url);
-  if (!res?.ok) return [];
-  return (await res.json()) as WcCategoryLite[];
-}
-
-async function fetchAllKnowledgePostsForSitemap(): Promise<WpPostLite[]> {
-  const base = `${WP_API_URL.replace('/wp-json', '/wp-json/wp/v2')}/posts`;
-  const first = await fetchJson(`${base}?per_page=100&page=1&status=publish&_fields=slug,modified`);
-  if (!first?.ok) return [];
-
-  const firstData = (await first.json()) as WpPostLite[];
-  const totalPages = Number(first.headers.get('X-WP-TotalPages') ?? '1');
-
-  if (totalPages <= 1) return firstData;
-
-  const rest = await Promise.all(
-    Array.from({ length: totalPages - 1 }, (_, idx) => idx + 2).map((page) =>
-      fetchJson(`${base}?per_page=100&page=${page}&status=publish&_fields=slug,modified`)
-    )
-  );
-
-  const restData = await Promise.all(
-    rest.map(async (res) => (res?.ok ? ((await res.json()) as WpPostLite[]) : []))
-  );
-
-  return [...firstData, ...restData.flat()];
-}
-
-async function fetchHiddenCategorySlugs(): Promise<Set<string>> {
-  try {
-    const res = await fetchJson(`${WP_API_URL}/prag-core/v1/settings`);
-    if (!res?.ok) return new Set();
-    const data = await res.json();
-    return new Set(Array.isArray(data.hidden_categories) ? data.hidden_categories : []);
-  } catch {
-    return new Set();
-  }
-}
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteBase = await resolveSiteBaseUrl();
 
-  const [products, categories, posts, hiddenSlugs] = await Promise.all([
-    fetchAllProductsForSitemap(),
-    fetchAllCategoriesForSitemap(),
-    fetchAllKnowledgePostsForSitemap(),
-    fetchHiddenCategorySlugs(),
-  ]);
-
+  // Shop sitemap advertises ONLY genuinely shop-indexable URLs.
+  // Excluded (canonicalise to www.prag.global): products, product categories,
+  // Knowledge Center, and corporate/content duplicates (about, contact, resources,
+  // faq, distributor, shipping-policy, return-policy, privacy, terms-of-use).
+  // Excluded (noindex): transactional URLs (cart, checkout, account, wishlist,
+  // compare, search, order-received, order-failed, login, register).
+  // Excluded (redirect, no canonical rendered): /solar, /stabilizer, /batteries,
+  // /inverter shortcut routes.
+  // Excluded (noindex utility page): /sitemap HTML page is noindex,follow and
+  // not intended as a search result, so it is not advertised in the XML sitemap.
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${siteBase}/`, changeFrequency: 'daily', priority: 1 },
-    { url: `${siteBase}/products`, changeFrequency: 'daily', priority: 0.95 },
     { url: `${siteBase}/stores`, changeFrequency: 'weekly', priority: 0.7 },
-    { url: `${siteBase}/knowledge-center`, changeFrequency: 'daily', priority: 0.8 },
-    { url: `${siteBase}/about`, changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${siteBase}/contact`, changeFrequency: 'monthly', priority: 0.6 },
-    { url: `${siteBase}/resources`, changeFrequency: 'weekly', priority: 0.6 },
-    { url: `${siteBase}/shipping-policy`, changeFrequency: 'monthly', priority: 0.4 },
-    { url: `${siteBase}/return-policy`, changeFrequency: 'monthly', priority: 0.4 },
-    { url: `${siteBase}/privacy`, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${siteBase}/terms-of-use`, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${siteBase}/sitemap`, changeFrequency: 'monthly', priority: 0.2 },
   ];
 
-  const categoryRoutes: MetadataRoute.Sitemap = categories
-    .filter((category) => Boolean(category.slug) && !hiddenSlugs.has(category.slug))
-    .map((category) => ({
-      url: `${siteBase}/products/${category.slug}`,
-      lastModified: category.date_modified ? new Date(category.date_modified) : undefined,
-      changeFrequency: 'weekly',
-      priority: 0.75,
-    }));
-
-  const productRoutes: MetadataRoute.Sitemap = products
-    .filter((product) => Boolean(product.slug) && Boolean(product.categories?.[0]?.slug) && !(product.categories?.[0]?.slug && hiddenSlugs.has(product.categories[0].slug)))
-    .map((product) => {
-      const categorySlug = product.categories?.[0]?.slug!;
-      const productPath = `/products/${categorySlug}/${product.slug}`;
-
-      return {
-        url: `${siteBase}${productPath}`,
-        lastModified: product.date_modified ? new Date(product.date_modified) : undefined,
-        changeFrequency: 'weekly' as const,
-        priority: 0.85,
-      };
-    });
-
-  const knowledgeRoutes: MetadataRoute.Sitemap = posts
-    .filter((post) => Boolean(post.slug))
-    .map((post) => ({
-      url: `${siteBase}/knowledge-center/${post.slug}`,
-      lastModified: post.modified ? new Date(post.modified) : undefined,
-      changeFrequency: 'weekly',
-      priority: 0.65,
-    }));
-
-  return [...staticRoutes, ...categoryRoutes, ...productRoutes, ...knowledgeRoutes];
+  return staticRoutes;
 }

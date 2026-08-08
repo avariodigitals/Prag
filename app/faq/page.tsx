@@ -1,7 +1,10 @@
 import type { Metadata } from 'next';
 import { ManagedFAQSection } from '@/components/FAQ';
 
-export const metadata: Metadata = { title: 'FAQ' };
+export const metadata: Metadata = {
+  title: 'FAQ',
+  alternates: { canonical: 'https://www.prag.global/faq' },
+};
 
 const DESCRIPTION = 'Answers to common questions about PRAG products, warranty, installation, and support.';
 const FAQ_ITEMS = [

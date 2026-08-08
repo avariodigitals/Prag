@@ -7,6 +7,23 @@ import type { Product } from '@/lib/types';
 
 const CATEGORY_SLUGS = ['inverters', 'voltage-stabilizers', 'all-prag-stabilizers', 'batteries', 'solar'];
 
+export async function generateMetadata() {
+  // Shop products index canonicalises to the www SEO/content authority.
+  // Search/filter params (q, cats) are excluded so filtered URLs canonicalise to the clean URL.
+  const canonical = 'https://www.prag.global/products';
+  return {
+    title: 'Products – PRAG',
+    description: 'Browse all PRAG product categories and power technologies.',
+    alternates: { canonical },
+    openGraph: {
+      title: 'Products – PRAG',
+      description: 'Browse all PRAG product categories and power technologies.',
+      url: canonical,
+      type: 'website',
+    },
+  };
+}
+
 export default async function ProductsPage({
   searchParams,
 }: {

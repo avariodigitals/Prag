@@ -33,14 +33,6 @@ export const metadata: Metadata = {
   description: 'Shop inverters, stabilizers, solar panels and batteries. Engineered for real-world loads.',
   metadataBase: new URL('https://shop.prag.global'),
   alternates: { canonical: 'https://shop.prag.global' },
-  icons: {
-    icon: [
-      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/icon.png', sizes: '512x512', type: 'image/png' },
-    ],
-    shortcut: '/icon.png',
-    apple: '/icon-192.png',
-  },
   openGraph: {
     title: 'PRAG – Nigeria\'s Leading Power Engineering Company',
     description: 'Shop inverters, stabilizers, solar panels and batteries. Engineered for real-world loads.',

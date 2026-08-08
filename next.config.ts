@@ -22,7 +22,6 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      { source: '/favicon.ico', destination: '/favicon.png', permanent: true },
       ...LEGACY_REDIRECTS.map((r) => ({ ...r, permanent: true })),
     ];
   },

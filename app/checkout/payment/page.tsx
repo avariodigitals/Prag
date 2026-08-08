@@ -1,7 +1,10 @@
 import PaymentView from '@/components/PaymentView';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Payment – Checkout – PRAG' };
+export const metadata = {
+  title: 'Payment – Checkout – PRAG',
+  robots: { index: false, follow: true },
+};
 
 export default function PaymentPage() {
   return (

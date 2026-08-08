@@ -11,7 +11,10 @@ interface Props {
   }>;
 }
 
-export const metadata = { title: 'Order Received – PRAG' };
+export const metadata = {
+  title: 'Order Received – PRAG',
+  robots: { index: false, follow: true },
+};
 
 export default async function OrderReceivedPage({ searchParams }: Props) {
   const { order_id, order_date, first_name, last_name, email, phone } = await searchParams;

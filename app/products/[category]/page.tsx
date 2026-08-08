@@ -28,13 +28,16 @@ export async function generateMetadata({ params }: Props) {
   };
   const name = DISPLAY_NAMES[category] ?? (await getCategoryBySlug(category))?.name ?? category;
   const description = DISPLAY_DESCRIPTIONS[category] ?? `Browse ${name} at PRAG. Quality power engineering products with warranty and nationwide delivery.`;
+  const shopBase = process.env.NEXT_PUBLIC_SHOP_URL ?? 'https://shop.prag.global';
+  const canonical = `${shopBase}/products/${category}`;
   return {
     title: `${name} – PRAG`,
     description,
-    alternates: { canonical: `https://shop.prag.global/products/${category}` },
+    alternates: { canonical },
     openGraph: {
       title: `${name} – PRAG`,
       description,
+      url: canonical,
       type: 'website',
     },
   };

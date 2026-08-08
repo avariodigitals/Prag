@@ -36,7 +36,6 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/checkout', '/account', '/wishlist', '/compare'],
     },
     sitemap: `${siteBase}/sitemap.xml`,
     host: siteBase,

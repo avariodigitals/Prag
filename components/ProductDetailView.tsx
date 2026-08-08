@@ -65,7 +65,8 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
   const images = product.images ?? [];
   const [activeImage, setActiveImage] = useState(0);
   const image = images[activeImage] ?? images[0];
-  const pageUrl = pathname ? `https://prag.global${pathname}` : '';
+  const shopBase = (process.env.NEXT_PUBLIC_SHOP_URL ?? 'https://shop.prag.global').replace(/\/$/, '');
+  const pageUrl = pathname ? `${shopBase}${pathname}` : '';
   const isRecentlyCreated = (() => {
     if (!product.date_created) return false;
     const created = new Date(product.date_created);

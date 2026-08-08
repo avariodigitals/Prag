@@ -10,7 +10,7 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props) {
-  const { slug } = await params;
+  const { category, slug } = await params;
   const product = await getProductBySlug(slug);
   if (!product) return { title: 'Product – PRAG' };
 
@@ -18,14 +18,17 @@ export async function generateMetadata({ params }: Props) {
     || product.description?.replace(/<[^>]+>/g, '').trim().slice(0, 160)
     || `Buy ${product.name} at PRAG. Quality power engineering products with warranty and nationwide delivery.`;
   const imageUrl = product.images?.[0]?.src;
+  const shopBase = process.env.NEXT_PUBLIC_SHOP_URL ?? 'https://shop.prag.global';
+  const canonical = `${shopBase}/products/${category}/${product.slug}`;
 
   return {
     title: `${product.name} – PRAG`,
     description,
-    alternates: { canonical: `https://shop.prag.global/products/${product.categories?.[0]?.slug ?? 'products'}/${product.slug}` },
+    alternates: { canonical },
     openGraph: {
       title: product.name,
       description,
+      url: canonical,
       images: imageUrl ? [{ url: imageUrl, alt: product.images?.[0]?.alt || product.name }] : undefined,
       type: 'website',
     },

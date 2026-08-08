@@ -2,6 +2,11 @@ import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth';
 import AccountSidebar from '@/components/AccountSidebar';
 
+export const metadata = {
+  title: 'My Account – PRAG',
+  robots: { index: false, follow: true },
+};
+
 export default async function AccountLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();
   if (!session) redirect('/login');

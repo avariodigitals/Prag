@@ -169,12 +169,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
 
   const productRoutes: MetadataRoute.Sitemap = products
-    .filter((product) => Boolean(product.slug) && !(product.categories?.[0]?.slug && hiddenSlugs.has(product.categories[0].slug)))
+    .filter((product) => Boolean(product.slug) && Boolean(product.categories?.[0]?.slug) && !(product.categories?.[0]?.slug && hiddenSlugs.has(product.categories[0].slug)))
     .map((product) => {
-      const categorySlug = product.categories?.[0]?.slug;
-      const productPath = categorySlug
-        ? `/products/${categorySlug}/${product.slug}`
-        : `/products/${product.slug}`;
+      const categorySlug = product.categories?.[0]?.slug!;
+      const productPath = `/products/${categorySlug}/${product.slug}`;
 
       return {
         url: `${siteBase}${productPath}`,

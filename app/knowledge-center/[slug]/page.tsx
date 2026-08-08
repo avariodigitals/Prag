@@ -29,14 +29,17 @@ export async function generateMetadata({ params }: Props) {
   const title = post.title.rendered.replace(/<[^>]+>/g, '');
   const description = post.excerpt.rendered.replace(/<[^>]+>/g, '').trim().slice(0, 160);
   const imageUrl = post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
+  const shopBase = process.env.NEXT_PUBLIC_SHOP_URL ?? 'https://shop.prag.global';
+  const canonical = `${shopBase}/knowledge-center/${post.slug}`;
 
   return {
     title: `${title} – PRAG`,
     description,
-    alternates: { canonical: `https://shop.prag.global/knowledge-center/${post.slug}` },
+    alternates: { canonical },
     openGraph: {
       title,
       description,
+      url: canonical,
       images: imageUrl ? [{ url: imageUrl, alt: title }] : undefined,
       type: 'article',
       publishedTime: post.date,

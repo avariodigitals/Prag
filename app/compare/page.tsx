@@ -4,7 +4,10 @@ import type { Product } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata = { title: 'Product Comparison - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more' };
+export const metadata = {
+  title: 'Product Comparison - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more',
+  robots: { index: false, follow: true },
+};
 
 export default async function ComparePage() {
   let products: Product[] = [];

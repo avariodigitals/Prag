@@ -4,7 +4,10 @@ interface Props {
   searchParams: Promise<{ order_id?: string; retry?: string }>;
 }
 
-export const metadata = { title: 'Order Failed – PRAG' };
+export const metadata = {
+  title: 'Order Failed – PRAG',
+  robots: { index: false, follow: true },
+};
 
 export default async function OrderFailedPage({ searchParams }: Props) {
   const { order_id, retry } = await searchParams;

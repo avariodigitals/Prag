@@ -3,6 +3,11 @@ export const dynamic = 'force-dynamic';
 import SearchResultsGrid from '@/components/SearchResultsGrid';
 import { searchProducts } from '@/lib/woocommerce';
 
+export const metadata = {
+  title: 'Search – PRAG',
+  robots: { index: false, follow: true },
+};
+
 interface Props {
   searchParams: Promise<{ q?: string; sort?: string }>;
 }

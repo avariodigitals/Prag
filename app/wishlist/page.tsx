@@ -2,7 +2,10 @@ import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth';
 import WishlistView from '@/components/WishlistView';
 
-export const metadata = { title: 'Saved Items - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more' };
+export const metadata = {
+  title: 'Saved Items - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more',
+  robots: { index: false, follow: true },
+};
 
 export default async function WishlistPage() {
   const session = await getSession();

@@ -1,7 +1,10 @@
 import ShippingView from '@/components/ShippingView';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Shipping – Checkout – PRAG' };
+export const metadata = {
+  title: 'Shipping – Checkout – PRAG',
+  robots: { index: false, follow: true },
+};
 
 export default function ShippingPage() {
   return (

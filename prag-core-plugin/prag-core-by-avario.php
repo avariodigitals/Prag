@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Prag Core by Avario
  * Plugin URI: https://www.avariodigitals.com
- * Description: Headless bridge for PRAG. Handles custom authentication, registration, and site-wide settings via REST API.
- * Version: 1.0.0
+ * Description: Headless bridge for PRAG. Handles custom authentication, registration, site-wide settings via REST API, and SEO exclusion for central.prag.global.
+ * Version: 1.1.0
  * Author: Avario Digitals
  * Author URI: https://www.avariodigitals.com
  * Text Domain: prag-core
@@ -23,6 +23,19 @@ class Prag_Core_Bridge {
         add_action('init', [$this, 'register_user_meta']);
         // Register custom post types
         add_action('init', [$this, 'register_post_types']);
+
+        // SEO: central.prag.global is a headless CMS/backend and must not
+        // appear in search results. These hooks ensure every public HTML
+        // page is marked noindex/nofollow without affecting the REST API
+        // (/wp-json/*), uploaded media (/wp-content/uploads/*), or admin.
+        add_action('template_redirect', [$this, 'send_x_robots_tag_noindex']);
+        add_filter('wp_robots', [$this, 'filter_wp_robots_noindex']);
+        add_filter('wp_sitemaps_enabled', '__return_false');
+        add_filter('robots_txt', [$this, 'filter_robots_txt_disallow_all'], 10, 2);
+        // Ensure "Discourage search engines" is enabled even if the plugin
+        // was activated before this feature existed (activation hooks only
+        // fire on activation/re-activation).
+        add_action('init', [$this, 'ensure_discourage_search_engines']);
     }
 
     /**
@@ -368,6 +381,56 @@ class Prag_Core_Bridge {
         header('Access-Control-Allow-Methods: OPTIONS, GET, POST, PUT, DELETE');
         header('Access-Control-Allow-Headers: Authorization, Content-Type, X-WP-Nonce');
         return $served;
+    }
+
+    /**
+     * SEO: Send X-Robots-Tag: noindex, nofollow on all frontend HTML pages.
+     *
+     * template_redirect only fires on the frontend (posts, pages, archives,
+     * feeds, etc.) — NOT on REST API requests (/wp-json/*), admin pages
+     * (/wp-admin/*), AJAX (admin-ajax.php), or static uploads
+     * (/wp-content/uploads/*), so those remain unaffected.
+     */
+    public function send_x_robots_tag_noindex() {
+        if (headers_sent()) {
+            return;
+        }
+        header('X-Robots-Tag: noindex, nofollow', true);
+    }
+
+    /**
+     * SEO: Force the <meta name="robots"> tag to noindex, nofollow on all
+     * frontend pages. Defense-in-depth alongside the X-Robots-Tag header.
+     */
+    public function filter_wp_robots_noindex(array $robots): array {
+        $robots['noindex']  = true;
+        $robots['nofollow'] = true;
+        return $robots;
+    }
+
+    /**
+     * SEO: Return a robots.txt that disallows all crawling. This is
+     * defense-in-depth; the primary exclusion is the X-Robots-Tag header
+     * and noindex meta tag. No sitemap is referenced.
+     */
+    public function filter_robots_txt_disallow_all(string $output, string $public): string {
+        return "User-agent: *\nDisallow: /\n";
+    }
+
+    /**
+     * SEO: Ensure "Discourage search engines from indexing this site" is
+     * enabled (blog_public = '0'). Runs once; a flag option prevents
+     * repeated writes. This covers the case where the plugin was already
+     * active before the activation hook existed.
+     */
+    public function ensure_discourage_search_engines() {
+        if (get_option('prag_core_seo_initialized') === 'yes') {
+            return;
+        }
+        if (get_option('blog_public') !== '0') {
+            update_option('blog_public', '0');
+        }
+        update_option('prag_core_seo_initialized', 'yes');
     }
 
     /**
@@ -1327,3 +1390,13 @@ class Prag_Core_Bridge {
 }
 
 new Prag_Core_Bridge();
+
+/**
+ * SEO: On plugin activation, enable "Discourage search engines from indexing
+ * this site" (Settings → Reading). This sets blog_public to '0' so WordPress
+ * core itself outputs noindex/nofollow and blocks the core sitemap.
+ */
+register_activation_hook(__FILE__, 'prag_core_seo_activation');
+function prag_core_seo_activation() {
+    update_option('blog_public', '0');
+}

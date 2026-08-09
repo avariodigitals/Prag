@@ -10,6 +10,19 @@ import SiteShell from '@/components/SiteShell';
 import { getEcommerceScriptsForHost } from '@/lib/ecommerceConfig';
 import './globals.css';
 
+// Site-wide Organization structured data. References the same Organization
+// entity as the brand site (www.prag.global) so Google links the shop to the
+// brand knowledge panel. Logo must be >= 112x112px per Google's rules.
+// https://developers.google.com/search/docs/appearance/structured-data/logo
+const organizationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': 'https://www.prag.global/#organization',
+  name: 'PRAG',
+  url: 'https://www.prag.global/',
+  logo: 'https://www.prag.global/images/prag-logo.png',
+};
+
 const onest = Onest({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
@@ -87,6 +100,10 @@ export default async function RootLayout({ children, modal }: { children: React.
         )}
       </head>
       <body className={`${onest.variable} ${spaceGrotesk.variable} antialiased`} suppressHydrationWarning>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
         <Script
           async
           src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}

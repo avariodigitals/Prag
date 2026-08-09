@@ -6,7 +6,7 @@ import { getProducts } from '@/lib/woocommerce';
 import type { Product } from '@/lib/types';
 
 export const metadata = {
-  title: 'Technical Resources - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more',
+  title: 'Technical Resources',
   alternates: { canonical: 'https://www.prag.global/resources' },
 };
 

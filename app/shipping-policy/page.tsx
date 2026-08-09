@@ -2,7 +2,7 @@ import { getPage } from '@/lib/woocommerce';
 import PolicyPageLayout from '@/components/PolicyPageLayout';
 
 export const metadata = {
-  title: 'Shipping Policy - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more',
+  title: 'Shipping Policy',
   alternates: { canonical: 'https://www.prag.global/shipping-policy' },
 };
 

@@ -3,7 +3,7 @@ import { getSession } from '@/lib/auth';
 import WishlistView from '@/components/WishlistView';
 
 export const metadata = {
-  title: 'Saved Items - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more',
+  title: 'Saved Items',
   robots: { index: false, follow: true },
 };
 

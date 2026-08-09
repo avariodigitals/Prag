@@ -1,7 +1,7 @@
 import CartView from '@/components/CartView';
 
 export const metadata = {
-  title: 'My Cart - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more',
+  title: 'My Cart',
   robots: { index: false, follow: true },
 };
 

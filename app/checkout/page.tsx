@@ -2,7 +2,7 @@ import CheckoutView from '@/components/CheckoutView';
 
 export const dynamic = 'force-dynamic';
 export const metadata = {
-  title: 'Checkout - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more',
+  title: 'Checkout',
   robots: { index: false, follow: true },
 };
 

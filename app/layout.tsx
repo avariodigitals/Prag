@@ -29,13 +29,16 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'PRAG - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more',
-  description: 'Shop inverters, stabilizers, solar panels and batteries. Engineered for real-world loads.',
+  title: {
+    default: 'PRAG Shop – Inverters, Stabilizers, Batteries & Solar Products',
+    template: '%s | PRAG Shop',
+  },
+  description: 'Shop PRAG inverters, voltage stabilizers, lithium batteries and solar products online, with secure payment and nationwide delivery across Nigeria.',
   metadataBase: new URL('https://shop.prag.global'),
   alternates: { canonical: 'https://shop.prag.global' },
   openGraph: {
-    title: 'PRAG – Nigeria\'s Leading Power Engineering Company',
-    description: 'Shop inverters, stabilizers, solar panels and batteries. Engineered for real-world loads.',
+    title: 'PRAG Shop – Inverters, Stabilizers, Batteries & Solar Products',
+    description: 'Shop PRAG inverters, voltage stabilizers, lithium batteries and solar products online, with secure payment and nationwide delivery across Nigeria.',
     url: 'https://shop.prag.global/',
     siteName: 'PRAG',
     images: [
@@ -43,15 +46,15 @@ export const metadata: Metadata = {
         url: 'https://central.prag.global/wp-content/uploads/2026/04/Prag-Logo.png',
         width: 1200,
         height: 630,
-        alt: 'PRAG – Nigeria\'s Leading Power Engineering Company',
+        alt: 'PRAG Shop – Inverters, Stabilizers, Batteries & Solar Products',
       },
     ],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'PRAG – Nigeria\'s Leading Power Engineering Company',
-    description: 'Shop inverters, stabilizers, solar panels and batteries. Engineered for real-world loads.',
+    title: 'PRAG Shop – Inverters, Stabilizers, Batteries & Solar Products',
+    description: 'Shop PRAG inverters, voltage stabilizers, lithium batteries and solar products online, with secure payment and nationwide delivery across Nigeria.',
     images: ['https://central.prag.global/wp-content/uploads/2026/04/Prag-Logo.png'],
   },
 };

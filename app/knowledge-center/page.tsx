@@ -4,7 +4,7 @@ export const dynamic = 'force-dynamic';
 import BlogGrid from '@/components/BlogGrid';
 import { getPosts, getPostCategories } from '@/lib/woocommerce';
 
-export const metadata = { title: 'Knowledge Center - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more' };
+export const metadata = { title: 'Knowledge Center' };
 
 interface Props {
   searchParams: Promise<{ category?: string; page?: string }>;

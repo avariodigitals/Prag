@@ -6,7 +6,7 @@ import { getStores } from '@/lib/woocommerce';
 import type { Store } from '@/lib/types';
 
 export const metadata = {
-  title: 'PRAG Stores - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more',
+  title: 'PRAG Stores',
   alternates: { canonical: 'https://shop.prag.global/stores' },
 };
 

@@ -5,7 +5,7 @@ import type { Product } from '@/lib/types';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Product Comparison - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more',
+  title: 'Product Comparison',
   robots: { index: false, follow: true },
 };
 

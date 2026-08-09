@@ -1,7 +1,7 @@
 import DistributorForm from '@/components/DistributorForm';
 
 export const metadata = {
-  title: 'Become a Distributor - Nigeria Number #1 Inverter, Battery, Stabilizer, Solar Solutions and more',
+  title: 'Become a Distributor',
   alternates: { canonical: 'https://www.prag.global/distributor' },
 };
 

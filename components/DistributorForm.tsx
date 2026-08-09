@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import Turnstile from './Turnstile';
 
 const TIERS = ['Authorized Dealer', 'Certified Installer', 'Product Reseller'];
 const ALLOWED_TIERS = new Set(TIERS);
@@ -63,6 +64,9 @@ export default function DistributorForm() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [sending, setSending] = useState(false);
   const [toast, setToast] = useState<Toast | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
+  const onVerify = useCallback((token: string) => setTurnstileToken(token), []);
 
   useEffect(() => {
     if (!toast) return;
@@ -79,6 +83,10 @@ export default function DistributorForm() {
     e.preventDefault();
     const error = validateDistributorForm(form);
     if (error) { setToast({ type: 'error', message: error }); return; }
+    if (!turnstileToken) {
+      setToast({ type: 'error', message: 'Please complete the security check before submitting.' });
+      return;
+    }
     setSending(true);
     try {
       const res = await fetch('/api/distributor', {
@@ -93,16 +101,21 @@ export default function DistributorForm() {
           type: form.type,
           tier: form.tier,
           message: form.message,
+          turnstileToken,
         }),
       });
       const data = await res.json();
       if (res.ok && data.success) {
         setForm(EMPTY_FORM);
+        setTurnstileToken('');
+        setTurnstileResetKey((k) => k + 1);
         setToast({ type: 'success', message: "Our partnership team will contact you within 2 business days." });
       } else {
-        setToast({ type: 'error', message: 'Something went wrong. Please try again or email us directly.' });
+        setTurnstileResetKey((k) => k + 1);
+        setToast({ type: 'error', message: data?.message || 'Something went wrong. Please try again or email us directly.' });
       }
     } catch {
+      setTurnstileResetKey((k) => k + 1);
       setToast({ type: 'error', message: 'Something went wrong. Please try again or email us directly.' });
     } finally {
       setSending(false);
@@ -156,7 +169,9 @@ export default function DistributorForm() {
             className="w-full p-2.5 bg-white rounded-lg border-[1.31px] border-zinc-300 text-zinc-900 text-sm font-normal font-['Montserrat'] focus:border-sky-700 outline-none transition-colors resize-none" />
         </div>
 
-        <button type="submit" disabled={sending}
+        <Turnstile onVerify={onVerify} resetKey={turnstileResetKey} />
+
+        <button type="submit" disabled={sending || !turnstileToken}
           className="w-full py-3 bg-sky-700 rounded-lg text-white text-base font-semibold font-['DM_Sans'] leading-6 hover:bg-sky-800 transition-colors disabled:opacity-60">
           {sending ? 'Submitting...' : 'Submit Application'}
         </button>

@@ -481,6 +481,7 @@ export interface ContactFormData {
   company?: string;
   enquiry_type?: string;
   message: string;
+  turnstileToken?: string;
 }
 
 export async function submitContactForm(data: ContactFormData): Promise<{ success: boolean }> {

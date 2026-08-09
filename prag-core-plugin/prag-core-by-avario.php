@@ -289,6 +289,16 @@ class Prag_Core_Bridge {
             ]
         ]);
 
+        // Post SEO meta — exposes Yoast postmeta (title, metadesc, focuskw)
+        // for headless frontend consumption. Read-only, public.
+        register_rest_route($namespace, '/post-seo/(?P<id>\d+)', [
+            [
+                'methods'             => 'GET',
+                'callback'            => [$this, 'get_post_seo_meta'],
+                'permission_callback' => '__return_true',
+            ],
+        ]);
+
         register_rest_route($namespace, '/product-document', [
             [
                 'methods' => 'POST',
@@ -915,6 +925,24 @@ class Prag_Core_Bridge {
         }
         update_option('prag_admin_config', wp_json_encode($params), false);
         return ['success' => true, 'message' => 'Admin config saved'];
+    }
+
+    /**
+     * Get Post SEO Meta (Yoast postmeta for headless frontend)
+     * Returns Yoast title, metadesc, and focuskw for a given post ID.
+     * Read-only, publicly accessible.
+     */
+    public function get_post_seo_meta($request) {
+        $id = (int) $request->get_param('id');
+        if ($id <= 0) {
+            return new WP_Error('invalid_id', 'Valid post ID is required', ['status' => 400]);
+        }
+        return rest_ensure_response([
+            'id'              => $id,
+            'seo_title'       => get_post_meta($id, '_yoast_wpseo_title', true),
+            'meta_description' => get_post_meta($id, '_yoast_wpseo_metadesc', true),
+            'focus_keyphrase' => get_post_meta($id, '_yoast_wpseo_focuskw', true),
+        ]);
     }
 
     /**

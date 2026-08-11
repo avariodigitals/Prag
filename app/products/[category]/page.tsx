@@ -110,7 +110,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   ]);
 
   if (!knownId && !cat) {
-    const product = await getProductBySlug(category);
+    const product = await getProductBySlug(category).catch(() => null);
     if (product) redirect(productUrl(product));
   }
 

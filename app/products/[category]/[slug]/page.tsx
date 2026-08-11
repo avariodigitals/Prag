@@ -11,7 +11,7 @@ interface Props {
 
 export async function generateMetadata({ params }: Props) {
   const { category, slug } = await params;
-  const product = await getProductBySlug(slug);
+  const product = await getProductBySlug(slug).catch(() => null);
   if (!product) return { title: 'Product – PRAG' };
 
   const description = product.short_description?.replace(/<[^>]+>/g, '').trim().slice(0, 160)
@@ -48,7 +48,7 @@ export async function generateMetadata({ params }: Props) {
 export default async function ProductDetailPage({ params }: Props) {
   const { category, slug } = await params;
   const [product, relatedResult] = await Promise.all([
-    getProductBySlug(slug),
+    getProductBySlug(slug).catch(() => null),
     getProducts({ category, per_page: 4 }).catch(() => ({ products: [] as Product[], total: 0 })),
   ]);
   const related = relatedResult.products;

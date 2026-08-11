@@ -237,22 +237,17 @@ export const getCategories = unstable_cache(
 
 export const getProductBySlug = unstable_cache(
   async (slug: string): Promise<Product | null> => {
-    try {
-      const res = await fetchWithRetry(
-        `${baseUrl()}/products?slug=${slug}&_fields=id,name,slug,sku,price,regular_price,sale_price,on_sale,status,stock_status,short_description,description,images,categories,tags,featured,date_created,attributes,dimensions,weight&${authParams()}`,
-        { next: { revalidate: 600 } },
-        FETCH_TIMEOUT_MS,
-        1
-      );
-      if (!res) return null;
-      if (!res.ok) return null;
-      const text = await res.text();
-      if (!text.startsWith('[')) return null;
-      const products = JSON.parse(text) as Product[];
-      return products[0] ?? null;
-    } catch {
-      return null;
-    }
+    const res = await fetchWithRetry(
+      `${baseUrl()}/products?slug=${slug}&status=publish&_fields=id,name,slug,sku,price,regular_price,sale_price,on_sale,status,stock_status,short_description,description,images,categories,tags,featured,date_created,attributes,dimensions,weight&${authParams()}`,
+      { next: { revalidate: 600 } },
+      FETCH_TIMEOUT_MS,
+      2
+    );
+    if (!res || !res.ok) throw new Error(`Failed to fetch product "${slug}"`);
+    const text = await res.text();
+    if (!text.startsWith('[')) return null;
+    const products = JSON.parse(text) as Product[];
+    return products[0] ?? null;
   },
   ['product-by-slug'],
   { revalidate: 3600, tags: ['product-by-slug'] }
@@ -452,8 +447,11 @@ export const getStores = unstable_cache(
 
 export async function getProductsForCompare(slugs: string[]): Promise<Product[]> {
   if (!slugs.length) return [];
-  const results = await Promise.all(slugs.map((slug) => getProductBySlug(slug)));
-  return results.filter((p): p is Product => p !== null);
+  const results = await Promise.allSettled(slugs.map((slug) => getProductBySlug(slug)));
+  return results
+    .filter((r): r is PromiseFulfilledResult<Product | null> => r.status === 'fulfilled')
+    .map(r => r.value)
+    .filter((p): p is Product => p !== null);
 }
 
 export interface WPPage {

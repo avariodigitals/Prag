@@ -19,6 +19,9 @@ const nextConfig: NextConfig = {
   },
   env: {
     NEXT_PUBLIC_SHOP_URL: process.env.NEXT_PUBLIC_SHOP_URL ?? 'https://shop.xyz.com',
+    // Lets the client Turnstile component detect preview deployments and use
+    // Cloudflare's test sitekey (production sitekey rejects *.vercel.app hosts).
+    NEXT_PUBLIC_VERCEL_ENV: process.env.VERCEL_ENV ?? '',
   },
   async redirects() {
     return [

@@ -12,6 +12,11 @@
 
 const TURNSTILE_VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 
+// Cloudflare's official test secret (always passes validation for the dummy
+// token). Paired with the test sitekey the client uses on Vercel preview
+// deployments — the production secret rejects dummy tokens.
+const TEST_SECRET_KEY = '1x0000000000000000000000000000000AA';
+
 export interface TurnstileVerifyResult {
   success: boolean;
   /** When true, verification was skipped because no secret key is configured. */
@@ -24,7 +29,9 @@ export async function verifyTurnstileToken(
   token: unknown,
   remoteip?: string | null,
 ): Promise<TurnstileVerifyResult> {
-  const secret = process.env.TURNSTILE_SECRET_KEY;
+  const secret = process.env.VERCEL_ENV === 'preview'
+    ? TEST_SECRET_KEY
+    : process.env.TURNSTILE_SECRET_KEY;
 
   // Fail-open when not configured (local dev / not yet set up).
   if (!secret) {

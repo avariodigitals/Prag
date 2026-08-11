@@ -31,6 +31,11 @@ declare global {
   }
 }
 
+// Cloudflare's official test sitekey (always passes, works on any domain).
+// Used on Vercel preview deployments, where the production sitekey's
+// hostname allow-list does not authorize *.vercel.app URLs (error 110200).
+const TEST_SITE_KEY = '1x00000000000000000000AA';
+
 const SCRIPT_SRC = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 let scriptLoadPromise: Promise<void> | null = null;
 
@@ -65,7 +70,9 @@ interface Props {
 }
 
 export default function Turnstile({ onVerify, resetKey, className }: Props) {
-  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+  const siteKey = process.env.NEXT_PUBLIC_VERCEL_ENV === 'preview'
+    ? TEST_SITE_KEY
+    : process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
   const [error, setError] = useState(false);

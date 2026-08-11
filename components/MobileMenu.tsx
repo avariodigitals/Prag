@@ -6,7 +6,7 @@ import { ShoppingCart, X } from 'lucide-react';
 import { useCart } from '@/lib/CartContext';
 
 const NAV_CATEGORIES = [
-  { label: 'Stabilizer', href: '/products/all-prag-stabilizers' },
+  { label: 'Stabilizer', href: '/products/voltage-stabilizers' },
   { label: 'Inverter', href: '/products/inverters' },
   { label: 'Solar', href: '/products/solar' },
   { label: 'Batteries', href: '/products/batteries' },

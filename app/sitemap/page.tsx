@@ -12,7 +12,7 @@ const SECTIONS = [
     links: [
       { label: 'All Products', href: '/products' },
       { label: 'Batteries', href: '/products/batteries' },
-      { label: 'Stabilizers', href: '/products/all-prag-stabilizers' },
+      { label: 'Stabilizers', href: '/products/voltage-stabilizers' },
       { label: 'Inverters', href: '/products/inverters' },
       { label: 'Solar', href: '/products/solar' },
     ],

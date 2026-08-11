@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { ShieldCheck, Truck } from 'lucide-react';
 
 const NAV_CATEGORIES = [
-  { label: 'Stabilizer', slug: 'all-prag-stabilizers' },
+  { label: 'Stabilizer', slug: 'voltage-stabilizers' },
   { label: 'Inverter', slug: 'inverters' },
   { label: 'Solar', slug: 'solar' },
   { label: 'Batteries', slug: 'batteries' },

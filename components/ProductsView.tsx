@@ -37,14 +37,10 @@ export default function ProductsView({ allProducts, productsByCategory, categori
     ...parentCats.map(c => ({ label: c.name, slug: c.slug })),
   ];
 
-  const resolvedTopSlug = activeTop === 'voltage-stabilizers' && !categories.some((category) => category.slug === 'voltage-stabilizers')
-    ? 'all-prag-stabilizers'
-    : activeTop;
-
-  const topCat = categories.find((category) => category.slug === resolvedTopSlug);
+  const topCat = categories.find((category) => category.slug === activeTop);
 
   // Subcategories of the active top category, sorted by subcategoryOrder
-  const activeParentSlug = resolvedTopSlug;
+  const activeParentSlug = activeTop;
   const subOrder = subcategoryOrder?.[activeParentSlug] ?? [];
   const subcategories = topCat
     ? categories
@@ -65,7 +61,7 @@ export default function ProductsView({ allProducts, productsByCategory, categori
   } else if (activeSub) {
     products = productsByCategory[activeSub] ?? [];
   } else {
-    products = productsByCategory[resolvedTopSlug] ?? productsByCategory[activeTop] ?? [];
+    products = productsByCategory[activeTop] ?? [];
   }
 
   products = sortProductsBySizeThenPrice(products);

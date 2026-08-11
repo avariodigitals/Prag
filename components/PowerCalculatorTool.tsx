@@ -26,13 +26,6 @@ const APPLIANCES = [
   { name: 'Fluorescent Light (40W)', watts: 40 },
 ];
 
-// Standard KVA sizes — round up to nearest standard size
-const KVA_SIZES = [0.6, 1, 1.5, 2, 2.5, 3.5, 5, 7.5, 10, 15, 20];
-
-function nearestKva(kva: number): number {
-  return KVA_SIZES.find((k) => k >= kva) ?? KVA_SIZES[KVA_SIZES.length - 1];
-}
-
 const WHATSAPP_NUMBER = '2347036463977';
 
 export default function PowerCalculatorTool() {
@@ -52,8 +45,6 @@ export default function PowerCalculatorTool() {
   const appliancesAdded = Object.values(quantities).reduce((s, q) => s + (q > 0 ? 1 : 0), 0);
   const peakWatts = APPLIANCES.reduce((s, a) => s + a.watts * (quantities[a.name] ?? 0), 0);
   const dailyKwh = (peakWatts * 8) / 1000;
-  const rawKva = peakWatts / 1000 / 0.8;
-  const recommendedKva = nearestKva(rawKva);
 
   function getRecommendation() {
     if (appliancesAdded === 0) return;
@@ -67,8 +58,7 @@ export default function PowerCalculatorTool() {
       `Hello Prag, I'd like a power system recommendation. Here is the list of things I want to power:\n\n` +
       `${selected}\n\n` +
       `Peak Load: ${peakWatts}W\n` +
-      `Estimated Daily Usage: ${dailyKwh.toFixed(1)} KWh\n` +
-      `Suggested Inverter Size: ${recommendedKva} KVA`;
+      `Estimated Daily Usage: ${dailyKwh.toFixed(1)} KWh`;
 
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank', 'noopener,noreferrer');
@@ -118,7 +108,6 @@ export default function PowerCalculatorTool() {
             { label: 'Appliances Added', value: String(appliancesAdded) },
             { label: 'Peak Load', value: `${peakWatts}W` },
             { label: 'Daily Usage', value: `${dailyKwh.toFixed(1)} KWh` },
-            { label: 'Recommended Inverter', value: appliancesAdded > 0 ? `${recommendedKva} KVA` : '—' },
           ].map((item) => (
             <div key={item.label} className="flex flex-col items-center gap-0.5">
               <span className="text-white text-lg font-extrabold font-['Montserrat']">{item.value}</span>

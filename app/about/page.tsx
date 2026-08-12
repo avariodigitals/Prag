@@ -40,10 +40,18 @@ function parseStats(content: string): { display: number; suffix: string; label: 
   });
 }
 
-// Parse admin values content into title/body pairs separated by blank lines
+// Parse admin values content into title/body pairs.
+// Format: "Title: Body text" per block, separated by blank lines.
+// Also handles "Title\nBody text" (title on first line, body on rest).
 function parseValues(content: string): { title: string; body: string }[] {
   const blocks = content.split('\n\n').map(b => b.trim()).filter(Boolean);
   return blocks.map(block => {
+    // Try "Title: Body" format first
+    const colonMatch = block.match(/^([^:]+):\s*([\s\S]+)$/);
+    if (colonMatch) {
+      return { title: colonMatch[1].trim(), body: colonMatch[2].trim() };
+    }
+    // Fallback: title on first line, body on rest
     const lines = block.split('\n').map(l => l.trim());
     const title = lines[0] || '';
     const body = lines.slice(1).join(' ');
@@ -176,7 +184,7 @@ export default async function AboutPage() {
             <div className="w-3 h-3 bg-sky-700" />
             <span className="text-zinc-900 text-sm font-medium font-['Space_Grotesk'] uppercase tracking-widest">OUR CORE VALUES</span>
           </div>
-          <h2 className="max-w-[631px] text-center text-zinc-900 text-xl md:text-3xl font-bold font-['Onest'] leading-snug">
+          <h2 className="max-w-[631px] text-center text-zinc-900 text-xl md:text-3xl font-medium font-['Onest'] leading-snug">
             {valuesTitle}
           </h2>
           <p className="text-center text-neutral-500 text-base md:text-lg font-normal font-['Onest'] leading-relaxed">

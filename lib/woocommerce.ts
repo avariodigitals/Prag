@@ -416,7 +416,7 @@ export const getStores = unstable_cache(
       const url = `${wpBase()}/prag_store?per_page=100&_fields=id,title,meta`;
       const res = await fetch(url, {
         next: {
-          revalidate: PUBLIC_CONTENT_REVALIDATE_SECONDS,
+          revalidate: 300,
           tags: ['wc-stores', 'wordpress-content'],
         },
       });
@@ -442,7 +442,7 @@ export const getStores = unstable_cache(
     }
   },
   ['prag-stores'],
-  { revalidate: 3600 }
+  { revalidate: 300, tags: ['wc-stores', 'wordpress-content'] }
 );
 
 export async function getProductsForCompare(slugs: string[]): Promise<Product[]> {

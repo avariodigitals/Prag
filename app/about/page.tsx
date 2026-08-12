@@ -4,16 +4,16 @@ import { getB2CPublicContent, findB2CPage, findVisibleSectionsByType } from '@/l
 
 export const metadata = {
   title: 'About Us – Prag',
-  alternates: { canonical: 'https://www.prag.global/about' },
+  alternates: { canonical: 'https://shop.prag.global/about' },
 };
 
-const STATS = [
+const FALLBACK_STATS = [
   { value: 50000, display: 50, suffix: 'K+', label: 'Systems Installed' },
   { value: 20, display: 20, suffix: '+', label: 'Years Active' },
   { value: 36, display: 36, suffix: '', label: 'States Covered' },
 ];
 
-const VALUES = [
+const FALLBACK_VALUES = [
   { title: 'Engineering Excellence', body: 'Engineering Power Systems with Precision, Technical Expertise, and a Focus on Long-Term Performance' },
   { title: 'Reliable Power Systems You Trust', body: 'Building Reliable Power Solutions That Perform Consistently Under Real-World Conditions' },
   { title: 'Practical Solutions for Real Conditions', body: 'Delivering Practical Power Solutions Designed for Real Environments, Not Just Ideal Scenarios' },
@@ -26,6 +26,31 @@ const STORY_PARAS = [
   'Today, PRAG provides voltage stabilization, backup power, solar energy, and energy storage solutions backed by technical expertise and real-world experience.\nOur focus remains the same: delivering reliable power solutions designed for the realities of Nigerian power conditions.',
 ];
 
+// Parse admin stats content lines like "50K+ Systems Installed" into structured stats
+function parseStats(content: string): { display: number; suffix: string; label: string }[] {
+  const lines = content.split('\n').map(l => l.trim()).filter(Boolean);
+  return lines.map(line => {
+    // Match patterns like "50K+ Systems Installed", "20+ Years Active", "36 States Covered"
+    const match = line.match(/^(\d+)(K\+|\+|)\s+(.+)$/);
+    if (match) {
+      return { display: Number(match[1]), suffix: match[2], label: match[3] };
+    }
+    // Fallback: just show the whole line as label
+    return { display: 0, suffix: '', label: line };
+  });
+}
+
+// Parse admin values content into title/body pairs separated by blank lines
+function parseValues(content: string): { title: string; body: string }[] {
+  const blocks = content.split('\n\n').map(b => b.trim()).filter(Boolean);
+  return blocks.map(block => {
+    const lines = block.split('\n').map(l => l.trim());
+    const title = lines[0] || '';
+    const body = lines.slice(1).join(' ');
+    return { title, body: body || title };
+  });
+}
+
 export default async function AboutPage() {
   const content = await getB2CPublicContent();
   const page = findB2CPage(content, '/about');
@@ -33,6 +58,8 @@ export default async function AboutPage() {
   const contentSections = findVisibleSectionsByType(page, 'content');
   const introSection = contentSections[0];
   const storySection = contentSections[1];
+  const statsSection = findVisibleSectionsByType(page, 'stats')[0];
+  const valuesSection = findVisibleSectionsByType(page, 'values')[0];
 
   const heroTitle = heroSection?.summary || 'Engineering Reliable Power Solutions for Real-World Challenges';
   const heroDesc = heroSection?.content || 'PRAG delivers power stabilization, backup power, solar energy, and energy storage solutions designed for Nigerian power conditions.';
@@ -49,6 +76,12 @@ export default async function AboutPage() {
   const storyTitle = storySection?.summary || 'Nigeria\'s Leading Provider of Voltage Regulation, Power Backup, Storage, and Renewable Energy Solutions.';
   const storyContent = storySection?.content || STORY_PARAS.join('\n\n');
   const storyImage = storySection?.imageUrl || 'https://central.prag.global/wp-content/uploads/2026/04/51105cfa2d7e118079c6acdb18a81c8b54dc18e6-1.png';
+
+  // Use admin stats if available, otherwise fallback
+  const stats = statsSection?.content ? parseStats(statsSection.content) : FALLBACK_STATS;
+  const values = valuesSection?.content ? parseValues(valuesSection.content) : FALLBACK_VALUES;
+  const valuesTitle = valuesSection?.summary || 'Built on Principles That Deliver Reliable Results';
+  const valuesIntro = valuesSection?.kicker || 'Our work is guided by a commitment to quality, precision, and long-term performance.';
 
   return (
     <main className="w-full bg-white flex flex-col">
@@ -82,8 +115,8 @@ export default async function AboutPage() {
 
             {/* Stats */}
             <div className="flex flex-col md:flex-row md:justify-between items-center gap-10 md:gap-0">
-              {STATS.map((stat) => (
-                <div key={stat.label} className="flex flex-col items-center gap-0.5 w-full">
+              {stats.map((stat, i) => (
+                <div key={i} className="flex flex-col items-center gap-0.5 w-full">
                   <span className="text-sky-700 text-3xl md:text-4xl font-bold font-['Onest'] text-center">
                     <CountUp value={stat.display} suffix={stat.suffix} />
                   </span>
@@ -144,16 +177,16 @@ export default async function AboutPage() {
             <span className="text-zinc-900 text-sm font-medium font-['Space_Grotesk'] uppercase tracking-widest">OUR CORE VALUES</span>
           </div>
           <h2 className="max-w-[631px] text-center text-zinc-900 text-xl md:text-3xl font-bold font-['Onest'] leading-snug">
-            Built on Principles That Deliver Reliable Results
+            {valuesTitle}
           </h2>
           <p className="text-center text-neutral-500 text-base md:text-lg font-normal font-['Onest'] leading-relaxed">
-            Our work is guided by a commitment to quality, precision, and long-term performance.
+            {valuesIntro}
           </p>
         </div>
 
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
-          {VALUES.map((val) => (
-            <div key={val.title} className="p-6 bg-white rounded-3xl outline outline-[0.3px] outline-zinc-600 flex flex-col gap-8 md:gap-12">
+          {values.map((val, i) => (
+            <div key={i} className="p-6 bg-white rounded-3xl outline outline-[0.3px] outline-zinc-600 flex flex-col gap-8 md:gap-12">
               <div className="flex flex-col gap-3">
                 <div className="p-3 bg-sky-700 rounded-full w-fit">
                   <div className="w-4 h-4 bg-white rounded-sm" />

@@ -1,4 +1,5 @@
 import DistributorForm from '@/components/DistributorForm';
+import { getB2CPublicContent, findB2CPage, findVisibleSectionsByType } from '@/lib/b2cContent';
 
 export const metadata = {
   title: 'Become a Distributor',
@@ -20,16 +21,45 @@ const TIERS = [
   { title: 'Join as a Product Reseller', body: 'Expand your offerings by reselling PRAG solar solutions to your network. With flexible purchasing options and competitive margins.' },
 ];
 
-export default function DistributorPage() {
+function parseCards(content: string): { title: string; body: string }[] {
+  return content
+    .split('\n\n')
+    .map((block) => {
+      const parts = block.split(':');
+      if (parts.length >= 2) {
+        return { title: parts[0].trim(), body: parts.slice(1).join(':').trim() };
+      }
+      return null;
+    })
+    .filter((item): item is { title: string; body: string } => item !== null);
+}
+
+export default async function DistributorPage() {
+  const content = await getB2CPublicContent();
+  const page = findB2CPage(content, '/distributor');
+  const heroSection = findVisibleSectionsByType(page, 'hero')[0];
+  const cardSections = findVisibleSectionsByType(page, 'cards');
+  const benefitsSection = cardSections[0];
+  const tiersSection = cardSections[1];
+
+  const heroTitle = heroSection?.summary || 'Sell the Solutions Nigeria Needs.';
+  const heroDesc = heroSection?.content || "Partner with PRAG and build a profitable business distributing Nigeria's most trusted power engineering products.";
+  const benefitsKicker = benefitsSection?.kicker || 'PARTNER BENEFITS';
+  const benefitsTitle = benefitsSection?.summary || 'Everything You Need to Build a Thriving Power Business';
+  const benefits = benefitsSection?.content ? parseCards(benefitsSection.content) : BENEFITS;
+  const tiersKicker = tiersSection?.kicker || 'PARTNERSHIP TYPE';
+  const tiersTitle = tiersSection?.summary || 'Choose the Type That Fits Your Business';
+  const tiers = tiersSection?.content ? parseCards(tiersSection.content) : TIERS;
+
   return (
     <main className="w-full bg-white flex flex-col">
       {/* Hero */}
       <div className="w-full px-4 md:px-20 py-6 md:py-10 bg-stone-50 flex flex-col items-center gap-4 md:gap-6">
         <h1 className="text-black text-2xl md:text-3xl font-bold font-['Montserrat'] text-center leading-snug">
-          Sell the Solutions Nigeria Needs.
+          {heroTitle}
         </h1>
         <p className="max-w-[531px] text-center text-black text-sm md:text-base font-normal font-['Montserrat'] leading-relaxed">
-          Partner with PRAG and build a profitable business distributing Nigeria&apos;s most trusted power engineering products.
+          {heroDesc}
         </p>
       </div>
 
@@ -38,14 +68,14 @@ export default function DistributorPage() {
         <div className="flex flex-col gap-3 md:gap-4">
           <div className="flex items-center gap-1.5">
             <div className="w-4 h-4 bg-sky-700" />
-            <span className="text-zinc-900 text-base font-normal font-['Montserrat']">PARTNER BENEFITS</span>
+            <span className="text-zinc-900 text-base font-normal font-['Montserrat']">{benefitsKicker}</span>
           </div>
           <h2 className="max-w-[631px] text-zinc-900 text-2xl md:text-4xl font-bold font-['Montserrat']">
-            Everything You Need to Build a Thriving Power Business
+            {benefitsTitle}
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {BENEFITS.map((b) => (
+          {benefits.map((b) => (
             <div key={b.title} className="p-5 rounded-2xl outline outline-[0.3px] outline-zinc-500/50 flex flex-col gap-4">
               <div className="w-7 h-7 bg-sky-700 rounded-full" />
               <h3 className="text-zinc-900 text-lg font-medium font-['Montserrat']">{b.title}</h3>
@@ -60,14 +90,14 @@ export default function DistributorPage() {
         <div className="flex flex-col items-center gap-3">
           <div className="flex items-center gap-1.5">
             <div className="w-4 h-4 bg-sky-700" />
-            <span className="text-zinc-900 text-base font-normal font-['Montserrat']">PARTNERSHIP TYPE</span>
+            <span className="text-zinc-900 text-base font-normal font-['Montserrat']">{tiersKicker}</span>
           </div>
           <h2 className="max-w-[631px] text-center text-zinc-900 text-2xl md:text-4xl font-bold font-['Montserrat']">
-            Choose the Type That Fits Your Business
+            {tiersTitle}
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {TIERS.map((tier) => (
+          {tiers.map((tier) => (
             <div key={tier.title} className="p-5 bg-white rounded-2xl outline outline-[0.3px] outline-zinc-500/50 flex flex-col gap-4">
               <div className="p-2.5 bg-sky-700 rounded-full w-fit">
                 <div className="w-4 h-4 bg-white rounded-sm" />

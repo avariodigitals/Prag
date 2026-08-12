@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import CountUp from '@/components/CountUp';
+import { getB2CPublicContent, findB2CPage, findVisibleSectionsByType } from '@/lib/b2cContent';
 
 export const metadata = {
   title: 'About Us – Prag',
@@ -25,17 +26,40 @@ const STORY_PARAS = [
   'Today, PRAG provides voltage stabilization, backup power, solar energy, and energy storage solutions backed by technical expertise and real-world experience.\nOur focus remains the same: delivering reliable power solutions designed for the realities of Nigerian power conditions.',
 ];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const content = await getB2CPublicContent();
+  const page = findB2CPage(content, '/about');
+  const heroSection = findVisibleSectionsByType(page, 'hero')[0];
+  const contentSections = findVisibleSectionsByType(page, 'content');
+  const introSection = contentSections[0];
+  const storySection = contentSections[1];
+
+  const heroTitle = heroSection?.summary || 'Engineering Reliable Power Solutions for Real-World Challenges';
+  const heroDesc = heroSection?.content || 'PRAG delivers power stabilization, backup power, solar energy, and energy storage solutions designed for Nigerian power conditions.';
+  const introKicker = introSection?.kicker || 'ABOUT PRAG';
+  const introTitle = introSection?.summary || 'Built on Engineering, Driven by Real Power Challenges';
+  const introContent = introSection?.content || `At PRAG, we believe reliable power starts with proper engineering.
+                Rather than simply supplying equipment, we design complete power systems tailored to each client's needs, ensuring long-term performance, protection, and efficiency.
+
+                We help homes, businesses, and industries achieve reliable, efficient, and sustainable power through engineering-led system design and implementation.
+
+                Our solutions are backed by years of practical experience and thousands of successful installations across Nigeria.`;
+  const introImage = introSection?.imageUrl || 'https://central.prag.global/wp-content/uploads/2026/04/51105cfa2d7e118079c6acdb18a81c8b54dc18e6.png';
+  const storyKicker = storySection?.kicker || 'OUR STORY';
+  const storyTitle = storySection?.summary || 'Nigeria\'s Leading Provider of Voltage Regulation, Power Backup, Storage, and Renewable Energy Solutions.';
+  const storyContent = storySection?.content || STORY_PARAS.join('\n\n');
+  const storyImage = storySection?.imageUrl || 'https://central.prag.global/wp-content/uploads/2026/04/51105cfa2d7e118079c6acdb18a81c8b54dc18e6-1.png';
+
   return (
     <main className="w-full bg-white flex flex-col">
 
       {/* Hero */}
       <div className="w-full px-4 md:px-14 pt-10 md:pt-20 pb-8 md:pb-10 bg-stone-50 flex flex-col items-center gap-4 md:gap-6">
         <h1 className="text-black text-2xl md:text-4xl font-bold font-['Onest'] text-center leading-snug">
-          Engineering Reliable Power<br />Solutions for Real-World Challenges
+          {heroTitle}
         </h1>
         <p className="max-w-[531px] text-center text-black text-base md:text-lg font-normal font-['Space_Grotesk'] leading-relaxed">
-          PRAG delivers power stabilization, backup power, solar energy, and energy storage solutions designed for Nigerian power conditions.
+          {heroDesc}
         </p>
       </div>
 
@@ -44,20 +68,15 @@ export default function AboutPage() {
         <div className="flex flex-col md:flex-row items-start gap-8 md:gap-20">
           <div className="flex items-center gap-1.5 shrink-0">
             <div className="w-3 h-3 bg-sky-700" />
-            <span className="text-zinc-900 text-sm font-medium font-['Space_Grotesk'] uppercase tracking-widest">ABOUT PRAG</span>
+            <span className="text-zinc-900 text-sm font-medium font-['Space_Grotesk'] uppercase tracking-widest">{introKicker}</span>
           </div>
           <div className="flex-1 flex flex-col gap-10 md:gap-16">
             <div className="flex flex-col gap-4">
               <h2 className="text-zinc-900 text-xl md:text-3xl font-semibold font-['Space_Grotesk'] leading-snug">
-                Built on Engineering, Driven by Real Power Challenges
+                {introTitle}
               </h2>
-              <p className="text-zinc-500 text-base md:text-lg font-normal font-['Space_Grotesk'] leading-relaxed">
-                At PRAG, we believe reliable power starts with proper engineering.
-                Rather than simply supplying equipment, we design complete power systems tailored to each client&apos;s needs, ensuring long-term performance, protection, and efficiency.
-                <br /><br />
-                We help homes, businesses, and industries achieve reliable, efficient, and sustainable power through engineering-led system design and implementation.
-                <br /><br />
-                Our solutions are backed by years of practical experience and thousands of successful installations across Nigeria.
+              <p className="text-zinc-500 text-base md:text-lg font-normal font-['Space_Grotesk'] leading-relaxed whitespace-pre-line">
+                {introContent}
               </p>
             </div>
 
@@ -76,7 +95,7 @@ export default function AboutPage() {
             {/* Team image */}
             <div className="relative w-full h-64 md:h-[499px] rounded-3xl overflow-hidden">
               <Image
-                src="https://central.prag.global/wp-content/uploads/2026/04/51105cfa2d7e118079c6acdb18a81c8b54dc18e6.png"
+                src={introImage}
                 alt="PRAG Team"
                 fill
                 sizes="(max-width: 768px) 100vw, 1082px"
@@ -92,17 +111,17 @@ export default function AboutPage() {
         <div className="flex flex-col items-center gap-4 md:gap-6">
           <div className="flex items-center gap-1.5">
             <div className="w-3 h-3 bg-sky-700" />
-            <span className="text-zinc-900 text-sm font-medium font-['Space_Grotesk'] uppercase tracking-widest">OUR STORY</span>
+            <span className="text-zinc-900 text-sm font-medium font-['Space_Grotesk'] uppercase tracking-widest">{storyKicker}</span>
           </div>
           <h2 className="max-w-[1082px] text-center text-zinc-900 text-xl md:text-3xl font-semibold font-['Space_Grotesk'] leading-snug">
-            Nigeria&apos;s Leading Provider of Voltage Regulation, Power Backup, Storage, and Renewable Energy Solutions.
+            {storyTitle}
           </h2>
         </div>
         {/* Story: text first, image below on mobile; side-by-side on desktop */}
         <div className="flex flex-col md:flex-row items-start md:items-center gap-8 md:gap-10">
           <div className="relative w-full md:w-[539px] h-64 md:h-[499px] rounded-3xl overflow-hidden shrink-0 order-2 md:order-1">
             <Image
-              src="https://central.prag.global/wp-content/uploads/2026/04/51105cfa2d7e118079c6acdb18a81c8b54dc18e6-1.png"
+              src={storyImage}
               alt="Our Story"
               fill
               sizes="(max-width: 768px) 100vw, 539px"
@@ -110,8 +129,8 @@ export default function AboutPage() {
             />
           </div>
           <div className="flex-1 flex flex-col gap-6 order-1 md:order-2">
-            {STORY_PARAS.map((para, i) => (
-              <p key={i} className="text-zinc-500 text-base md:text-lg font-normal font-['Space_Grotesk'] leading-relaxed">{para}</p>
+            {storyContent.split('\n\n').map((para, i) => (
+              <p key={i} className="text-zinc-500 text-base md:text-lg font-normal font-['Space_Grotesk'] leading-relaxed whitespace-pre-line">{para}</p>
             ))}
           </div>
         </div>

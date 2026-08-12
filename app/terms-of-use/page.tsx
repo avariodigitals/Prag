@@ -1,9 +1,10 @@
 import { getPage } from '@/lib/woocommerce';
 import PolicyPageLayout from '@/components/PolicyPageLayout';
+import { getB2CPublicContent, findB2CPage, findVisibleSectionsByType } from '@/lib/b2cContent';
 
 export const metadata = {
   title: 'Terms of Use',
-  alternates: { canonical: 'https://www.prag.global/terms-of-use' },
+  alternates: { canonical: 'https://shop.prag.global/terms-of-use' },
 };
 
 const SECTIONS = [
@@ -145,12 +146,19 @@ const SECTIONS = [
 ];
 
 export default async function TermsPage() {
-  const wpPage = await getPage('terms-of-use');
+  const [content, wpPage] = await Promise.all([
+    getB2CPublicContent(),
+    getPage('terms-of-use'),
+  ]);
+  const page = findB2CPage(content, '/terms-of-use');
+  const heroSection = findVisibleSectionsByType(page, 'hero')[0];
+  const heroTitle = heroSection?.summary || 'Terms of Use';
+
   if (wpPage) {
     return (
       <main className="w-full bg-white flex flex-col">
         <div className="w-full px-4 md:px-20 py-6 md:py-10 bg-stone-50 flex flex-col gap-4 md:gap-6">
-          <h1 className="text-black text-2xl md:text-3xl font-medium font-['Montserrat']" dangerouslySetInnerHTML={{ __html: wpPage.title.rendered }} />
+          <h1 className="text-black text-2xl md:text-3xl font-medium font-['Montserrat']">{heroTitle}</h1>
         </div>
         <div className="w-full px-4 md:px-20 py-6 md:py-10 flex justify-center">
           <div className="w-full max-w-[997px] p-4 md:p-8 bg-white rounded-2xl outline outline-1 outline-zinc-100 wp-content"
@@ -159,5 +167,5 @@ export default async function TermsPage() {
       </main>
     );
   }
-  return <PolicyPageLayout title="Terms of Use" sections={SECTIONS} />;
+  return <PolicyPageLayout title={heroTitle} sections={SECTIONS} />;
 }

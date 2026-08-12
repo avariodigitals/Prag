@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { headers } from 'next/headers';
 import { getEcommerceScriptsForHost } from '@/lib/ecommerceConfig';
+import { getPosts } from '@/lib/woocommerce';
 
 const SHOP_FALLBACK_URL = process.env.NEXT_PUBLIC_SHOP_URL ?? 'https://shop.prag.global';
 
@@ -35,9 +36,9 @@ async function resolveSiteBaseUrl(): Promise<string> {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteBase = await resolveSiteBaseUrl();
 
-  // Shop sitemap advertises ONLY genuinely shop-indexable URLs.
+  // Shop sitemap advertises genuinely shop-indexable URLs.
   // Excluded (canonicalise to www.prag.global): products, product categories,
-  // Knowledge Center, and corporate/content duplicates (about, contact, resources,
+  // and corporate/content duplicates (about, contact, resources,
   // faq, distributor, shipping-policy, return-policy, privacy, terms-of-use).
   // Excluded (noindex): transactional URLs (cart, checkout, account, wishlist,
   // compare, search, order-received, order-failed, login, register).
@@ -48,7 +49,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${siteBase}/`, changeFrequency: 'daily', priority: 1 },
     { url: `${siteBase}/stores`, changeFrequency: 'weekly', priority: 0.7 },
+    { url: `${siteBase}/knowledge-center`, changeFrequency: 'daily', priority: 0.8 },
   ];
 
-  return staticRoutes;
+  // Include knowledge center articles
+  try {
+    const { posts } = await getPosts({ per_page: 100 });
+    const postRoutes: MetadataRoute.Sitemap = posts.map((post) => ({
+      url: `${siteBase}/knowledge-center/${post.slug}`,
+      lastModified: post.date ? new Date(post.date) : undefined,
+      changeFrequency: 'weekly',
+      priority: 0.6,
+    }));
+    return [...staticRoutes, ...postRoutes];
+  } catch {
+    return staticRoutes;
+  }
 }

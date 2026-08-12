@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { ManagedFAQSection } from '@/components/FAQ';
+import { getB2CPublicContent, findB2CPage, findVisibleSectionsByType } from '@/lib/b2cContent';
 
 export const metadata: Metadata = {
   title: 'FAQ',
@@ -34,20 +35,44 @@ const FAQ_ITEMS = [
   },
 ];
 
-export default function FAQPage() {
+export default async function FAQPage() {
+  const content = await getB2CPublicContent();
+  const page = findB2CPage(content, '/faq');
+  const heroSection = findVisibleSectionsByType(page, 'hero')[0];
+  const faqSection = findVisibleSectionsByType(page, 'faq')[0];
+
+  const heroTitle = heroSection?.summary || 'FAQ';
+  const heroDesc = heroSection?.content || DESCRIPTION;
+
+  // Parse FAQ items from admin content (format: "question|answer\n\nquestion|answer")
+  let items = FAQ_ITEMS;
+  if (faqSection?.content) {
+    const parsed = faqSection.content
+      .split('\n\n')
+      .map((block) => {
+        const parts = block.split('|');
+        if (parts.length >= 2) {
+          return { question: parts[0].trim(), answer: parts.slice(1).join('|').trim() };
+        }
+        return null;
+      })
+      .filter((item): item is { question: string; answer: string } => item !== null);
+    if (parsed.length > 0) items = parsed;
+  }
+
   return (
     <main className="w-full flex flex-col">
       <div className="w-full px-4 md:px-20 py-6 md:py-10 bg-stone-50 flex flex-col items-center gap-4 md:gap-6">
         <h1 className="text-black text-2xl md:text-3xl font-bold font-['Montserrat'] text-center leading-snug">
-          FAQ
+          {heroTitle}
         </h1>
-        <p className="max-w-[531px] text-center text-black text-sm md:text-base font-normal font-['Montserrat'] leading-relaxed">{DESCRIPTION}</p>
+        <p className="max-w-[531px] text-center text-black text-sm md:text-base font-normal font-['Montserrat'] leading-relaxed">{heroDesc}</p>
       </div>
 
       <ManagedFAQSection
         kicker="FAQ"
         title="FAQ"
-        items={FAQ_ITEMS}
+        items={items}
         hideHeader
       />
     </main>

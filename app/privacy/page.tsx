@@ -3,10 +3,11 @@ export const dynamic = 'force-dynamic';
 
 import { getPage } from '@/lib/woocommerce';
 import PolicyPageLayout from '@/components/PolicyPageLayout';
+import { getB2CPublicContent, findB2CPage, findVisibleSectionsByType } from '@/lib/b2cContent';
 
 export const metadata = {
   title: 'Privacy Policy',
-  alternates: { canonical: 'https://www.prag.global/privacy' },
+  alternates: { canonical: 'https://shop.prag.global/privacy' },
 };
 
 const SECTIONS = [
@@ -85,12 +86,19 @@ const SECTIONS = [
 ];
 
 export default async function PrivacyPage() {
-  const wpPage = await getPage('privacy-policy');
+  const [content, wpPage] = await Promise.all([
+    getB2CPublicContent(),
+    getPage('privacy-policy'),
+  ]);
+  const page = findB2CPage(content, '/privacy');
+  const heroSection = findVisibleSectionsByType(page, 'hero')[0];
+  const heroTitle = heroSection?.summary || 'Privacy Policy';
+
   if (wpPage) {
     return (
       <main className="w-full bg-white flex flex-col">
         <div className="w-full px-4 md:px-20 py-6 md:py-10 bg-stone-50 flex flex-col gap-4 md:gap-6">
-          <h1 className="text-black text-2xl md:text-3xl font-medium font-['Montserrat']" dangerouslySetInnerHTML={{ __html: wpPage.title.rendered }} />
+          <h1 className="text-black text-2xl md:text-3xl font-medium font-['Montserrat']">{heroTitle}</h1>
         </div>
         <div className="w-full px-4 md:px-20 py-6 md:py-10 flex justify-center">
           <div className="w-full max-w-[997px] p-4 md:p-8 bg-white rounded-2xl outline outline-1 outline-zinc-100 wp-content"
@@ -99,5 +107,5 @@ export default async function PrivacyPage() {
       </main>
     );
   }
-  return <PolicyPageLayout title="Privacy Policy" sections={SECTIONS} />;
+  return <PolicyPageLayout title={heroTitle} sections={SECTIONS} />;
 }

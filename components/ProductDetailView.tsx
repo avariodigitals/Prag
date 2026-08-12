@@ -17,6 +17,8 @@ function cleanWpContent(html: string): string {
     .replace(/javascript:/gi, '')
     .replace(/<img[^>]*>/gi, '')
     .replace(/<p>\s*<\/p>/gi, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\u00a0/g, ' ')
     .trim();
 }
 

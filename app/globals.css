@@ -18,10 +18,15 @@
   --font-space-grotesk: var(--font-space-grotesk);
 }
 
+html {
+  overflow-x: hidden;
+}
+
 body {
   font-family: var(--font-space-grotesk), sans-serif;
   background: #ffffff;
   color: #171717;
+  overflow-x: hidden;
 }
 
 /* Legacy font token mapping: keep original typography choices after rollback */
@@ -55,6 +60,8 @@ nav [class*="font-['Montserrat']"] {
   font-size: 1.1rem;
   line-height: 1.75;
   color: #475569;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .wp-content p {

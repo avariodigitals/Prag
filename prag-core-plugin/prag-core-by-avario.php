@@ -827,6 +827,8 @@ class Prag_Core_Bridge {
             'brand_banner_link'         => '/power-calculator',
             'brand_banner_whatsapp_text'=> 'Ask PRAG on WhatsApp',
             'brand_banner_image'        => '',
+            'brand_banner_enabled'      => true,
+            'brand_banners'             => [],
             'final_cta_title'           => 'Ready for More Reliable Power?',
             'final_cta_subtitle'        => 'Shop PRAG power solutions for your home today.',
             'final_cta_shop_text'       => 'Shop Now',

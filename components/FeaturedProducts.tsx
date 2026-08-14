@@ -58,6 +58,8 @@ function BestSellerCard({ product, whatsappDigits }: { product: Product; whatsap
   const isAvailable = !isOutOfStock && hasValidPrice;
 
   const spec = shortSpec(product);
+  // Hide spec line if it just repeats the rating already shown in the name
+  const specIsDuplicate = nameRating && spec && spec.replace(/[^a-zA-Z0-9]/g, '').includes(nameRating.replace(/[^a-zA-Z0-9]/g, ''));
 
   const orderText = `Hi, I'm interested in the ${product.name}.`;
   const orderHref = `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(orderText)}`;
@@ -111,12 +113,12 @@ function BestSellerCard({ product, whatsappDigits }: { product: Product; whatsap
         <Link href={productUrl(product)} aria-label={`View details for ${product.name}`} className="text-center">
           <h3 className="text-zinc-900 text-base font-bold font-['Montserrat'] leading-snug line-clamp-2 group-hover:text-sky-700 transition-colors" style={{ hyphens: 'auto', wordBreak: 'break-word' }}>
             {nameBase}
-            {nameRating && <span className="whitespace-nowrap"> {nameRating}</span>}
+            {nameRating && <span> {nameRating}</span>}
           </h3>
         </Link>
 
         {/* Short spec */}
-        {spec && (
+        {spec && !specIsDuplicate && (
           <p className="text-center text-zinc-500 text-xs font-normal font-['Montserrat'] line-clamp-1 min-h-[16px]">
             {spec}
           </p>

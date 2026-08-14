@@ -196,7 +196,7 @@ export default function TopBar({ initialUser = null, phone = '+2348032170129', w
                 <circle cx="12" cy="8" r="3" />
                 <path d="M6.168 18.849A4 4 0 0 1 10 16h4a4 4 0 0 1 3.832 2.849" />
               </svg>
-              <span className="text-neutral-700/70 text-base xl:text-lg font-medium font-['Onest'] leading-5 whitespace-nowrap">Login or Register</span>
+              <span className="text-neutral-700/70 text-sm xl:text-lg font-medium font-['Onest'] leading-5">Login or Register</span>
             </Link>
           )}
         </div>

@@ -33,7 +33,16 @@ const CALCULATOR_ICON = (
   </svg>
 );
 
+interface BannerItem {
+  image: string;
+  link: string;
+  enabled: boolean;
+}
+
 export default function BrandBanner({ settings }: { settings?: SiteSettings }) {
+  const enabled = settings?.brand_banner_enabled ?? true;
+  if (!enabled) return null;
+
   const title = settings?.brand_banner_title || FB.title;
   const description = settings?.brand_banner_description || FB.description;
   const cta = settings?.brand_banner_cta || FB.cta;
@@ -44,8 +53,11 @@ export default function BrandBanner({ settings }: { settings?: SiteSettings }) {
     settings?.socials?.whatsapp ||
     (settings?.whatsapp ? `https://wa.me/${settings.whatsapp.replace(/[^\d]/g, '')}` : FB.whatsappLink);
 
+  const extraBanners: BannerItem[] = (settings?.brand_banners || []).filter((b) => b.enabled !== false && b.image);
+
   return (
-    <section className="w-full px-4 md:px-20 py-10 md:py-14 flex flex-col justify-center items-center overflow-hidden">
+    <section className="w-full px-4 md:px-20 py-10 md:py-14 flex flex-col justify-center items-center gap-10 md:gap-14 overflow-hidden">
+      {/* Main brand banner with text + CTAs */}
       <div
         className="relative w-full max-w-[1229px] overflow-hidden rounded-3xl min-h-[420px] md:min-h-[460px] flex items-center"
         style={image ? { backgroundImage: `url('${image}')`, backgroundSize: 'cover', backgroundPosition: 'center center', backgroundRepeat: 'no-repeat', backgroundColor: '#0b1220' } : { background: 'linear-gradient(135deg, #0c1a33 0%, #0f2747 45%, #103a5e 100%)' }}
@@ -63,7 +75,7 @@ export default function BrandBanner({ settings }: { settings?: SiteSettings }) {
         <div className="absolute inset-0 md:hidden" style={{ background: 'linear-gradient(180deg, rgba(7,14,28,0.30) 0%, rgba(7,14,28,0.62) 60%, rgba(7,14,28,0.82) 100%)' }} aria-hidden="true" />
 
         <div className="relative z-10 w-full px-6 py-10 md:px-14 md:py-16 flex flex-col items-start gap-5 md:gap-6 text-left">
-          <h2 className="max-w-[640px] text-white text-3xl md:text-[52px] font-bold font-['Onest'] leading-[1.05]">
+          <h2 className="max-w-[640px] text-white text-2xl sm:text-3xl md:text-[52px] font-bold font-['Onest'] leading-[1.05]">
             {title}
           </h2>
 
@@ -95,6 +107,31 @@ export default function BrandBanner({ settings }: { settings?: SiteSettings }) {
           </div>
         </div>
       </div>
+
+      {/* Additional image-only banners */}
+      {extraBanners.length > 0 && (
+        <div className="w-full max-w-[1229px] flex flex-col gap-10 md:gap-14">
+          {extraBanners.map((banner, i) => {
+            const inner = (
+              <div
+                className="relative w-full overflow-hidden rounded-3xl min-h-[200px] md:min-h-[280px] bg-slate-200"
+                style={{ backgroundImage: `url('${banner.image}')`, backgroundSize: 'cover', backgroundPosition: 'center center', backgroundRepeat: 'no-repeat' }}
+              />
+            );
+            return (
+              <div key={`banner-${i}`} className="w-full">
+                {banner.link ? (
+                  <Link href={banner.link} className="block w-full">
+                    {inner}
+                  </Link>
+                ) : (
+                  inner
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }

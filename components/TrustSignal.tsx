@@ -62,7 +62,7 @@ export default function TrustSignal({ settings }: { settings?: SiteSettings }) {
 
   return (
     <section className="w-full px-4 md:px-20 py-12 md:py-16 bg-white">
-      <div className="w-full max-w-[1228px] mx-auto flex flex-col gap-8 md:gap-10">
+      <div className="w-full max-w-[900px] mx-auto rounded-3xl border border-slate-200 px-5 py-8 md:px-8 md:py-10 flex flex-col gap-6 md:gap-8">
         {/* Header */}
         <div className="flex flex-col items-center gap-2 text-center">
           <div className="flex items-center gap-2">

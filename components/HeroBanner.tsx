@@ -69,14 +69,20 @@ function BoltIcon({ className }: { className?: string }) {
 
 const STAT_ICONS = [MapPinIcon, ClockIcon, BoltIcon];
 
-type TransitionType = 'fade' | 'slide' | 'zoom' | 'flip';
+type TransitionType = 'fade' | 'slide' | 'zoom' | 'flip' | 'slide-up' | 'blur' | 'skew' | 'rotate-zoom';
 
 const TRANSITION_CLASSES: Record<TransitionType, { active: string; inactive: string }> = {
-  fade:  { active: 'opacity-100',                       inactive: 'opacity-0' },
-  slide: { active: 'opacity-100 translate-x-0',         inactive: 'opacity-0 translate-x-12' },
-  zoom:  { active: 'opacity-100 scale-100',             inactive: 'opacity-0 scale-95' },
-  flip:  { active: 'opacity-100 rotate-0',              inactive: 'opacity-0 rotate-3' },
+  fade:        { active: 'opacity-100',                        inactive: 'opacity-0' },
+  slide:       { active: 'opacity-100 translate-x-0',          inactive: 'opacity-0 translate-x-12' },
+  zoom:        { active: 'opacity-100 scale-100',              inactive: 'opacity-0 scale-95' },
+  flip:        { active: 'opacity-100 rotate-0',               inactive: 'opacity-0 rotate-3' },
+  'slide-up':  { active: 'opacity-100 translate-y-0',          inactive: 'opacity-0 translate-y-8' },
+  blur:        { active: 'opacity-100 blur-0',                 inactive: 'opacity-0 blur-md' },
+  skew:        { active: 'opacity-100 skew-x-0',               inactive: 'opacity-0 skew-x-6' },
+  'rotate-zoom': { active: 'opacity-100 rotate-0 scale-100',   inactive: 'opacity-0 rotate-6 scale-90' },
 };
+
+const VALID_TRANSITIONS = ['fade', 'slide', 'zoom', 'flip', 'slide-up', 'blur', 'skew', 'rotate-zoom'];
 
 export default function HeroBanner({ slides: slidesProp, heroBg, whatsappLink, slideTransition }: { slides?: Slide[]; heroBg?: string; whatsappLink?: string; slideTransition?: string }) {
   const allSlides = (slidesProp && slidesProp.length > 0) ? slidesProp : FALLBACK_SLIDES;
@@ -84,7 +90,7 @@ export default function HeroBanner({ slides: slidesProp, heroBg, whatsappLink, s
   const bgSrc = heroBg || FALLBACK_BG;
   const waBase = whatsappLink || FALLBACK_WHATSAPP;
   const helpChooseHref = `${waBase}${waBase.includes('?') ? '&' : '?'}text=${encodeURIComponent(HELP_ME_CHOOSE_TEXT)}`;
-  const transitionType = (['fade', 'slide', 'zoom', 'flip'].includes(slideTransition || '') ? slideTransition : 'fade') as TransitionType;
+  const transitionType = (VALID_TRANSITIONS.includes(slideTransition || '') ? slideTransition : 'fade') as TransitionType;
   const transition = TRANSITION_CLASSES[transitionType];
   const defaultSlideIndex = Math.max(
     0,
@@ -135,7 +141,7 @@ export default function HeroBanner({ slides: slidesProp, heroBg, whatsappLink, s
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      <div className="relative w-full mx-auto rounded-b-3xl overflow-hidden min-h-[620px] md:min-h-[560px] lg:min-h-[640px] shadow-sm md:bg-transparent">
+      <div className="relative w-full mx-auto overflow-hidden min-h-[620px] md:min-h-[560px] lg:min-h-[640px] shadow-sm md:bg-transparent">
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat md:hidden"
           style={{
@@ -162,13 +168,13 @@ export default function HeroBanner({ slides: slidesProp, heroBg, whatsappLink, s
           }}
           aria-hidden="true"
         />
-        <div className="absolute inset-0 hidden md:block" aria-hidden="true">
+        <div className="absolute inset-0 hidden md:block bg-slate-900" aria-hidden="true">
           {slides.map((s, i) => {
             const slideBg = s.backgroundImage || bgSrc;
             return (
               <div
                 key={`bg-${i}`}
-                className={`absolute inset-0 transition-all duration-700 ${i === current ? transition.active : transition.inactive}`}
+                className={`absolute inset-0 transition-opacity duration-700 ${i === current ? 'opacity-100' : 'opacity-0'}`}
               >
                 <div
                   className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -179,7 +185,7 @@ export default function HeroBanner({ slides: slidesProp, heroBg, whatsappLink, s
                   }}
                 />
                 <div
-                  className="absolute inset-0"
+                  className={`absolute inset-0 transition-all duration-700 ${i === current ? transition.active : transition.inactive}`}
                   style={{
                     background: `linear-gradient(90deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.30) 30%, rgba(0,0,0,0.08) 55%, rgba(0,0,0,0.00) 70%)`,
                   }}
@@ -199,15 +205,15 @@ export default function HeroBanner({ slides: slidesProp, heroBg, whatsappLink, s
 
             <div className="flex-1 flex flex-col gap-5 md:gap-6 items-center md:items-start text-center md:text-left">
               <div className="flex flex-col gap-3 md:gap-5">
-                <h1 key={`title-${current}`} className={`text-white text-4xl md:text-[64px] font-bold font-['Onest'] leading-[1.06] transition-all duration-500 ${transition.active}`}>
+                <h1 key={`title-${current}`} className={`text-white text-3xl sm:text-4xl md:text-[64px] font-bold font-['Onest'] leading-[1.06] transition-all duration-500 ${transition.active}`}>
                   {slide.title}
                 </h1>
-                <p key={`desc-${current}`} className={`max-w-[580px] text-white/85 text-lg md:text-xl font-normal font-['Montserrat'] leading-[1.45] transition-all duration-500 whitespace-pre-wrap ${transition.active}`}>
+                <p key={`desc-${current}`} className={`max-w-[580px] text-white/85 text-xl md:text-xl font-normal font-['Montserrat'] leading-[1.45] transition-all duration-500 whitespace-pre-wrap ${transition.active}`}>
                   {slide.description}
                 </p>
-                <div className="flex flex-row items-stretch md:items-start justify-center md:justify-start gap-2.5 md:gap-4 w-full md:w-auto">
+                <div className="flex flex-col sm:flex-row items-stretch md:items-start justify-center md:justify-start gap-2.5 md:gap-4 w-full md:w-auto">
                   <Link href={slide.link} className="flex-1 md:flex-none md:w-auto px-4 sm:px-8 py-3 md:py-4 bg-sky-700 rounded-3xl md:rounded-full flex justify-center items-center gap-2 hover:bg-sky-800 transition-all hover:scale-105">
-                    <span className="text-white text-sm sm:text-lg md:text-xl font-medium font-['Montserrat'] whitespace-nowrap">{slide.cta}</span>
+                    <span className="text-white text-base sm:text-lg md:text-xl font-medium font-['Montserrat'] whitespace-nowrap">{slide.cta}</span>
                   </Link>
                   <a
                     href={helpChooseHref}
@@ -216,19 +222,19 @@ export default function HeroBanner({ slides: slidesProp, heroBg, whatsappLink, s
                     className="flex-1 md:flex-none md:w-auto px-4 sm:px-6 py-3 md:py-4 rounded-3xl md:rounded-full flex justify-center items-center gap-2 border border-white/40 bg-white/10 md:backdrop-blur-sm hover:bg-white/20 md:hover:border-white/60 transition-all hover:scale-105"
                   >
                     <WhatsAppIcon className="w-5 h-5 text-[#25D366] shrink-0" />
-                    <span className="text-white text-sm sm:text-lg md:text-xl font-medium font-['Montserrat'] whitespace-nowrap">Help Me Choose</span>
+                    <span className="text-white text-base sm:text-lg md:text-xl font-medium font-['Montserrat'] whitespace-nowrap">Help Me Choose</span>
                   </a>
                 </div>
 
-                <div className="flex flex-wrap items-center justify-center md:justify-start divide-x divide-white/25 pt-3">
+                <div className="flex flex-nowrap items-center justify-center md:justify-start divide-x divide-white/25 pt-3 overflow-x-auto">
                   {STATS.map((stat, i) => {
                     const Icon = STAT_ICONS[i];
                     return (
-                      <div key={stat.label} className="flex items-center gap-2.5 px-4 first:pl-0 last:pr-0">
-                        <Icon className="hidden md:block w-6 h-6 text-sky-300 shrink-0" />
+                      <div key={stat.label} className="flex items-center gap-2 md:gap-3 px-3 md:px-5 first:pl-0 last:pr-0 shrink-0">
+                        <Icon className="hidden md:block w-8 h-8 text-sky-300 shrink-0" />
                         <span className="flex flex-col leading-tight">
-                          <span className="text-white text-base md:text-lg font-bold font-['Onest'] whitespace-nowrap">{stat.value}</span>
-                          <span className="text-white text-[11px] md:text-white/90 md:font-medium font-bold font-['Montserrat'] whitespace-nowrap">{stat.label}</span>
+                          <span className="text-white text-lg md:text-2xl font-bold font-['Onest']">{stat.value}</span>
+                          <span className="text-white text-xs md:text-white/90 md:font-medium font-bold font-['Montserrat']">{stat.label}</span>
                         </span>
                       </div>
                     );

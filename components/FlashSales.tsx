@@ -85,7 +85,7 @@ function FlashSaleCard({ product, whatsappDigits }: { product: Product; whatsapp
         <Link href={productUrl(product)} aria-label={`View details for ${product.name}`} className="text-center">
           <p className="text-zinc-900 text-base md:text-lg font-bold font-['Montserrat'] leading-snug md:leading-[30px] line-clamp-2 group-hover:text-sky-700 transition-colors text-center" style={{ hyphens: 'auto', wordBreak: 'break-word' }}>
             {nameBase}
-            {nameRating && <span className="whitespace-nowrap"> {nameRating}</span>}
+            {nameRating && <span> {nameRating}</span>}
           </p>
         </Link>
 

@@ -57,7 +57,7 @@ export default function ShopByNeed() {
         <span className="px-4 py-1.5 rounded-full bg-sky-700/10 text-sky-700 text-xs md:text-sm font-semibold font-['Montserrat'] tracking-wide uppercase">
           Shop by What You Need
         </span>
-        <h2 className="text-black text-3xl md:text-5xl font-bold font-['Onest'] leading-tight max-w-3xl">
+        <h2 className="text-black text-2xl sm:text-3xl md:text-5xl font-bold font-['Onest'] leading-tight max-w-3xl">
           What do you need help with?
         </h2>
         <p className="text-stone-500 text-base md:text-lg font-normal font-['Montserrat'] max-w-xl">

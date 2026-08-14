@@ -624,6 +624,8 @@ export interface SiteSettings {
   brand_banner_link: string;
   brand_banner_whatsapp_text: string;
   brand_banner_image: string;
+  brand_banner_enabled: boolean;
+  brand_banners: { image: string; link: string; enabled: boolean }[];
   final_cta_title: string;
   final_cta_subtitle: string;
   final_cta_shop_text: string;
@@ -681,6 +683,8 @@ const SETTINGS_FALLBACK: SiteSettings = {
   brand_banner_link: '/power-calculator',
   brand_banner_whatsapp_text: 'Ask PRAG on WhatsApp',
   brand_banner_image: '',
+  brand_banner_enabled: true,
+  brand_banners: [],
   final_cta_title: 'Ready for More Reliable Power?',
   final_cta_subtitle: 'Shop PRAG power solutions for your home today.',
   final_cta_shop_text: 'Shop Now',

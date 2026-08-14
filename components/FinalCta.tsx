@@ -21,7 +21,7 @@ export default function FinalCta({ settings }: { settings?: SiteSettings }) {
   return (
     <section className="w-full px-4 md:px-20 py-10 md:py-14 flex flex-col justify-center items-center gap-6 overflow-hidden bg-sky-700">
       <div className="w-full max-w-[1228px] flex flex-col justify-center items-center gap-6 text-center">
-        <h2 className="w-full text-white text-3xl md:text-5xl font-bold font-['Onest'] leading-tight">
+        <h2 className="w-full text-white text-2xl sm:text-3xl md:text-5xl font-bold font-['Onest'] leading-tight">
           {title}
         </h2>
         <p className="w-full max-w-[631px] text-white/80 text-base md:text-lg font-normal font-['Montserrat'] leading-relaxed">

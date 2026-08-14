@@ -883,6 +883,7 @@ class Prag_Core_Bridge {
                     'productAlt'        => 'Heavy Duty Inverter',
                     'backgroundImage'   => 'https://central.prag.global/wp-content/uploads/2026/04/421db5e8efbc14b105a33a6db7182652503c3fdd.png',
                     'showProductImage'  => true,
+                    'enabled'           => true,
                 ],
                 [
                     'title'             => 'Power Your Home. Power Your Business.',
@@ -893,6 +894,7 @@ class Prag_Core_Bridge {
                     'productAlt'        => 'Residential Inverter',
                     'backgroundImage'   => 'https://central.prag.global/wp-content/uploads/2026/04/421db5e8efbc14b105a33a6db7182652503c3fdd.png',
                     'showProductImage'  => true,
+                    'enabled'           => true,
                 ],
                 [
                     'title'             => 'Built Tough. Tested Tougher.',
@@ -903,6 +905,7 @@ class Prag_Core_Bridge {
                     'productAlt'        => 'Industrial Inverter',
                     'backgroundImage'   => 'https://central.prag.global/wp-content/uploads/2026/04/421db5e8efbc14b105a33a6db7182652503c3fdd.png',
                     'showProductImage'  => true,
+                    'enabled'           => true,
                 ],
                 [
                     'title'             => 'Reliable Power. Unbeatable Performance.',
@@ -913,6 +916,7 @@ class Prag_Core_Bridge {
                     'productAlt'        => 'Premium Inverter',
                     'backgroundImage'   => 'https://central.prag.global/wp-content/uploads/2026/04/421db5e8efbc14b105a33a6db7182652503c3fdd.png',
                     'showProductImage'  => true,
+                    'enabled'           => true,
                 ],
             ],
             'categories' => [

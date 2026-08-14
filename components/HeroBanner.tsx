@@ -13,6 +13,7 @@ interface Slide {
   productAlt: string;
   backgroundImage?: string;
   showProductImage?: boolean;
+  enabled?: boolean;
 }
 
 const FALLBACK_SLIDES: Slide[] = [
@@ -69,7 +70,8 @@ function BoltIcon({ className }: { className?: string }) {
 const STAT_ICONS = [MapPinIcon, ClockIcon, BoltIcon];
 
 export default function HeroBanner({ slides: slidesProp, heroBg, whatsappLink }: { slides?: Slide[]; heroBg?: string; whatsappLink?: string }) {
-  const slides = (slidesProp && slidesProp.length > 0) ? slidesProp : FALLBACK_SLIDES;
+  const allSlides = (slidesProp && slidesProp.length > 0) ? slidesProp : FALLBACK_SLIDES;
+  const slides = allSlides.filter((s) => s.enabled !== false);
   const bgSrc = heroBg || FALLBACK_BG;
   const waBase = whatsappLink || FALLBACK_WHATSAPP;
   const helpChooseHref = `${waBase}${waBase.includes('?') ? '&' : '?'}text=${encodeURIComponent(HELP_ME_CHOOSE_TEXT)}`;
@@ -122,7 +124,7 @@ export default function HeroBanner({ slides: slidesProp, heroBg, whatsappLink }:
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      <div className="relative w-full mx-auto rounded-b-3xl overflow-hidden min-h-[560px] md:min-h-[480px] lg:min-h-[540px] shadow-sm md:bg-transparent">
+      <div className="relative w-full mx-auto rounded-b-3xl overflow-hidden min-h-[620px] md:min-h-[560px] lg:min-h-[640px] shadow-sm md:bg-transparent">
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat md:hidden"
           style={{
@@ -167,7 +169,7 @@ export default function HeroBanner({ slides: slidesProp, heroBg, whatsappLink }:
           })}
         </div>
 
-        <div className="relative z-10 w-full h-full px-5 sm:px-8 md:px-16 lg:px-24 xl:px-32 py-8 md:py-10 lg:py-12 flex flex-col justify-center min-h-[560px] md:min-h-[480px] lg:min-h-[540px]">
+        <div className="relative z-10 w-full h-full px-5 sm:px-8 md:px-16 lg:px-24 xl:px-32 py-8 md:py-12 lg:py-16 flex flex-col justify-center min-h-[620px] md:min-h-[560px] lg:min-h-[640px]">
           <div className="w-full flex flex-col md:flex-row justify-center md:justify-between items-center gap-6 md:gap-4 lg:gap-6">
             <div className="flex justify-center w-full md:hidden">
               <div className="relative w-48 h-60">
@@ -224,7 +226,7 @@ export default function HeroBanner({ slides: slidesProp, heroBg, whatsappLink }:
             </div>
           </div>
 
-          <div className="mt-4 md:mt-5 flex justify-center">
+          <div className="mt-4 md:mt-5 flex justify-center md:justify-start">
             <div className="flex items-center gap-2">
               {slides.map((_, i) => (
                 <button

@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import ProductDetailView from '@/components/ProductDetailView';
+import ProductAssurance from '@/components/ProductAssurance';
 import { getProductBySlug, getProducts, getProductReviews, getTechDocuments, getProductCustomTabs, searchProducts, productUrl, getSiteSettings, filterHiddenProducts, isProductHidden } from '@/lib/woocommerce';
 import type { Product } from '@/lib/types';
 import { notFound, redirect } from 'next/navigation';
@@ -87,6 +88,7 @@ export default async function ProductDetailPage({ params }: Props) {
   return (
     <main className="w-full bg-white flex flex-col">
       <ProductDetailView product={product} relatedProducts={relatedFiltered} reviews={reviews} techDocs={techDocs} customTabs={customTabs} />
+      <ProductAssurance />
     </main>
   );
 }

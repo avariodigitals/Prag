@@ -86,12 +86,23 @@ export default async function ProductAssurance() {
               {offices.length > 0 ? (
                 offices.map((office, i) => (
                   <span key={office.id}>
-                    <Link
-                      href="/stores"
-                      className="text-sky-700 font-medium underline underline-offset-4 decoration-sky-300 hover:decoration-sky-700 transition-colors"
-                    >
-                      {office.name}
-                    </Link>
+                    {office.map_url ? (
+                      <a
+                        href={office.map_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sky-700 font-medium underline underline-offset-4 decoration-sky-300 hover:decoration-sky-700 transition-colors"
+                      >
+                        {office.name}
+                      </a>
+                    ) : (
+                      <Link
+                        href="/stores"
+                        className="text-sky-700 font-medium underline underline-offset-4 decoration-sky-300 hover:decoration-sky-700 transition-colors"
+                      >
+                        {office.name}
+                      </Link>
+                    )}
                     {i < offices.length - 1 && <span className="text-zinc-900"> · </span>}
                   </span>
                 ))

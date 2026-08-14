@@ -181,7 +181,7 @@ export default function HeroBanner({ slides: slidesProp, heroBg, whatsappLink, s
                 <div
                   className="absolute inset-0"
                   style={{
-                    background: `linear-gradient(90deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.45) 30%, rgba(0,0,0,0.10) 55%, rgba(0,0,0,0.00) 70%)`,
+                    background: `linear-gradient(90deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.30) 30%, rgba(0,0,0,0.08) 55%, rgba(0,0,0,0.00) 70%)`,
                   }}
                 />
               </div>

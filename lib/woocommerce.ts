@@ -653,6 +653,7 @@ export interface SiteSettings {
   trust_signal_stats: { value: string; label: string }[];
   trust_signal_badges: { label: string }[];
   hero_background: string;
+  slide_transition: string;
   socials: { facebook: string; instagram: string; linkedin: string; twitter: string; whatsapp: string };
   slides: { title: string; description: string; cta: string; link: string; productImage: string; productAlt: string; backgroundImage?: string; showProductImage?: boolean; enabled?: boolean }[];
   categories: { name: string; slug: string; image: string }[];
@@ -734,6 +735,7 @@ const SETTINGS_FALLBACK: SiteSettings = {
     { label: 'Secure Checkout' },
   ],
   hero_background: 'https://central.prag.global/wp-content/uploads/2026/04/421db5e8efbc14b105a33a6db7182652503c3fdd.png',
+  slide_transition: 'fade',
   socials: {
     facebook: 'https://www.facebook.com/pragpowersolutions',
     instagram: 'https://www.instagram.com/prag_ng/',

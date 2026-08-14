@@ -873,6 +873,7 @@ class Prag_Core_Bridge {
                 'twitter'   => '',
                 'whatsapp'  => 'https://wa.me/2348032170129',
             ],
+            'slide_transition' => 'fade',
             'slides' => [
                 [
                     'title'             => 'No Hype. Just Inverters That Deliver.',

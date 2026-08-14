@@ -69,12 +69,23 @@ function BoltIcon({ className }: { className?: string }) {
 
 const STAT_ICONS = [MapPinIcon, ClockIcon, BoltIcon];
 
-export default function HeroBanner({ slides: slidesProp, heroBg, whatsappLink }: { slides?: Slide[]; heroBg?: string; whatsappLink?: string }) {
+type TransitionType = 'fade' | 'slide' | 'zoom' | 'flip';
+
+const TRANSITION_CLASSES: Record<TransitionType, { active: string; inactive: string }> = {
+  fade:  { active: 'opacity-100',                       inactive: 'opacity-0' },
+  slide: { active: 'opacity-100 translate-x-0',         inactive: 'opacity-0 translate-x-12' },
+  zoom:  { active: 'opacity-100 scale-100',             inactive: 'opacity-0 scale-95' },
+  flip:  { active: 'opacity-100 rotate-0',              inactive: 'opacity-0 rotate-3' },
+};
+
+export default function HeroBanner({ slides: slidesProp, heroBg, whatsappLink, slideTransition }: { slides?: Slide[]; heroBg?: string; whatsappLink?: string; slideTransition?: string }) {
   const allSlides = (slidesProp && slidesProp.length > 0) ? slidesProp : FALLBACK_SLIDES;
   const slides = allSlides.filter((s) => s.enabled !== false);
   const bgSrc = heroBg || FALLBACK_BG;
   const waBase = whatsappLink || FALLBACK_WHATSAPP;
   const helpChooseHref = `${waBase}${waBase.includes('?') ? '&' : '?'}text=${encodeURIComponent(HELP_ME_CHOOSE_TEXT)}`;
+  const transitionType = (['fade', 'slide', 'zoom', 'flip'].includes(slideTransition || '') ? slideTransition : 'fade') as TransitionType;
+  const transition = TRANSITION_CLASSES[transitionType];
   const defaultSlideIndex = Math.max(
     0,
     slides.findIndex((item) => item.title.toLowerCase().includes('power your home'))
@@ -157,12 +168,11 @@ export default function HeroBanner({ slides: slidesProp, heroBg, whatsappLink }:
             return (
               <div
                 key={`bg-${i}`}
-                className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-700"
+                className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-700 ${i === current ? transition.active : transition.inactive}`}
                 style={{
                   backgroundImage: `url('${slideBg}')`,
                   backgroundColor: 'lightgray',
                   filter: 'brightness(0.55) contrast(1.05)',
-                  opacity: i === current ? 1 : 0,
                 }}
               />
             );
@@ -179,10 +189,10 @@ export default function HeroBanner({ slides: slidesProp, heroBg, whatsappLink }:
 
             <div className="flex-1 flex flex-col gap-5 md:gap-6 items-center md:items-start text-center md:text-left">
               <div className="flex flex-col gap-3 md:gap-5">
-                <h1 className="text-white text-4xl md:text-[64px] font-bold font-['Onest'] leading-[1.06] transition-opacity duration-500">
+                <h1 key={`title-${current}`} className={`text-white text-4xl md:text-[64px] font-bold font-['Onest'] leading-[1.06] transition-all duration-500 ${transition.active}`}>
                   {slide.title}
                 </h1>
-                <p className="max-w-[580px] text-white/85 text-lg md:text-xl font-normal font-['Montserrat'] leading-[1.45] transition-opacity duration-500 whitespace-pre-wrap">
+                <p key={`desc-${current}`} className={`max-w-[580px] text-white/85 text-lg md:text-xl font-normal font-['Montserrat'] leading-[1.45] transition-all duration-500 whitespace-pre-wrap ${transition.active}`}>
                   {slide.description}
                 </p>
                 <div className="flex flex-row items-stretch md:items-start justify-center md:justify-start gap-2.5 md:gap-4 w-full md:w-auto">
@@ -227,13 +237,13 @@ export default function HeroBanner({ slides: slidesProp, heroBg, whatsappLink }:
           </div>
 
           <div className="mt-4 md:mt-5 flex justify-center md:justify-start">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               {slides.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setCurrent(i)}
-                  className={`rounded-full transition-all min-w-6 min-h-6 flex items-center justify-center ${
-                    i === current ? 'bg-sky-700' : 'bg-white/35 hover:bg-white/55'
+                  className={`rounded-full transition-all w-2.5 h-2.5 flex items-center justify-center ${
+                    i === current ? 'bg-sky-700 w-6' : 'bg-white/35 hover:bg-white/55'
                   }`}
                   aria-label={`Go to slide ${i + 1}`}
                 />

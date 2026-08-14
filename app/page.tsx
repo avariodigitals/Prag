@@ -33,7 +33,7 @@ export default async function HomePage() {
 
   return (
     <main className="w-full bg-white flex flex-col">
-      <HeroBanner slides={settings.slides} heroBg={settings.hero_background} whatsappLink={settings.socials?.whatsapp || (settings.whatsapp ? `https://wa.me/${settings.whatsapp.replace(/[^\d]/g, '')}` : undefined)} />
+      <HeroBanner slides={settings.slides} heroBg={settings.hero_background} whatsappLink={settings.socials?.whatsapp || (settings.whatsapp ? `https://wa.me/${settings.whatsapp.replace(/[^\d]/g, '')}` : undefined)} slideTransition={settings.slide_transition} />
       <CategoryGrid settings={settings} />
       <FeaturedProducts products={featuredProducts} whatsappNumber={settings.socials?.whatsapp || settings.whatsapp} />
       <ShopByNeed />

@@ -168,13 +168,23 @@ export default function HeroBanner({ slides: slidesProp, heroBg, whatsappLink, s
             return (
               <div
                 key={`bg-${i}`}
-                className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-700 ${i === current ? transition.active : transition.inactive}`}
-                style={{
-                  backgroundImage: `url('${slideBg}')`,
-                  backgroundColor: 'lightgray',
-                  filter: 'brightness(0.55) contrast(1.05)',
-                }}
-              />
+                className={`absolute inset-0 transition-all duration-700 ${i === current ? transition.active : transition.inactive}`}
+              >
+                <div
+                  className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                  style={{
+                    backgroundImage: `url('${slideBg}')`,
+                    backgroundColor: 'lightgray',
+                    filter: 'brightness(0.95) contrast(1.05)',
+                  }}
+                />
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background: `linear-gradient(90deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.45) 30%, rgba(0,0,0,0.10) 55%, rgba(0,0,0,0.00) 70%)`,
+                  }}
+                />
+              </div>
             );
           })}
         </div>

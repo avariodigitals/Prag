@@ -6,6 +6,10 @@ import Image from 'next/image';
 import TopBar from './TopBar';
 import NavBar from './NavBar';
 import Footer from './Footer';
+import FinalCta from './FinalCta';
+import CheckoutFaq from './CheckoutFaq';
+import Testimonials from './Testimonials';
+import HomeNeeds from './HomeNeeds';
 import NavigationScrollReset from './NavigationScrollReset';
 import type { SiteSettings } from '@/lib/woocommerce';
 import { formatPhone } from '@/lib/formatPhone';
@@ -21,6 +25,7 @@ interface Props {
 export default function SiteShellClient({ children, user, settings }: Props) {
   const pathname = usePathname();
   const isAuth = AUTH_ROUTES.some((r) => pathname.startsWith(r));
+  const isHomePage = pathname === '/';
 
   useEffect(() => {
     if (isAuth) return;
@@ -60,6 +65,10 @@ export default function SiteShellClient({ children, user, settings }: Props) {
       <TopBar initialUser={user} phone={settings.contact_phone} whatsapp={settings.whatsapp} />
       <NavBar />
       {children}
+      {isHomePage && <HomeNeeds settings={settings} />}
+      {isHomePage && <Testimonials settings={settings} />}
+      {isHomePage && <CheckoutFaq settings={settings} />}
+      <FinalCta settings={settings} />
       <Footer settings={settings} />
     </>
   );

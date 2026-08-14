@@ -2,7 +2,8 @@
 export const dynamic = 'force-dynamic';
 
 import ProductsView from '@/components/ProductsView';
-import { getCategories, getProducts, getSiteSettings } from '@/lib/woocommerce';
+import ProductAssurance from '@/components/ProductAssurance';
+import { getCategories, getProducts, getSiteSettings, filterHiddenProducts } from '@/lib/woocommerce';
 import type { Product } from '@/lib/types';
 
 const CATEGORY_SLUGS = ['inverters', 'voltage-stabilizers', 'all-prag-stabilizers', 'batteries', 'solar'];
@@ -62,7 +63,7 @@ export default async function ProductsPage({
     ? getProducts({ per_page: 100 }).then(({ products }) => {
         const normalized = query.toLowerCase();
         return {
-          products: products.filter((product) => {
+          products: filterHiddenProducts(products, hiddenSet).filter((product) => {
             const name = product.name.toLowerCase();
             const categoryNames = (product.categories ?? []).map((category) => category.name.toLowerCase());
             return name.includes(normalized) || categoryNames.some((categoryName) => categoryName.includes(normalized));
@@ -89,14 +90,14 @@ export default async function ProductsPage({
           });
           return { products: Array.from(deduped.values()), total: deduped.size };
         })
-      : getProducts({ per_page: 100 }).catch(() => ({ products: [] as Product[], total: 0 }));
+      : getProducts({ per_page: 100 }).then(({ products, total }) => ({ products: filterHiddenProducts(products, hiddenSet), total })).catch(() => ({ products: [] as Product[], total: 0 }));
 
   const [{ products: allProducts }, ...categoryResults] = await Promise.all([
     baseAllProductsPromise,
     ...visibleCategorySlugs.map((slug) => {
       const cat = visibleCategories.find((category) => category.slug === slug);
       return cat
-        ? getProducts({ category_id: cat.id, per_page: 50 }).catch(() => ({ products: [] as Product[], total: 0 }))
+        ? getProducts({ category_id: cat.id, per_page: 50 }).then(({ products, total }) => ({ products: filterHiddenProducts(products, hiddenSet), total })).catch(() => ({ products: [] as Product[], total: 0 }))
         : Promise.resolve({ products: [] as Product[], total: 0 });
     }),
   ]);
@@ -128,7 +129,7 @@ export default async function ProductsPage({
   });
 
   const subResults = await Promise.all(
-    subcategories.map((subcategory) => getProducts({ category_id: subcategory.id, per_page: 50 }).catch(() => ({ products: [] as Product[], total: 0 })))
+    subcategories.map((subcategory) => getProducts({ category_id: subcategory.id, per_page: 50 }).then(({ products, total }) => ({ products: filterHiddenProducts(products, hiddenSet), total })).catch(() => ({ products: [] as Product[], total: 0 })))
   );
   subcategories.forEach((subcategory, index) => {
     productsByCategory[subcategory.slug] = subResults[index].products;
@@ -159,6 +160,8 @@ export default async function ProductsPage({
           subcategoryOrder={settings.subcategory_order}
         />
       </div>
+
+      <ProductAssurance />
     </main>
   );
 }

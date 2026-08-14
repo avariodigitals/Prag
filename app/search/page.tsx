@@ -1,7 +1,8 @@
 export const dynamic = 'force-dynamic';
 
 import SearchResultsGrid from '@/components/SearchResultsGrid';
-import { searchProducts } from '@/lib/woocommerce';
+import { searchProducts, getSiteSettings, filterHiddenProducts } from '@/lib/woocommerce';
+import type { Product } from '@/lib/types';
 
 export const metadata = {
   title: 'Search – PRAG',
@@ -16,9 +17,14 @@ export default async function SearchPage({ searchParams }: Props) {
   const sp = await searchParams;
   const query = sp.q?.trim() ?? '';
 
-  const { products, total } = query
+  const rawResult = query
     ? await searchProducts(query, sp.sort, 1, 16)
-    : { products: [], total: 0 };
+    : { products: [] as Product[], total: 0 };
+
+  // Strip out any products belonging to hidden categories
+  const settings = await getSiteSettings();
+  const products = filterHiddenProducts(rawResult.products, settings.hidden_categories);
+  const total = products.length;
 
   return (
     <main className="w-full bg-white flex flex-col">

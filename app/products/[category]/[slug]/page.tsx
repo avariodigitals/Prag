@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import ProductDetailView from '@/components/ProductDetailView';
-import { getProductBySlug, getProducts, getProductReviews, getTechDocuments, getProductCustomTabs, searchProducts, productUrl } from '@/lib/woocommerce';
+import { getProductBySlug, getProducts, getProductReviews, getTechDocuments, getProductCustomTabs, searchProducts, productUrl, getSiteSettings, filterHiddenProducts, isProductHidden } from '@/lib/woocommerce';
 import type { Product } from '@/lib/types';
 import { notFound, redirect } from 'next/navigation';
 
@@ -47,11 +47,13 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function ProductDetailPage({ params }: Props) {
   const { category, slug } = await params;
-  const [product, relatedResult] = await Promise.all([
+  const [product, relatedResult, settings] = await Promise.all([
     getProductBySlug(slug).catch(() => null),
     getProducts({ category, per_page: 4 }).catch(() => ({ products: [] as Product[], total: 0 })),
+    getSiteSettings(),
   ]);
-  const related = relatedResult.products;
+  const hiddenSet = new Set(settings.hidden_categories ?? []);
+  const related = filterHiddenProducts(relatedResult.products, hiddenSet);
 
   if (!product) {
     try {
@@ -66,6 +68,11 @@ export default async function ProductDetailPage({ params }: Props) {
     } catch {
       // Search failed, fall through to notFound
     }
+    notFound();
+  }
+
+  // Hide product entirely if it belongs to a turned-off category
+  if (isProductHidden(product, hiddenSet)) {
     notFound();
   }
 

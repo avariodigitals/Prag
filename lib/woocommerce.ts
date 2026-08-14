@@ -220,8 +220,16 @@ export const getFeaturedProducts = unstable_cache(
 
 export const getFlashSaleProducts = unstable_cache(
   async (): Promise<Product[]> => {
-    const products = await wcFetch<Product[]>(`/products?on_sale=true&per_page=4&status=publish&_fields=${PRODUCT_LIST_FIELDS}`, []);
-    return sortProductsByCapacityThenPrice(products);
+    // Fetch a wider pool so we can drop out-of-stock / non-discounted items
+    // and still surface 3-4 genuinely discounted, in-stock products.
+    const products = await wcFetch<Product[]>(`/products?on_sale=true&per_page=12&status=publish&_fields=${PRODUCT_LIST_FIELDS}`, []);
+    const genuinelyDiscounted = products.filter((p) => {
+      if (p.stock_status !== 'instock') return false;
+      const regular = Number(p.regular_price);
+      const sale = Number(p.sale_price || p.price);
+      return Number.isFinite(regular) && Number.isFinite(sale) && regular > sale && sale > 0;
+    });
+    return sortProductsByCapacityThenPrice(genuinelyDiscounted).slice(0, 4);
   },
   ['flash-sale-products'],
   { revalidate: 600, tags: ['flash-sale-products'] }
@@ -609,14 +617,44 @@ export interface SiteSettings {
   under_construction_title: string;
   under_construction_message: string;
   footer_description: string;
+  brand_banner_kicker: string;
   brand_banner_title: string;
   brand_banner_description: string;
   brand_banner_cta: string;
   brand_banner_link: string;
+  brand_banner_whatsapp_text: string;
   brand_banner_image: string;
+  final_cta_title: string;
+  final_cta_subtitle: string;
+  final_cta_shop_text: string;
+  final_cta_shop_link: string;
+  final_cta_whatsapp_text: string;
+  checkout_faq_kicker: string;
+  checkout_faq_title: string;
+  checkout_faq_subtitle: string;
+  checkout_faq_link_text: string;
+  checkout_faq_link_url: string;
+  checkout_faq_items: { question: string; answer: string }[];
+  checkout_faq_banner_enabled: boolean;
+  checkout_faq_banner_image: string;
+  checkout_faq_banner_link: string;
+  testimonial_enabled: boolean;
+  testimonial_title: string;
+  testimonial_subtitle: string;
+  testimonial_items: { rating: number; quote: string; name: string; location: string; product: string; image: string }[];
+  home_need_enabled: boolean;
+  home_need_title: string;
+  home_need_subtitle: string;
+  home_need_items: { title: string; description: string; cta: string; link: string; icon: string; image: string }[];
+  // Trust Signal ("Why People Buy PRAG" / "Buy With Confidence") — above Flash Sales
+  trust_signal_enabled: boolean;
+  trust_signal_kicker: string;
+  trust_signal_title: string;
+  trust_signal_stats: { value: string; label: string }[];
+  trust_signal_badges: { label: string }[];
   hero_background: string;
   socials: { facebook: string; instagram: string; linkedin: string; twitter: string; whatsapp: string };
-  slides: { title: string; description: string; cta: string; link: string; productImage: string; productAlt: string }[];
+  slides: { title: string; description: string; cta: string; link: string; productImage: string; productAlt: string; backgroundImage?: string }[];
   categories: { name: string; slug: string; image: string }[];
   hidden_categories: string[];
   category_order: string[];
@@ -635,11 +673,66 @@ const SETTINGS_FALLBACK: SiteSettings = {
   under_construction_title: 'We are coming back soon',
   under_construction_message: 'We are currently making improvements to serve you better. Please check back shortly.',
   footer_description: 'Nigeria\'s leading power engineering company. We design, supply and install power solutions for homes, businesses and industrial facilities across the country.',
-  brand_banner_title: 'No Hype. Just Inverters That Deliver.',
-  brand_banner_description: 'Explore stabilizers, inverters, batteries, and complete power solutions designed to keep your home or business running without interruption.',
-  brand_banner_cta: 'Buy Inverters Built to Last',
-  brand_banner_link: '/products/inverters',
-  brand_banner_image: 'https://central.prag.global/wp-content/uploads/2026/04/f80b14a4d9e3fc153ae2e60c3d8d11a58ebe33fe.png',
+  brand_banner_kicker: 'HELP ME CHOOSE',
+  brand_banner_title: 'Not Sure What to Buy?',
+  brand_banner_description: 'Tell us what you want to power and we\'ll help you find the right PRAG setup.',
+  brand_banner_cta: 'Use Power Calculator',
+  brand_banner_link: '/power-calculator',
+  brand_banner_whatsapp_text: 'Ask PRAG on WhatsApp',
+  brand_banner_image: '',
+  final_cta_title: 'Ready for More Reliable Power?',
+  final_cta_subtitle: 'Shop PRAG power solutions for your home today.',
+  final_cta_shop_text: 'Shop Now',
+  final_cta_shop_link: '/products',
+  final_cta_whatsapp_text: 'Chat with PRAG on WhatsApp',
+  checkout_faq_kicker: 'FAQ',
+  checkout_faq_title: 'Still deciding? Here\'s what you need to know before you buy.',
+  checkout_faq_subtitle: 'Straight answers on sizing, warranty, delivery and installation — so you can shop with confidence and never second-guess your power setup.',
+  checkout_faq_link_text: 'Find your perfect inverter size',
+  checkout_faq_link_url: '/power-calculator',
+  checkout_faq_items: [
+    { question: 'Which inverter size should I buy?', answer: 'The right inverter size depends on the total wattage of the appliances you want to power and how long you need them running. Add up the wattage of your essential loads (fridge, lights, TV, fans) and add a 20–30% buffer for surge power. Use our Power Calculator for an instant recommendation, or chat with our team for a tailored sizing.' },
+    { question: 'How do I know what battery I need?', answer: 'Battery sizing depends on your inverter size, how long you want backup power, and your daily energy usage. A 12V system works for small setups, while 48V is better for larger loads. Lithium batteries last longer and charge faster than lead-acid. Use our Power Calculator or talk to our team to match the right battery capacity (Ah) to your inverter and runtime needs.' },
+    { question: 'How long will my battery last?', answer: 'Battery runtime depends on capacity (kWh), the load you are running, and battery chemistry. A 2.4kWh lithium battery powering a 300W load gives roughly 6–7 hours of backup. Lithium batteries typically last 5–10 years with proper use, while lead-acid batteries last 2–4 years. Our team can help you estimate runtime for your specific setup.' },
+    { question: 'Do PRAG products come with warranty?', answer: 'Yes. All PRAG products come with a manufacturer\'s warranty — typically 5 years for inverters and stabilizers, and up to 10 years for lithium batteries. Warranty covers manufacturing defects and component failures under normal use. Your warranty is activated automatically at purchase.' },
+    { question: 'Do you deliver nationwide?', answer: 'Yes, we deliver to all 36 states in Nigeria. Orders within Lagos arrive within 1–2 business days, while other states typically take 2–5 business days. Shipping is free on orders over ₦500,000. You will receive tracking details once your order is dispatched.' },
+    { question: 'Can I get help choosing the right product?', answer: 'Absolutely. You can use our Power Calculator for an instant recommendation, chat with us on WhatsApp, call our support line, or visit any PRAG store. Our team will guide you to the right inverter, battery, or solar setup based on your budget and power needs.' },
+    { question: 'Can PRAG help with installation?', answer: 'Yes. PRAG offers professional installation through our certified engineers and authorized partner network across Nigeria. We handle everything from residential inverter setups to full solar installations. Schedule an installation by contacting us or visiting a PRAG store after your purchase.' },
+  ],
+  checkout_faq_banner_enabled: true,
+  checkout_faq_banner_image: 'https://central.prag.global/wp-content/uploads/2026/04/eebd514c0d3e75e4f32cb8fd691c7b3613fd99d5.png',
+  checkout_faq_banner_link: '/products/inverters',
+  testimonial_enabled: true,
+  testimonial_title: 'Trusted in Homes Across Nigeria',
+  testimonial_subtitle: 'Real reviews from real PRAG customers who took control of their power.',
+  testimonial_items: [
+    { rating: 5, quote: 'I bought a 3.5kVA inverter and two lithium batteries for my flat. From the day it was installed, I have not had a single dark night. The team came, sized everything properly, and installed it clean. Worth every naira.', name: 'Chidi', location: 'Lekki, Lagos', product: '3.5kVA Inverter + Lithium Battery', image: '' },
+    { rating: 5, quote: 'The stabilizer saved my fridge and TV during the voltage spikes in our area. It has been running silently for eight months now — no issues at all. PRAG makes solid products.', name: 'Aisha', location: 'Kano', product: '5kVA Voltage Stabilizer', image: '' },
+    { rating: 5, quote: 'I was tired of spending on fuel. PRAG set up a solar system for my home and I barely touch my generator now. Installation was professional and the support team answered every question.', name: 'Emeka', location: 'Port Harcourt', product: 'Solar System Installation', image: '' },
+  ],
+  home_need_enabled: true,
+  home_need_title: 'Power Your Home Your Way',
+  home_need_subtitle: 'Whatever your setup, PRAG has a reliable power solution sized for how you actually live.',
+  home_need_items: [
+    { title: 'For Apartments', description: 'Compact inverter and battery combos that fit tight spaces and keep your essentials running through every outage.', cta: 'Get Recommendations', link: '/home-needs/apartments', icon: '', image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80' },
+    { title: 'For Family Homes', description: 'Higher-capacity inverters with extended-life lithium batteries for longer runtime across more rooms and appliances.', cta: 'Get Recommendations', link: '/home-needs/family-homes', icon: '', image: 'https://images.unsplash.com/photo-1568605114967-8130f81a6e54?w=800&q=80' },
+    { title: 'For Home Offices', description: 'Quiet, clean power that keeps your laptop, internet router, and essential devices online without missing a beat.', cta: 'Get Recommendations', link: '/home-needs/home-offices', icon: '', image: 'https://images.unsplash.com/photo-1593696954577-ab3d39817b21?w=800&q=80' },
+    { title: 'For Solar Homes', description: 'Solar panels and hybrid inverters that cut your grid and generator dependence — and your fuel bill.', cta: 'Get Recommendations', link: '/home-needs/solar-homes', icon: '', image: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&q=80' },
+  ],
+  trust_signal_enabled: true,
+  trust_signal_kicker: 'Why People Buy PRAG',
+  trust_signal_title: 'Buy With Confidence',
+  trust_signal_stats: [
+    { value: '36', label: 'States Covered' },
+    { value: '15+', label: 'Years Power Expertise' },
+    { value: '50K+', label: 'Installations' },
+  ],
+  trust_signal_badges: [
+    { label: 'Product Warranty' },
+    { label: 'Nationwide Delivery' },
+    { label: 'Expert Support' },
+    { label: 'Secure Checkout' },
+  ],
   hero_background: 'https://central.prag.global/wp-content/uploads/2026/04/421db5e8efbc14b105a33a6db7182652503c3fdd.png',
   socials: {
     facebook: 'https://www.facebook.com/pragpowersolutions',
@@ -686,6 +779,11 @@ export const getSiteSettings = unstable_cache(
         socials: { ...SETTINGS_FALLBACK.socials, ...(data.socials ?? {}) },
         slides: Array.isArray(data.slides) && data.slides.length > 0 ? data.slides : SETTINGS_FALLBACK.slides,
         categories: Array.isArray(data.categories) && data.categories.length > 0 ? data.categories : SETTINGS_FALLBACK.categories,
+        checkout_faq_items: Array.isArray(data.checkout_faq_items) && data.checkout_faq_items.length > 0 ? data.checkout_faq_items : SETTINGS_FALLBACK.checkout_faq_items,
+        testimonial_items: Array.isArray(data.testimonial_items) && data.testimonial_items.length > 0 ? data.testimonial_items : SETTINGS_FALLBACK.testimonial_items,
+        home_need_items: Array.isArray(data.home_need_items) && data.home_need_items.length > 0 ? data.home_need_items : SETTINGS_FALLBACK.home_need_items,
+        trust_signal_stats: Array.isArray(data.trust_signal_stats) && data.trust_signal_stats.length > 0 ? data.trust_signal_stats : SETTINGS_FALLBACK.trust_signal_stats,
+        trust_signal_badges: Array.isArray(data.trust_signal_badges) && data.trust_signal_badges.length > 0 ? data.trust_signal_badges : SETTINGS_FALLBACK.trust_signal_badges,
         hidden_categories: Array.isArray(data.hidden_categories) ? data.hidden_categories : [],
         category_order: Array.isArray(data.category_order) ? data.category_order : [],
         subcategory_order: data.subcategory_order && typeof data.subcategory_order === 'object' ? data.subcategory_order : {},
@@ -737,6 +835,41 @@ export function productUrl(product: Pick<Product, 'slug' | 'categories'>) {
 
 export function formatPrice(price: string) {
   return `₦${Number(price).toLocaleString('en-NG', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+}
+
+/**
+ * Remove products that belong ONLY to hidden categories. A product is
+ * kept as long as at least one of its categories is visible — this
+ * prevents losing products that straddle a visible and a hidden category.
+ */
+export function filterHiddenProducts<T extends { categories?: { slug: string }[] }>(
+  products: T[],
+  hiddenSlugs: string[] | Set<string> | undefined
+): T[] {
+  if (!hiddenSlugs) return products;
+  const hidden = hiddenSlugs instanceof Set ? hiddenSlugs : new Set(hiddenSlugs);
+  if (hidden.size === 0) return products;
+  return products.filter((p) => {
+    const cats = p.categories ?? [];
+    if (cats.length === 0) return true; // no categories — keep
+    return cats.some((c) => !hidden.has(c.slug));
+  });
+}
+
+/**
+ * True when a single product belongs ONLY to hidden categories
+ * (i.e. it has no visible category at all).
+ */
+export function isProductHidden<T extends { categories?: { slug: string }[] }>(
+  product: T,
+  hiddenSlugs: string[] | Set<string> | undefined
+): boolean {
+  if (!hiddenSlugs) return false;
+  const hidden = hiddenSlugs instanceof Set ? hiddenSlugs : new Set(hiddenSlugs);
+  if (hidden.size === 0) return false;
+  const cats = product.categories ?? [];
+  if (cats.length === 0) return false;
+  return !cats.some((c) => !hidden.has(c.slug));
 }
 
 export const getAllProductSlugs = unstable_cache(

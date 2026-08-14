@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import CategoryProductsGrid from '@/components/CategoryProductsGrid';
-import { getProductBySlug, getProducts, getCategoryBySlug, productUrl, getSiteSettings, getCategories } from '@/lib/woocommerce';
+import { getProductBySlug, getProducts, getCategoryBySlug, productUrl, getSiteSettings, getCategories, filterHiddenProducts } from '@/lib/woocommerce';
 import type { Product } from '@/lib/types';
 import { notFound, redirect } from 'next/navigation';
 
@@ -126,8 +126,8 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       page: 1,
       per_page: 16,
     });
-    products = result.products;
-    total = result.total;
+    products = filterHiddenProducts(result.products, hiddenSet);
+    total = products.length;
   } catch {
     products = [];
     total = 0;

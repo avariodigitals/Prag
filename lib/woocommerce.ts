@@ -654,7 +654,7 @@ export interface SiteSettings {
   trust_signal_badges: { label: string }[];
   hero_background: string;
   socials: { facebook: string; instagram: string; linkedin: string; twitter: string; whatsapp: string };
-  slides: { title: string; description: string; cta: string; link: string; productImage: string; productAlt: string; backgroundImage?: string }[];
+  slides: { title: string; description: string; cta: string; link: string; productImage: string; productAlt: string; backgroundImage?: string; showProductImage?: boolean }[];
   categories: { name: string; slug: string; image: string }[];
   hidden_categories: string[];
   category_order: string[];

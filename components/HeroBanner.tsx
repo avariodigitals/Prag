@@ -12,6 +12,7 @@ interface Slide {
   productImage: string;
   productAlt: string;
   backgroundImage?: string;
+  showProductImage?: boolean;
 }
 
 const FALLBACK_SLIDES: Slide[] = [
@@ -214,11 +215,13 @@ export default function HeroBanner({ slides: slidesProp, heroBg, whatsappLink }:
               </div>
             </div>
 
+            {slide.showProductImage !== false && (
             <div className="hidden md:flex flex-1 justify-center lg:justify-end md:-ml-4 lg:-ml-6">
               <div className="relative w-72 h-[360px] lg:w-[380px] lg:h-[440px]">
                 <Image key={`desktop-${current}`} src={slide.productImage} alt={slide.productAlt} fill sizes="(max-width: 1024px) 288px, 380px" quality={85} className="object-contain" loading="eager" />
               </div>
             </div>
+            )}
           </div>
 
           <div className="mt-4 md:mt-5 flex justify-center">

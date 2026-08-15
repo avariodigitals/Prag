@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { getPage } from '@/lib/woocommerce';
 import PolicyPageLayout from '@/components/PolicyPageLayout';
 import { getB2CPublicContent, findB2CPage, findVisibleSectionsByType } from '@/lib/b2cContent';

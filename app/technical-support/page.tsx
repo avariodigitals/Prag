@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import type { Metadata } from 'next';
 import TechnicalSupportForm from '@/components/TechnicalSupportForm';
 import { getB2CPublicContent, findB2CPage, findVisibleSectionsByType } from '@/lib/b2cContent';

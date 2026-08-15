@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import PowerCalculatorTool from '@/components/PowerCalculatorTool';
 import { getB2CPublicContent, findB2CPage, findVisibleSectionsByType } from '@/lib/b2cContent';
 

@@ -303,7 +303,7 @@ export default function PaymentView() {
 
       <div className="w-full flex flex-col md:flex-row items-start gap-6 md:gap-10">
         {/* Summary on mobile, then Payment methods, then Proceed button */}
-        <div className="w-full md:w-80 lg:w-96 shrink-0 md:order-2">
+        <div className="w-full md:w-2/5 shrink-0 md:order-2">
           <CheckoutSummary
             ctaLabel=""
             onCta={() => {}}
@@ -316,7 +316,7 @@ export default function PaymentView() {
           />
         </div>
 
-        <div className="w-full md:flex-1 p-4 md:p-8 bg-white rounded-2xl outline outline-[1.31px] outline-gray-200 flex flex-col gap-5 md:order-1">
+        <div className="w-full md:w-3/5 p-4 md:p-8 bg-white rounded-2xl outline outline-[1.31px] outline-gray-200 flex flex-col gap-5 md:order-1">
           <h2 className="text-zinc-900 text-lg md:text-xl font-bold font-['Montserrat']">Payment Method</h2>
 
           <div className="flex flex-col gap-1">

@@ -384,6 +384,46 @@ class Prag_Core_Bridge {
                 'permission_callback' => [$this, 'check_admin_permissions'],
             ],
         ]);
+
+        // Shipping cities table (public read, admin write)
+        register_rest_route($namespace, '/shipping/cities', [
+            [
+                'methods'             => 'GET',
+                'callback'            => [$this, 'get_shipping_cities'],
+                'permission_callback' => '__return_true',
+            ],
+            [
+                'methods'             => 'POST',
+                'callback'            => [$this, 'add_shipping_city'],
+                'permission_callback' => [$this, 'check_admin_permissions'],
+            ],
+        ]);
+        register_rest_route($namespace, '/shipping/cities/(?P<id>\d+)', [
+            [
+                'methods'             => 'PATCH',
+                'callback'            => [$this, 'update_shipping_city'],
+                'permission_callback' => [$this, 'check_admin_permissions'],
+            ],
+            [
+                'methods'             => 'DELETE',
+                'callback'            => [$this, 'delete_shipping_city'],
+                'permission_callback' => [$this, 'check_admin_permissions'],
+            ],
+        ]);
+
+        // Shipping method toggles (public read, admin write)
+        register_rest_route($namespace, '/shipping/methods', [
+            [
+                'methods'             => 'GET',
+                'callback'            => [$this, 'get_shipping_methods'],
+                'permission_callback' => '__return_true',
+            ],
+            [
+                'methods'             => 'POST',
+                'callback'            => [$this, 'update_shipping_methods'],
+                'permission_callback' => [$this, 'check_admin_permissions'],
+            ],
+        ]);
     }
 
     public function add_rest_cors_headers($served, $result, $request, $server) {
@@ -1512,6 +1552,249 @@ class Prag_Core_Bridge {
     public function check_admin_permissions() {
         // The JWT Auth plugin already populates the current user
         return current_user_can('manage_options');
+    }
+
+    // ── Shipping Cities Table ───────────────────────────────
+
+    /**
+     * Default seed: all 36 states + FCT with major cities.
+     * Only Lagos cities have a price > 0; all others default to 0
+     * (city-based option hidden on front end until a price is set).
+     */
+    private function default_shipping_cities() {
+        $lagos_price = 5000;
+        $seed = [
+            // Lagos — priced
+            ['state' => 'Lagos', 'city' => 'Ikeja', 'price' => $lagos_price],
+            ['state' => 'Lagos', 'city' => 'Lekki', 'price' => $lagos_price],
+            ['state' => 'Lagos', 'city' => 'Victoria Island', 'price' => $lagos_price],
+            ['state' => 'Lagos', 'city' => 'Ikoyi', 'price' => $lagos_price],
+            ['state' => 'Lagos', 'city' => 'Yaba', 'price' => $lagos_price],
+            ['state' => 'Lagos', 'city' => 'Surulere', 'price' => $lagos_price],
+            ['state' => 'Lagos', 'city' => 'Festac Town', 'price' => $lagos_price],
+            ['state' => 'Lagos', 'city' => 'Apapa', 'price' => $lagos_price],
+            ['state' => 'Lagos', 'city' => 'Ikorodu', 'price' => $lagos_price],
+            ['state' => 'Lagos', 'city' => 'Epe', 'price' => $lagos_price],
+            ['state' => 'Lagos', 'city' => 'Badagry', 'price' => $lagos_price],
+            ['state' => 'Lagos', 'city' => 'Ajah', 'price' => $lagos_price],
+            ['state' => 'Lagos', 'city' => 'Maryland', 'price' => $lagos_price],
+            ['state' => 'Lagos', 'city' => 'Gbagada', 'price' => $lagos_price],
+            ['state' => 'Lagos', 'city' => 'Agege', 'price' => $lagos_price],
+            ['state' => 'Lagos', 'city' => 'Mushin', 'price' => $lagos_price],
+            ['state' => 'Lagos', 'city' => 'Oshodi', 'price' => $lagos_price],
+            // Abia
+            ['state' => 'Abia', 'city' => 'Aba', 'price' => 0],
+            ['state' => 'Abia', 'city' => 'Umuahia', 'price' => 0],
+            // Adamawa
+            ['state' => 'Adamawa', 'city' => 'Yola', 'price' => 0],
+            ['state' => 'Adamawa', 'city' => 'Mubi', 'price' => 0],
+            // Akwa Ibom
+            ['state' => 'Akwa Ibom', 'city' => 'Uyo', 'price' => 0],
+            ['state' => 'Akwa Ibom', 'city' => 'Ikot Ekpene', 'price' => 0],
+            // Anambra
+            ['state' => 'Anambra', 'city' => 'Awka', 'price' => 0],
+            ['state' => 'Anambra', 'city' => 'Onitsha', 'price' => 0],
+            ['state' => 'Anambra', 'city' => 'Nnewi', 'price' => 0],
+            // Bauchi
+            ['state' => 'Bauchi', 'city' => 'Bauchi', 'price' => 0],
+            // Bayelsa
+            ['state' => 'Bayelsa', 'city' => 'Yenagoa', 'price' => 0],
+            // Benue
+            ['state' => 'Benue', 'city' => 'Makurdi', 'price' => 0],
+            // Borno
+            ['state' => 'Borno', 'city' => 'Maiduguri', 'price' => 0],
+            // Cross River
+            ['state' => 'Cross River', 'city' => 'Calabar', 'price' => 0],
+            // Delta
+            ['state' => 'Delta', 'city' => 'Asaba', 'price' => 0],
+            ['state' => 'Delta', 'city' => 'Warri', 'price' => 0],
+            ['state' => 'Delta', 'city' => 'Sapele', 'price' => 0],
+            // Ebonyi
+            ['state' => 'Ebonyi', 'city' => 'Abakaliki', 'price' => 0],
+            // Edo
+            ['state' => 'Edo', 'city' => 'Benin City', 'price' => 0],
+            // Ekiti
+            ['state' => 'Ekiti', 'city' => 'Ado Ekiti', 'price' => 0],
+            // Enugu
+            ['state' => 'Enugu', 'city' => 'Enugu', 'price' => 0],
+            // FCT
+            ['state' => 'FCT', 'city' => 'Abuja', 'price' => 0],
+            ['state' => 'FCT', 'city' => 'Gwagwalada', 'price' => 0],
+            ['state' => 'FCT', 'city' => 'Kuje', 'price' => 0],
+            // Gombe
+            ['state' => 'Gombe', 'city' => 'Gombe', 'price' => 0],
+            // Imo
+            ['state' => 'Imo', 'city' => 'Owerri', 'price' => 0],
+            // Jigawa
+            ['state' => 'Jigawa', 'city' => 'Dutse', 'price' => 0],
+            // Kaduna
+            ['state' => 'Kaduna', 'city' => 'Kaduna', 'price' => 0],
+            ['state' => 'Kaduna', 'city' => 'Zaria', 'price' => 0],
+            // Kano
+            ['state' => 'Kano', 'city' => 'Kano', 'price' => 0],
+            // Katsina
+            ['state' => 'Katsina', 'city' => 'Katsina', 'price' => 0],
+            // Kebbi
+            ['state' => 'Kebbi', 'city' => 'Birnin Kebbi', 'price' => 0],
+            // Kogi
+            ['state' => 'Kogi', 'city' => 'Lokoja', 'price' => 0],
+            // Kwara
+            ['state' => 'Kwara', 'city' => 'Ilorin', 'price' => 0],
+            // Nasarawa
+            ['state' => 'Nasarawa', 'city' => 'Lafia', 'price' => 0],
+            // Niger
+            ['state' => 'Niger', 'city' => 'Minna', 'price' => 0],
+            // Ogun
+            ['state' => 'Ogun', 'city' => 'Abeokuta', 'price' => 0],
+            ['state' => 'Ogun', 'city' => 'Sagamu', 'price' => 0],
+            ['state' => 'Ogun', 'city' => 'Otta', 'price' => 0],
+            // Ondo
+            ['state' => 'Ondo', 'city' => 'Akure', 'price' => 0],
+            ['state' => 'Ondo', 'city' => 'Ondo City', 'price' => 0],
+            ['state' => 'Ondo', 'city' => 'Owo', 'price' => 0],
+            // Osun
+            ['state' => 'Osun', 'city' => 'Osogbo', 'price' => 0],
+            ['state' => 'Osun', 'city' => 'Ile-Ife', 'price' => 0],
+            // Oyo
+            ['state' => 'Oyo', 'city' => 'Ibadan', 'price' => 0],
+            ['state' => 'Oyo', 'city' => 'Oyo', 'price' => 0],
+            ['state' => 'Oyo', 'city' => 'Ogbomoso', 'price' => 0],
+            // Plateau
+            ['state' => 'Plateau', 'city' => 'Jos', 'price' => 0],
+            // Rivers
+            ['state' => 'Rivers', 'city' => 'Port Harcourt', 'price' => 0],
+            // Sokoto
+            ['state' => 'Sokoto', 'city' => 'Sokoto', 'price' => 0],
+            // Taraba
+            ['state' => 'Taraba', 'city' => 'Jalingo', 'price' => 0],
+            // Yobe
+            ['state' => 'Yobe', 'city' => 'Damaturu', 'price' => 0],
+            // Zamfara
+            ['state' => 'Zamfara', 'city' => 'Gusau', 'price' => 0],
+        ];
+
+        $cities = [];
+        $id = 1;
+        foreach ($seed as $entry) {
+            $cities[] = [
+                'id'     => $id++,
+                'state'  => $entry['state'],
+                'city'   => $entry['city'],
+                'price'  => $entry['price'],
+                'status' => 'active',
+            ];
+        }
+        return $cities;
+    }
+
+    private function get_shipping_cities_data() {
+        $saved = get_option('prag_shipping_cities', []);
+        if (empty($saved) || !is_array($saved)) {
+            $seeded = $this->default_shipping_cities();
+            update_option('prag_shipping_cities', $seeded);
+            return $seeded;
+        }
+        return $saved;
+    }
+
+    public function get_shipping_cities() {
+        return rest_ensure_response($this->get_shipping_cities_data());
+    }
+
+    public function add_shipping_city($request) {
+        $params = $request->get_json_params();
+        $state  = sanitize_text_field($params['state'] ?? '');
+        $city   = sanitize_text_field($params['city'] ?? '');
+        $price  = floatval($params['price'] ?? 0);
+        $status = in_array($params['status'] ?? 'active', ['active', 'suspended']) ? $params['status'] : 'active';
+
+        if ($state === '' || $city === '') {
+            return new WP_Error('invalid', 'State and city are required', ['status' => 400]);
+        }
+
+        $cities = $this->get_shipping_cities_data();
+        $max_id = 0;
+        foreach ($cities as $c) {
+            if ($c['id'] > $max_id) $max_id = $c['id'];
+        }
+        $new_city = [
+            'id'     => $max_id + 1,
+            'state'  => $state,
+            'city'   => $city,
+            'price'  => $price,
+            'status' => $status,
+        ];
+        $cities[] = $new_city;
+        update_option('prag_shipping_cities', $cities);
+        return rest_ensure_response($new_city);
+    }
+
+    public function update_shipping_city($request) {
+        $id     = intval($request['id']);
+        $params = $request->get_json_params();
+        $cities = $this->get_shipping_cities_data();
+        $found  = false;
+        foreach ($cities as &$c) {
+            if ($c['id'] === $id) {
+                if (isset($params['state']))  $c['state']  = sanitize_text_field($params['state']);
+                if (isset($params['city']))   $c['city']   = sanitize_text_field($params['city']);
+                if (isset($params['price']))  $c['price']  = floatval($params['price']);
+                if (isset($params['status'])) $c['status'] = in_array($params['status'], ['active', 'suspended']) ? $params['status'] : $c['status'];
+                $found = true;
+                break;
+            }
+        }
+        unset($c);
+        if (!$found) {
+            return new WP_Error('not_found', 'City not found', ['status' => 404]);
+        }
+        update_option('prag_shipping_cities', $cities);
+        return rest_ensure_response($cities);
+    }
+
+    public function delete_shipping_city($request) {
+        $id     = intval($request['id']);
+        $cities = $this->get_shipping_cities_data();
+        $filtered = array_values(array_filter($cities, function ($c) use ($id) {
+            return $c['id'] !== $id;
+        }));
+        if (count($filtered) === count($cities)) {
+            return new WP_Error('not_found', 'City not found', ['status' => 404]);
+        }
+        update_option('prag_shipping_cities', $filtered);
+        return rest_ensure_response(['ok' => true]);
+    }
+
+    // ── Shipping Method Toggles ─────────────────────────────
+
+    private function default_shipping_methods() {
+        return [
+            'local_pickup'     => true,
+            'custom_delivery'  => true,
+            'city_based'       => true,
+        ];
+    }
+
+    public function get_shipping_methods() {
+        $saved   = get_option('prag_shipping_methods', []);
+        $defaults = $this->default_shipping_methods();
+        if (!is_array($saved)) $saved = [];
+        return rest_ensure_response(array_merge($defaults, $saved));
+    }
+
+    public function update_shipping_methods($request) {
+        $params  = $request->get_json_params();
+        $current = get_option('prag_shipping_methods', $this->default_shipping_methods());
+        if (!is_array($current)) $current = $this->default_shipping_methods();
+
+        $keys = ['local_pickup', 'custom_delivery', 'city_based'];
+        foreach ($keys as $key) {
+            if (isset($params[$key])) {
+                $current[$key] = rest_sanitize_boolean($params[$key]);
+            }
+        }
+        update_option('prag_shipping_methods', $current);
+        return rest_ensure_response($current);
     }
 }
 

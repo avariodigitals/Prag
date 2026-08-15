@@ -10,20 +10,21 @@ interface Props {
   ctaLabel: string;
   onCta: () => void;
   shippingCost?: number;
+  shippingMethodTitle?: string;
   ctaDisabled?: boolean;
   itemsOverride?: Array<{ id: number; name: string; quantity: number; price: number }>;
   totalOverride?: number;
   hideMobileButton?: boolean;
 }
 
-export default function CheckoutSummary({ ctaLabel, onCta, shippingCost, ctaDisabled, itemsOverride, totalOverride, hideMobileButton }: Props) {
+export default function CheckoutSummary({ ctaLabel, onCta, shippingCost, shippingMethodTitle, ctaDisabled, itemsOverride, totalOverride, hideMobileButton }: Props) {
   const { items, total } = useCart();
   const summaryItems = itemsOverride && itemsOverride.length > 0 ? itemsOverride : items;
   const subTotal = totalOverride !== undefined ? totalOverride : total;
   const grandTotal = subTotal + (shippingCost ?? 0);
 
   return (
-    <div className="w-full md:w-80 lg:w-96 shrink-0 px-4 md:px-6 py-6 md:py-8 bg-white rounded-[10px] outline outline-1 outline-gray-200 flex flex-col gap-5">
+    <div className="w-full shrink-0 px-4 md:px-6 py-6 md:py-8 bg-white rounded-[10px] outline outline-1 outline-gray-200 flex flex-col gap-5">
       <h2 className="text-neutral-700 text-xl md:text-2xl font-bold font-['Montserrat']">Summary</h2>
 
       <div className="flex flex-col gap-3">
@@ -46,6 +47,12 @@ export default function CheckoutSummary({ ctaLabel, onCta, shippingCost, ctaDisa
           <span className="text-slate-600 text-base font-medium font-['Montserrat']">Sub Total</span>
           <span className="text-slate-600 text-base font-['Montserrat']">{fmt(subTotal)}</span>
         </div>
+        {shippingMethodTitle && (
+          <div className="flex justify-between gap-2">
+            <span className="text-slate-600 text-base font-medium font-['Montserrat']">Shipping</span>
+            <span className="text-slate-600 text-base font-['Montserrat'] text-right">{shippingMethodTitle}</span>
+          </div>
+        )}
         {shippingCost !== undefined && (
           <div className="flex justify-between">
             <span className="text-slate-600 text-base font-medium font-['Montserrat']">Shipping</span>

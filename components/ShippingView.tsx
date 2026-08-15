@@ -10,6 +10,7 @@ interface ShippingMethod {
   method_id: string;
   title: string;
   description: string;
+  price?: number;
 }
 
 export default function ShippingView() {
@@ -48,7 +49,13 @@ export default function ShippingView() {
     let mounted = true;
     async function loadMethods() {
       try {
-        const res = await fetch('/api/checkout/options', { cache: 'no-store' });
+        const state = searchParams.get('state') ?? '';
+        const city = searchParams.get('city') ?? '';
+        const qs = new URLSearchParams();
+        if (state) qs.set('state', state);
+        if (city) qs.set('city', city);
+        const url = `/api/checkout/options${qs.toString() ? `?${qs.toString()}` : ''}`;
+        const res = await fetch(url, { cache: 'no-store' });
         const data = await res.json() as { shippingMethods?: ShippingMethod[] };
         const nextMethods = data.shippingMethods ?? [];
         if (!mounted) return;
@@ -66,7 +73,7 @@ export default function ShippingView() {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [searchParams]);
 
   function proceed() {
     if (!selected) return;
@@ -75,16 +82,24 @@ export default function ShippingView() {
     const params = new URLSearchParams(searchParams.toString());
     params.set('shipping_method', method.id);
     params.set('shipping_method_title', method.title);
+    if (method.price !== undefined && method.price > 0) {
+      params.set('shipping_cost', String(method.price));
+    } else {
+      params.delete('shipping_cost');
+    }
     if (note) params.set('shipping_note', note);
     router.push(`/checkout/payment?${params.toString()}`);
   }
+
+  const selectedMethod = methods.find((m) => m.id === selected);
+  const selectedShippingCost = selectedMethod?.price !== undefined && selectedMethod.price > 0 ? selectedMethod.price : undefined;
 
   return (
     <div className="w-full px-4 md:px-20 py-6 md:py-10 flex flex-col items-center gap-6 md:gap-10">
       <CheckoutStepper activeStep={1} />
 
       <div className="w-full flex flex-col md:flex-row items-start gap-6 md:gap-10">
-        <div className="w-full md:flex-1 p-4 md:p-8 bg-white rounded-2xl outline outline-[1.31px] outline-gray-200 flex flex-col gap-5">
+        <div className="w-full md:w-3/5 p-4 md:p-8 bg-white rounded-2xl outline outline-[1.31px] outline-gray-200 flex flex-col gap-5">
           <h2 className="text-zinc-900 text-lg md:text-xl font-bold font-['Montserrat']">Shipping Method</h2>
 
           <div className="flex flex-col gap-3">
@@ -105,6 +120,9 @@ export default function ShippingView() {
                 >
                   <p className={`text-base font-bold font-['Montserrat'] ${active ? 'text-sky-700' : 'text-zinc-500'}`}>
                     {method.title}
+                    {method.price !== undefined && method.price > 0 && (
+                      <span className="ml-2 text-sky-700">&mdash; &#8358;{method.price.toLocaleString('en-NG')}</span>
+                    )}
                   </p>
                   <p className={`text-sm font-normal font-['Montserrat'] ${active ? 'text-sky-700' : 'text-zinc-500'}`}>
                     {method.description || 'Select this option to proceed with checkout.'}
@@ -133,13 +151,15 @@ export default function ShippingView() {
           </button>
         </div>
 
-        <div className="w-full md:w-80 lg:w-96 shrink-0">
+        <div className="w-full md:w-2/5 shrink-0">
           <CheckoutSummary
             ctaLabel="Proceed to Payment"
             onCta={proceed}
             ctaDisabled={loading || !selected}
             itemsOverride={summaryItems}
             totalOverride={summaryTotal}
+            shippingMethodTitle={selectedMethod?.title}
+            shippingCost={selectedShippingCost}
           />
         </div>
       </div>

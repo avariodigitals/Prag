@@ -29,7 +29,7 @@ declare global {
   }
 }
 
-const SHIPPING_COST = 0;
+const DEFAULT_SHIPPING_COST = 0;
 
 function isPaystackGateway(id: string) {
   return id.toLowerCase().includes('paystack');
@@ -83,6 +83,12 @@ export default function PaymentView() {
     () => summaryItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
     [summaryItems]
   );
+
+  const shippingCost = useMemo(() => {
+    const raw = searchParams.get('shipping_cost');
+    const parsed = Number(raw ?? '');
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_SHIPPING_COST;
+  }, [searchParams]);
 
   const lineItems = useMemo(() => {
     const fromQuery = searchParams.getAll('line_item')
@@ -145,6 +151,7 @@ export default function PaymentView() {
         shipping_method: searchParams.get('shipping_method') ?? '',
         shipping_method_title: searchParams.get('shipping_method_title') ?? '',
         shipping_note: searchParams.get('shipping_note') ?? '',
+        shipping_cost: shippingCost > 0 ? shippingCost : undefined,
         line_items: lineItems,
         billing: {
           email: searchParams.get('email') ?? '',
@@ -300,7 +307,8 @@ export default function PaymentView() {
           <CheckoutSummary
             ctaLabel=""
             onCta={() => {}}
-            shippingCost={SHIPPING_COST}
+            shippingCost={shippingCost}
+            shippingMethodTitle={searchParams.get('shipping_method_title') ?? undefined}
             ctaDisabled={true}
             itemsOverride={summaryItems}
             totalOverride={summaryTotal}

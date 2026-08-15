@@ -6,6 +6,7 @@ interface CheckoutOrderRequest {
   shipping_method?: string;
   shipping_method_title?: string;
   shipping_note?: string;
+  shipping_cost?: number;
   line_items?: Array<{ product_id: number; quantity: number }>;
   billing?: {
     email?: string;
@@ -70,6 +71,9 @@ export async function POST(req: NextRequest) {
     const shippingMethodRaw = body.shipping_method ?? '';
     const [shippingMethodId, shippingInstanceRaw] = shippingMethodRaw.split(':');
     const shippingInstanceId = String(shippingInstanceRaw ?? '').trim();
+    const shippingCost = Number.isFinite(body.shipping_cost) && (body.shipping_cost ?? 0) > 0
+      ? String(body.shipping_cost)
+      : '0';
 
     const payload = {
       payment_method: body.payment_method,
@@ -104,7 +108,7 @@ export async function POST(req: NextRequest) {
             method_id: shippingMethodId || shippingMethodRaw,
             ...(shippingInstanceId ? { instance_id: shippingInstanceId } : {}),
             method_title: body.shipping_method_title ?? body.shipping_method,
-            total: '0',
+            total: shippingCost,
           }]
         : [],
       customer_note: [billing.note, body.shipping_note].filter(Boolean).join(' | '),

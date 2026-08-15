@@ -159,16 +159,14 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       </div>
 
       {/* Products */}
-      <div className="w-full px-6 md:px-20 py-12 bg-white flex justify-center">
-        <div className="w-full max-w-[1280px]">
-          <CategoryProductsGrid
-            products={products}
-            total={total}
-            categorySlug={category}
-            activeSub={sp.sub}
-            subcategories={subcategories}
-          />
-        </div>
+      <div className="w-full px-4 md:px-14 py-12 bg-white">
+        <CategoryProductsGrid
+          products={products}
+          total={total}
+          categorySlug={category}
+          activeSub={sp.sub}
+          subcategories={subcategories}
+        />
       </div>
     </main>
   );

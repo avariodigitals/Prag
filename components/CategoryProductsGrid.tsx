@@ -28,6 +28,7 @@ const SLUG_TO_LABEL: Record<string, string> = {
   'solar': 'All Solar Products',
   'batteries': 'All Batteries',
 };
+const LISTING_PRICE_COLOR = 'lab(26.8019 1.35387 -4.68303)';
 
 export default function CategoryProductsGrid({
   products: initialProducts,
@@ -147,7 +148,7 @@ function CategoryProductsGridContent({
     <div className="flex flex-col gap-6 relative">
       {/* Toolbar */}
       <div className="flex flex-col gap-3 md:gap-4">
-        <div className="md:hidden -mx-6 px-6 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <div className="md:hidden -mx-4 px-4 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <div className="flex w-max items-center gap-3 pr-6">
             {tabs.map((tab) => {
               const isActive = tab.slug ? activeSub === tab.slug : !activeSub;
@@ -192,7 +193,7 @@ function CategoryProductsGridContent({
 
       {/* Grid */}
       {isPending ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-9 md:gap-x-6 md:gap-y-11 animate-pulse">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-6 animate-pulse">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="flex flex-col gap-3">
               <div className="h-56 md:h-64 bg-stone-100 rounded-xl" />
@@ -206,13 +207,13 @@ function CategoryProductsGridContent({
           ))}
         </div>
       ) : products.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 gap-4">
-          <p className="text-gray-400 text-lg font-['Montserrat']">No products found.</p>
+        <div className="flex justify-center py-20">
+          <p className="text-gray-400 text-base md:text-lg font-['Montserrat']">No products found.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-9 md:gap-x-6 md:gap-y-11">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} bg="bg-white" />
+            <ProductCard key={product.id} product={product} bg="bg-stone-50" priceColor={LISTING_PRICE_COLOR} />
           ))}
         </div>
       )}

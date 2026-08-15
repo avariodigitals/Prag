@@ -14,8 +14,9 @@ interface Props {
   onSaleProducts?: Product[];
 }
 
-export default function ProductsView({ allProducts, productsByCategory, categories, categoryOrder, onSaleProducts = [] }: Props) {
+export default function ProductsView({ allProducts, productsByCategory, categories, categoryOrder, subcategoryOrder, onSaleProducts = [] }: Props) {
   const [activeTop, setActiveTop] = useState('all');
+  const [activeSub, setActiveSub] = useState<string | null>(null);
 
   // Build top-level tabs from categoryOrder (explicit list of top-level slugs)
   // Falls back to parent===0 categories if no order is provided
@@ -34,11 +35,38 @@ export default function ProductsView({ allProducts, productsByCategory, categori
     ...(onSaleProducts.length > 0 ? [{ label: 'Sales', slug: '__sales__' }] : []),
   ];
 
+  // Build subcategory tabs for the active top-level category
+  const subOrderMap = subcategoryOrder ?? {};
+  const activeSubCats = activeTop !== 'all' && activeTop !== '__sales__'
+    ? categories
+        .filter((c) => {
+          const parent = categories.find((pc) => pc.slug === activeTop);
+          return parent && c.parent === parent.id && c.count > 0;
+        })
+        .sort((a, b) => {
+          const subOrder = subOrderMap[activeTop] ?? [];
+          const aIdx = subOrder.indexOf(a.slug);
+          const bIdx = subOrder.indexOf(b.slug);
+          if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
+          if (aIdx !== -1) return -1;
+          if (bIdx !== -1) return 1;
+          return a.name.localeCompare(b.name);
+        })
+    : [];
+
+  // Reset sub filter when switching top-level tabs
+  function selectTop(slug: string) {
+    setActiveTop(slug);
+    setActiveSub(null);
+  }
+
   let products: Product[];
   if (activeTop === 'all') {
     products = allProducts;
   } else if (activeTop === '__sales__') {
     products = onSaleProducts;
+  } else if (activeSub) {
+    products = productsByCategory[activeSub] ?? [];
   } else {
     products = productsByCategory[activeTop] ?? [];
   }
@@ -46,17 +74,19 @@ export default function ProductsView({ allProducts, productsByCategory, categori
   products = sortProductsBySizeThenPrice(products);
   const total = products.length;
 
-  const activeLabel = TOP_CATEGORIES.find((c) => c.slug === activeTop)?.label ?? 'All products';
+  const activeLabel = activeSub
+    ? activeSubCats.find((c) => c.slug === activeSub)?.name
+    : TOP_CATEGORIES.find((c) => c.slug === activeTop)?.label ?? 'All products';
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Tabs */}
+      {/* Top-level tabs */}
       <div className="-mx-6 md:mx-0 px-6 md:px-0 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
         <div className="flex items-center gap-3 min-w-max md:min-w-0 md:flex-wrap pb-1">
           {TOP_CATEGORIES.map((category) => (
             <button
               key={category.slug}
-              onClick={() => setActiveTop(category.slug)}
+              onClick={() => selectTop(category.slug)}
               className={`shrink-0 px-5 py-2.5 rounded-full text-sm font-medium font-['Onest'] border transition-colors ${
                 activeTop === category.slug
                   ? 'bg-sky-700 text-white border-sky-700'
@@ -68,6 +98,37 @@ export default function ProductsView({ allProducts, productsByCategory, categori
           ))}
         </div>
       </div>
+
+      {/* Subcategory tabs (only when a top-level category is active) */}
+      {activeSubCats.length > 0 && (
+        <div className="-mx-6 md:mx-0 px-6 md:px-0 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex items-center gap-2 min-w-max md:min-w-0 md:flex-wrap pb-1">
+            <button
+              onClick={() => setActiveSub(null)}
+              className={`shrink-0 px-4 py-2 rounded-full text-sm font-medium font-['Onest'] border transition-colors ${
+                !activeSub
+                  ? 'bg-sky-100 text-sky-700 border-sky-300'
+                  : 'bg-white text-zinc-500 border-zinc-200 hover:border-sky-300 hover:text-sky-700'
+              }`}
+            >
+              All {TOP_CATEGORIES.find((c) => c.slug === activeTop)?.label}
+            </button>
+            {activeSubCats.map((sub) => (
+              <button
+                key={sub.slug}
+                onClick={() => setActiveSub(sub.slug)}
+                className={`shrink-0 px-4 py-2 rounded-full text-sm font-medium font-['Onest'] border transition-colors ${
+                  activeSub === sub.slug
+                    ? 'bg-sky-100 text-sky-700 border-sky-300'
+                    : 'bg-white text-zinc-500 border-zinc-200 hover:border-sky-300 hover:text-sky-700'
+                }`}
+              >
+                {sub.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Result count */}
       <div className="flex items-center justify-between">

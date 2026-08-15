@@ -106,8 +106,8 @@ export default function ShippingView() {
                   <p className={`text-base font-bold font-['Montserrat'] ${active ? 'text-sky-700' : 'text-zinc-500'}`}>
                     {method.title}
                   </p>
-                  <p className={`text-base font-normal font-['Montserrat'] ${active ? 'text-sky-700' : 'text-zinc-500'}`}>
-                    {method.description || 'Shipping option from WooCommerce'}
+                  <p className={`text-sm font-normal font-['Montserrat'] ${active ? 'text-sky-700' : 'text-zinc-500'}`}>
+                    {method.description || 'Select this option to proceed with checkout.'}
                   </p>
                 </button>
               );

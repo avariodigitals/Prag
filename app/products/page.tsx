@@ -6,7 +6,7 @@ import ProductAssurance from '@/components/ProductAssurance';
 import { getCategories, getProducts, getSiteSettings, filterHiddenProducts } from '@/lib/woocommerce';
 import type { Product } from '@/lib/types';
 
-const CATEGORY_SLUGS = ['inverters', 'voltage-stabilizers', 'all-prag-stabilizers', 'batteries', 'solar'];
+const CATEGORY_SLUGS = ['voltage-stabilizers', 'inverters', 'batteries', 'solar'];
 
 export async function generateMetadata() {
   // Shop products index canonicalises to the www SEO/content authority.
@@ -43,7 +43,9 @@ export default async function ProductsPage({
   ]);
   const hiddenSet = new Set(settings.hidden_categories ?? []);
   const orderMap = new Map((settings.category_order ?? []).map((slug, i) => [slug, i]));
-  const visibleCategories = categories.filter((c) => !hiddenSet.has(c.slug));
+  // Exclude container/legacy categories that shouldn't appear as tabs
+  const EXCLUDED_SLUGS = new Set(['all-prag-stabilizers']);
+  const visibleCategories = categories.filter((c) => !hiddenSet.has(c.slug) && !EXCLUDED_SLUGS.has(c.slug));
   // Sort category slugs: those in category_order first (in that order), then remaining in original CATEGORY_SLUGS order
   const visibleCategorySlugs = CATEGORY_SLUGS.filter((slug) => !hiddenSet.has(slug)).sort((a, b) => {
     const aIdx = orderMap.get(a);
@@ -102,6 +104,14 @@ export default async function ProductsPage({
     }),
   ]);
 
+  // Fetch on-sale products for the Sales tab
+  const onSaleProducts = filterHiddenProducts(
+    await getProducts({ per_page: 100, on_sale: true })
+      .then(({ products }) => products)
+      .catch(() => [] as Product[]),
+    hiddenSet
+  );
+
   const productsByCategory: Record<string, Product[]> = {};
   visibleCategorySlugs.forEach((slug, index) => {
     productsByCategory[slug] = categoryResults[index].products;
@@ -158,6 +168,7 @@ export default async function ProductsPage({
           categories={visibleCategories}
           categoryOrder={settings.category_order}
           subcategoryOrder={settings.subcategory_order}
+          onSaleProducts={onSaleProducts}
         />
       </div>
 

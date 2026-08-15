@@ -1,9 +1,8 @@
 export const dynamic = 'force-dynamic';
 
 import ProductDetailView from '@/components/ProductDetailView';
-import ProductAssurance from '@/components/ProductAssurance';
-import { getProductBySlug, getProducts, getProductReviews, getTechDocuments, getProductCustomTabs, searchProducts, productUrl, getSiteSettings, filterHiddenProducts, isProductHidden } from '@/lib/woocommerce';
-import type { Product } from '@/lib/types';
+import { getProductBySlug, getProducts, getProductReviews, getTechDocuments, getProductCustomTabs, searchProducts, productUrl, getSiteSettings, filterHiddenProducts, isProductHidden, getStores } from '@/lib/woocommerce';
+import type { Product, Store } from '@/lib/types';
 import { notFound, redirect } from 'next/navigation';
 
 interface Props {
@@ -77,18 +76,34 @@ export default async function ProductDetailPage({ params }: Props) {
     notFound();
   }
 
-  const [reviews, techDocs, customTabs] = await Promise.all([
+  const [reviews, techDocs, customTabs, stores] = await Promise.all([
     getProductReviews(product.id),
     getTechDocuments(product.id),
     getProductCustomTabs(product.id),
+    getStores(),
   ]);
 
   const relatedFiltered = related.filter((p) => p.slug !== slug).slice(0, 3);
 
+  // Pick Lagos & Abuja offices
+  const pragStores = stores.filter((s) => s.type === 'prag');
+  const offices = pragStores.filter((s) => {
+    const hay = `${s.name} ${s.city}`.toLowerCase();
+    return hay.includes('lagos') || hay.includes('abuja') ||
+      hay.includes('obanikoro') || hay.includes('alaba') || hay.includes('lagos island');
+  }).sort((a, b) => {
+    const aLagos = `${a.name} ${a.city}`.toLowerCase().includes('lagos') ||
+      a.name.toLowerCase().includes('obanikoro') || a.name.toLowerCase().includes('alaba');
+    const bLagos = `${b.name} ${b.city}`.toLowerCase().includes('lagos') ||
+      b.name.toLowerCase().includes('obanikoro') || b.name.toLowerCase().includes('alaba');
+    if (aLagos && !bLagos) return -1;
+    if (!aLagos && bLagos) return 1;
+    return a.name.localeCompare(b.name);
+  });
+
   return (
     <main className="w-full bg-white flex flex-col">
-      <ProductDetailView product={product} relatedProducts={relatedFiltered} reviews={reviews} techDocs={techDocs} customTabs={customTabs} />
-      <ProductAssurance />
+      <ProductDetailView product={product} relatedProducts={relatedFiltered} reviews={reviews} techDocs={techDocs} customTabs={customTabs} offices={offices} />
     </main>
   );
 }

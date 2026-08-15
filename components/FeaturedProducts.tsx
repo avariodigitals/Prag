@@ -175,7 +175,7 @@ export default function FeaturedProducts({ products, whatsappNumber }: FeaturedP
   if (products.length === 0) return null;
 
   const whatsappDigits = normalizeWhatsapp(whatsappNumber);
-  const visible = products.slice(0, 4);
+  const visible = products.slice(0, 8);
 
   return (
     <section className="w-full px-4 md:px-20 py-12 md:py-20 bg-white flex flex-col justify-center items-center gap-10 md:gap-14">
@@ -196,10 +196,12 @@ export default function FeaturedProducts({ products, whatsappNumber }: FeaturedP
           </p>
         </div>
 
-        {/* Grid — only 4 products */}
-        <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-5 gap-y-8 md:gap-x-6 md:gap-y-10">
-          {visible.map((product) => (
-            <BestSellerCard key={product.id} product={product} whatsappDigits={whatsappDigits} />
+        {/* Grid — 4 on mobile, 8 on desktop */}
+        <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-x-5 gap-y-8 md:gap-x-6 md:gap-y-10">
+          {visible.map((product, i) => (
+            <div key={product.id} className={i >= 4 ? 'hidden md:block' : ''}>
+              <BestSellerCard product={product} whatsappDigits={whatsappDigits} />
+            </div>
           ))}
         </div>
 

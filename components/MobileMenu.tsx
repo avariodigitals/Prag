@@ -4,16 +4,18 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ShoppingCart, X } from 'lucide-react';
 import { useCart } from '@/lib/CartContext';
+import type { SiteSettings } from '@/lib/woocommerce';
 
-const NAV_CATEGORIES = [
-  { label: 'Stabilizer', href: '/products/voltage-stabilizers' },
-  { label: 'Inverter', href: '/products/inverters' },
-  { label: 'Solar', href: '/products/solar' },
-  { label: 'Batteries', href: '/products/batteries' },
+const FALLBACK_MENU = [
+  { label: 'Stabilizer', link: '/products/voltage-stabilizers' },
+  { label: 'Inverter', link: '/products/inverters' },
+  { label: 'Solar', link: '/products/solar' },
+  { label: 'Batteries', link: '/products/batteries' },
 ];
 
-export default function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
+export default function MobileMenu({ open, onClose, settings }: { open: boolean; onClose: () => void; settings?: SiteSettings }) {
   const { count } = useCart();
+  const menu = settings?.header_menu?.length ? settings.header_menu : FALLBACK_MENU;
 
   if (!open) return null;
 
@@ -37,16 +39,15 @@ export default function MobileMenu({ open, onClose }: { open: boolean; onClose: 
 
           {/* Nav categories */}
           <div className="flex flex-col gap-2">
-            {NAV_CATEGORIES.map(({ label, href }) => (
-              <Link
-                key={href}
-                href={href}
-                onClick={onClose}
-                className="self-stretch p-4 rounded-[10px] text-[#71717b] text-lg font-bold font-['Onest'] hover:bg-stone-50 transition-colors"
-              >
-                {label}
-              </Link>
-            ))}
+            {menu.map(({ label, link }) => {
+              const isExternal = /^https?:\/\//i.test(link);
+              const cls = "self-stretch p-4 rounded-[10px] text-[#71717b] text-lg font-bold font-['Onest'] hover:bg-stone-50 transition-colors";
+              return isExternal ? (
+                <a key={link} href={link} target="_blank" rel="noopener noreferrer" onClick={onClose} className={cls}>{label}</a>
+              ) : (
+                <Link key={link} href={link} onClick={onClose} className={cls}>{label}</Link>
+              );
+            })}
           </div>
 
           {/* Divider + secondary links */}

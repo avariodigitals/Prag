@@ -222,7 +222,7 @@ export default function HeroBanner({ slides: slidesProp, heroBg, whatsappLink, s
                     className="flex-1 md:flex-none md:w-auto px-4 sm:px-6 py-3 md:py-4 rounded-3xl md:rounded-full flex justify-center items-center gap-2 border border-white/40 bg-white/10 md:backdrop-blur-sm hover:bg-white/20 md:hover:border-white/60 transition-all hover:scale-105"
                   >
                     <WhatsAppIcon className="w-5 h-5 text-[#25D366] shrink-0" />
-                    <span className="text-white text-base sm:text-lg md:text-xl font-medium font-['Montserrat'] whitespace-nowrap">Help Me Choose</span>
+                    <span className="text-white text-base sm:text-lg md:text-xl font-medium font-['Montserrat'] whitespace-nowrap">Chat on WhatsApp</span>
                   </a>
                 </div>
 

@@ -11,65 +11,41 @@ interface Props {
   categories: Category[];
   categoryOrder?: string[];
   subcategoryOrder?: Record<string, string[]>;
+  onSaleProducts?: Product[];
 }
 
 const LISTING_PRICE_COLOR = 'lab(26.8019 1.35387 -4.68303)';
 
-export default function ProductsView({ allProducts, productsByCategory, categories, categoryOrder, subcategoryOrder }: Props) {
+export default function ProductsView({ allProducts, productsByCategory, categories, categoryOrder, onSaleProducts = [] }: Props) {
   const [activeTop, setActiveTop] = useState('all');
-  const [activeSub, setActiveSub] = useState<string | null>(null);
 
-  // Build dynamic top-level tabs from categories + order
-  const orderMap = new Map((categoryOrder ?? []).map((slug, i) => [slug, i]));
-  const parentCats = categories
-    .filter(c => c.parent === 0)
-    .sort((a, b) => {
-      const aIdx = orderMap.get(a.slug);
-      const bIdx = orderMap.get(b.slug);
-      if (aIdx !== undefined && bIdx !== undefined) return aIdx - bIdx;
-      if (aIdx !== undefined) return -1;
-      if (bIdx !== undefined) return 1;
-      return a.name.localeCompare(b.name);
-    });
+  // Build top-level tabs from categoryOrder (explicit list of top-level slugs)
+  // Falls back to parent===0 categories if no order is provided
+  const orderedSlugs = (categoryOrder ?? []).filter((slug) => categories.some((c) => c.slug === slug));
+  const parentCats = orderedSlugs.length > 0
+    ? orderedSlugs
+        .map((slug) => categories.find((c) => c.slug === slug))
+        .filter((c): c is Category => Boolean(c))
+    : categories
+        .filter((c) => c.parent === 0)
+        .sort((a, b) => a.name.localeCompare(b.name));
 
   const TOP_CATEGORIES = [
     { label: 'All products', slug: 'all' },
     ...parentCats.map(c => ({ label: c.name, slug: c.slug })),
+    ...(onSaleProducts.length > 0 ? [{ label: 'Sales', slug: '__sales__' }] : []),
   ];
-
-  const topCat = categories.find((category) => category.slug === activeTop);
-
-  // Subcategories of the active top category, sorted by subcategoryOrder
-  const activeParentSlug = activeTop;
-  const subOrder = subcategoryOrder?.[activeParentSlug] ?? [];
-  const subcategories = topCat
-    ? categories
-        .filter((category) => category.parent === topCat.id && category.count > 0)
-        .sort((a, b) => {
-          const aIdx = subOrder.indexOf(a.slug);
-          const bIdx = subOrder.indexOf(b.slug);
-          if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
-          if (aIdx !== -1) return -1;
-          if (bIdx !== -1) return 1;
-          return a.name.localeCompare(b.name);
-        })
-    : [];
 
   let products: Product[];
   if (activeTop === 'all') {
     products = allProducts;
-  } else if (activeSub) {
-    products = productsByCategory[activeSub] ?? [];
+  } else if (activeTop === '__sales__') {
+    products = onSaleProducts;
   } else {
     products = productsByCategory[activeTop] ?? [];
   }
 
   products = sortProductsBySizeThenPrice(products);
-
-  function handleTopChange(slug: string) {
-    setActiveTop(slug);
-    setActiveSub(null);
-  }
 
   return (
     <div className="flex flex-col gap-8">
@@ -78,7 +54,7 @@ export default function ProductsView({ allProducts, productsByCategory, categori
           {TOP_CATEGORIES.map((category) => (
             <button
               key={category.slug}
-              onClick={() => handleTopChange(category.slug)}
+              onClick={() => setActiveTop(category.slug)}
               className={`shrink-0 px-5 py-2.5 rounded-full text-sm font-medium font-['Onest'] border transition-colors ${
                 activeTop === category.slug
                   ? 'bg-sky-700 text-white border-sky-700'
@@ -90,34 +66,6 @@ export default function ProductsView({ allProducts, productsByCategory, categori
           ))}
         </div>
       </div>
-
-      {subcategories.length > 0 && (
-        <div className="flex items-center gap-6 border-b border-zinc-200 overflow-x-auto pb-0">
-          <button
-            onClick={() => setActiveSub(null)}
-            className={`pb-3 text-sm font-medium font-['Onest'] whitespace-nowrap border-b-2 transition-colors ${
-              !activeSub
-                ? 'border-sky-700 text-sky-700'
-                : 'border-transparent text-zinc-500 hover:text-zinc-800'
-            }`}
-          >
-            All {topCat?.name}
-          </button>
-          {subcategories.map((subcategory) => (
-            <button
-              key={subcategory.id}
-              onClick={() => setActiveSub(subcategory.slug)}
-              className={`pb-3 text-sm font-medium font-['Onest'] whitespace-nowrap border-b-2 transition-colors ${
-                activeSub === subcategory.slug
-                  ? 'border-sky-700 text-sky-700'
-                  : 'border-transparent text-zinc-500 hover:text-zinc-800'
-              }`}
-            >
-              {subcategory.name}
-            </button>
-          ))}
-        </div>
-      )}
 
       {products.length === 0 ? (
         <p className="text-zinc-400 text-center py-16 font-['Onest']">No products found.</p>

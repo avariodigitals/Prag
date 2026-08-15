@@ -62,8 +62,8 @@ export default function SiteShellClient({ children, user, settings }: Props) {
   return (
     <>
       <NavigationScrollReset />
-      <TopBar initialUser={user} phone={settings.contact_phone} whatsapp={settings.whatsapp} />
-      <NavBar />
+      <TopBar initialUser={user} phone={settings.contact_phone} whatsapp={settings.whatsapp} settings={settings} />
+      <NavBar settings={settings} />
       {children}
       {isHomePage && <HomeNeeds settings={settings} />}
       {isHomePage && <Testimonials settings={settings} />}

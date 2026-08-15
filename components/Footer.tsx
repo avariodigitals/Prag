@@ -6,20 +6,41 @@ import { formatPhone } from '@/lib/formatPhone';
 const FALLBACK_PHONE = '+2348032170129';
 const FALLBACK_EMAIL = 'sales@prag.global';
 const FALLBACK_DESC = "Nigeria's leading power engineering company. We design, supply and install power solutions for homes, businesses and industrial facilities across the country.";
-const FALLBACK_SOCIALS = {
-  facebook: 'https://www.facebook.com/pragpowersolutions',
-  instagram: 'https://www.instagram.com/prag_ng/',
-  linkedin: 'https://www.linkedin.com/company/prag/',
-  twitter: 'https://x.com/PRAG_Ng',
-  whatsapp: '',
-};
+const FALLBACK_COLUMNS = [
+  { title: 'Products', links: [
+    { label: 'Batteries', link: '/products/batteries' },
+    { label: 'Stabilizers', link: '/products/voltage-stabilizers' },
+    { label: 'Inverter', link: '/products/inverters' },
+    { label: 'Solar', link: '/products/solar' },
+  ]},
+  { title: 'Company', links: [
+    { label: 'About us', link: '/about' },
+    { label: 'PRAG Stores', link: '/stores' },
+    { label: 'Knowledge Center', link: '/knowledge-center' },
+    { label: 'Become a Distributor', link: '/distributor' },
+  ]},
+  { title: 'Support', links: [
+    { label: 'Contact Us', link: '/contact' },
+    { label: 'FAQ', link: '/faq' },
+    { label: 'Power Calculator', link: '/power-calculator' },
+    { label: 'Compare Products', link: '/compare' },
+    { label: 'Technical Resources', link: '/resources' },
+    { label: 'Shipping Policy', link: '/shipping-policy' },
+    { label: 'Return policy', link: '/return-policy' },
+  ]},
+  { title: 'Socials', links: [
+    { label: 'Facebook', link: 'https://www.facebook.com/pragpowersolutions' },
+    { label: 'Instagram', link: 'https://www.instagram.com/prag_ng/' },
+    { label: 'LinkedIn', link: 'https://www.linkedin.com/company/prag/' },
+    { label: 'Twitter / X', link: 'https://x.com/PRAG_Ng' },
+  ]},
+];
 
 export default function Footer({ settings }: { settings?: SiteSettings }) {
   const phone = settings?.contact_phone || FALLBACK_PHONE;
   const email = settings?.contact_email || FALLBACK_EMAIL;
   const desc = settings?.footer_description || FALLBACK_DESC;
-  const socials = settings?.socials ?? FALLBACK_SOCIALS;
-  const twitterLink = socials.twitter || FALLBACK_SOCIALS.twitter;
+  const columns = settings?.footer_columns?.length ? settings.footer_columns : FALLBACK_COLUMNS;
 
   return (
     <footer className="w-full px-4 md:px-20 py-10 bg-slate-950 flex flex-col justify-center items-center gap-10 overflow-hidden"> 
@@ -50,47 +71,24 @@ export default function Footer({ settings }: { settings?: SiteSettings }) {
             </div> 
           </div> 
         </div> 
-        <div className="w-full lg:w-[724px] grid grid-cols-2 md:grid-cols-4 gap-8 lg:flex lg:justify-between lg:items-start"> 
-          <div className="flex flex-col justify-start items-start gap-4"> 
-            <div className="text-white text-base font-bold font-['Onest']">Products</div>
-            <div className="flex flex-col justify-start items-start gap-1.5">
-              <Link href="/products/batteries" className="text-white/70 text-base font-normal font-['Space_Grotesk'] leading-7 hover:text-white transition-colors">Batteries</Link>
-              <Link href="/products/voltage-stabilizers" className="text-white/70 text-base font-normal font-['Space_Grotesk'] leading-7 hover:text-white transition-colors">Stabilizers</Link>
-              <Link href="/products/inverters" className="text-white/70 text-base font-normal font-['Space_Grotesk'] leading-7 hover:text-white transition-colors">Inverter</Link>
-              <Link href="/products/solar" className="text-white/70 text-base font-normal font-['Space_Grotesk'] leading-7 hover:text-white transition-colors">Solar</Link>
-            </div> 
-          </div> 
-          <div className="flex flex-col justify-start items-start gap-4"> 
-            <div className="text-white text-base font-bold font-['Onest']">Company</div>
-            <div className="flex flex-col justify-start items-start gap-1.5">
-              <Link href="/about" className="text-white/70 text-base font-normal font-['Space_Grotesk'] leading-7 hover:text-white transition-colors">About us</Link>
-              <Link href="/stores" className="text-white/70 text-base font-normal font-['Space_Grotesk'] leading-7 hover:text-white transition-colors">PRAG Stores</Link>
-              <Link href="/knowledge-center" className="text-white/70 text-base font-normal font-['Space_Grotesk'] leading-7 hover:text-white transition-colors">Knowledge Center</Link>
-              <Link href="/distributor" className="text-white/70 text-base font-normal font-['Space_Grotesk'] leading-7 hover:text-white transition-colors">Become a Distributor</Link>
-            </div> 
-          </div> 
-          <div className="flex flex-col justify-start items-start gap-4"> 
-            <div className="text-white text-base font-bold font-['Onest']">Support</div>
-            <div className="flex flex-col justify-start items-start gap-1.5">
-              <Link href="/contact" className="text-white/70 text-base font-normal font-['Space_Grotesk'] leading-7 hover:text-white transition-colors">Contact Us</Link>
-              <Link href="/faq" className="text-white/70 text-base font-normal font-['Space_Grotesk'] leading-7 hover:text-white transition-colors">FAQ</Link>
-              <Link href="/power-calculator" className="text-white/70 text-base font-normal font-['Space_Grotesk'] leading-7 hover:text-white transition-colors">Power Calculator</Link>
-              <Link href="/compare" className="text-white/70 text-base font-normal font-['Space_Grotesk'] leading-7 hover:text-white transition-colors">Compare Products</Link>
-              <Link href="/resources" className="text-white/70 text-base font-normal font-['Space_Grotesk'] leading-7 hover:text-white transition-colors">Technical Resources</Link>
-              <Link href="/shipping-policy" className="text-white/70 text-base font-normal font-['Space_Grotesk'] leading-7 hover:text-white transition-colors">Shipping Policy</Link>
-              <Link href="/return-policy" className="text-white/70 text-base font-normal font-['Space_Grotesk'] leading-7 hover:text-white transition-colors">Return policy</Link>
-            </div> 
-          </div> 
-          <div className="flex flex-col justify-start items-start gap-4"> 
-            <div className="text-white text-base font-bold font-['Onest']">Socials</div>
-            <div className="flex flex-col justify-start items-start gap-1.5">
-              {socials.facebook && <a href={socials.facebook} target="_blank" rel="noopener noreferrer" className="text-white/70 text-base font-normal font-['Space_Grotesk'] leading-7 hover:text-white transition-colors">Facebook</a>}
-              {socials.instagram && <a href={socials.instagram} target="_blank" rel="noopener noreferrer" className="text-white/70 text-base font-normal font-['Space_Grotesk'] leading-7 hover:text-white transition-colors">Instagram</a>}
-              {socials.linkedin && <a href={socials.linkedin} target="_blank" rel="noopener noreferrer" className="text-white/70 text-base font-normal font-['Space_Grotesk'] leading-7 hover:text-white transition-colors">LinkedIn</a>}
-              <a href={twitterLink} target="_blank" rel="noopener noreferrer" className="text-white/70 text-base font-normal font-['Space_Grotesk'] leading-7 hover:text-white transition-colors">Twitter / X</a>
-            </div> 
-          </div> 
-        </div> 
+        <div className="w-full lg:w-[724px] grid grid-cols-2 md:grid-cols-4 gap-8 lg:flex lg:justify-between lg:items-start">
+          {columns.map((col, colIdx) => (
+            <div key={colIdx} className="flex flex-col justify-start items-start gap-4">
+              <div className="text-white text-base font-bold font-['Onest']">{col.title}</div>
+              <div className="flex flex-col justify-start items-start gap-1.5">
+                {col.links.map((lnk, lnkIdx) => {
+                  const isExternal = /^https?:\/\//i.test(lnk.link);
+                  const cls = "text-white/70 text-base font-normal font-['Space_Grotesk'] leading-7 hover:text-white transition-colors";
+                  return isExternal ? (
+                    <a key={lnkIdx} href={lnk.link} target="_blank" rel="noopener noreferrer" className={cls}>{lnk.label}</a>
+                  ) : (
+                    <Link key={lnkIdx} href={lnk.link} className={cls}>{lnk.label}</Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
       </div> 
       <div className="w-full max-w-[1228px] flex flex-col justify-start items-start gap-4"> 
         <div className="w-full h-[0.30px] bg-stone-50/40" /> 

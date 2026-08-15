@@ -6,8 +6,8 @@ import type { SiteSettings } from '@/lib/woocommerce';
 const FALLBACK_CATEGORIES = [
   { name: 'Voltage Stabilizers', slug: 'voltage-stabilizers', image: 'https://central.prag.global/wp-content/uploads/2026/04/7ee70985fdddba92a39a6e67f80ec4773cbf34fd.png' },
   { name: 'Inverters',           slug: 'inverters',            image: 'https://central.prag.global/wp-content/uploads/2026/04/eebd514c0d3e75e4f32cb8fd691c7b3613fd99d5-1.png' },
-  { name: 'Solar Panels',        slug: 'solar',                image: 'https://central.prag.global/wp-content/uploads/2026/04/b5564cf299de3eea9dbe804a547cf74e99bc41a7.png' },
   { name: 'Batteries',           slug: 'batteries',            image: 'https://central.prag.global/wp-content/uploads/2026/04/dd4b835690b546ee636b7659added08cd02d9891.png' },
+  { name: 'Solar Panels',        slug: 'solar',                image: 'https://central.prag.global/wp-content/uploads/2026/04/b5564cf299de3eea9dbe804a547cf74e99bc41a7.png' },
 ];
 
 export default function CategoryGrid({ settings }: { settings?: SiteSettings }) {
@@ -34,7 +34,7 @@ export default function CategoryGrid({ settings }: { settings?: SiteSettings }) 
       <div className="w-full max-w-[1280px] flex flex-col gap-10">
         <div className="flex justify-between items-end gap-10">
           <div className="flex-1 flex flex-col gap-3 md:gap-7">
-            <h2 className="text-black text-base md:text-2xl font-bold font-['Montserrat']">Shop by Categories</h2>
+            <h2 className="text-black text-xl md:text-2xl font-bold font-['Montserrat']">Shop by Categories</h2>
           </div>
           <Link href="/products" className="hidden md:flex items-center gap-1.5 text-sky-700 text-xs md:text-sm font-normal font-['Montserrat'] hover:underline">
             View all Products

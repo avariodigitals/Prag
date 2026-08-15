@@ -819,7 +819,42 @@ class Prag_Core_Bridge {
             'business_hours_weekday'    => 'Mon–Fri: 8:00 AM – 6:00 PM',
             'business_hours_saturday'   => 'Sat: 9:00 AM – 2:00 PM',
             'announcement_bar'          => '',
+            'header_menu'               => [
+                ['label' => 'Stabilizer', 'link' => '/products/voltage-stabilizers'],
+                ['label' => 'Inverter',   'link' => '/products/inverters'],
+                ['label' => 'Solar',      'link' => '/products/solar'],
+                ['label' => 'Batteries',  'link' => '/products/batteries'],
+            ],
             'footer_description'        => 'Nigeria\'s leading power engineering company. We design, supply and install power solutions for homes, businesses and industrial facilities across the country.',
+            'footer_columns'            => [
+                ['title' => 'Products', 'links' => [
+                    ['label' => 'Batteries', 'link' => '/products/batteries'],
+                    ['label' => 'Stabilizers', 'link' => '/products/voltage-stabilizers'],
+                    ['label' => 'Inverter', 'link' => '/products/inverters'],
+                    ['label' => 'Solar', 'link' => '/products/solar'],
+                ]],
+                ['title' => 'Company', 'links' => [
+                    ['label' => 'About us', 'link' => '/about'],
+                    ['label' => 'PRAG Stores', 'link' => '/stores'],
+                    ['label' => 'Knowledge Center', 'link' => '/knowledge-center'],
+                    ['label' => 'Become a Distributor', 'link' => '/distributor'],
+                ]],
+                ['title' => 'Support', 'links' => [
+                    ['label' => 'Contact Us', 'link' => '/contact'],
+                    ['label' => 'FAQ', 'link' => '/faq'],
+                    ['label' => 'Power Calculator', 'link' => '/power-calculator'],
+                    ['label' => 'Compare Products', 'link' => '/compare'],
+                    ['label' => 'Technical Resources', 'link' => '/resources'],
+                    ['label' => 'Shipping Policy', 'link' => '/shipping-policy'],
+                    ['label' => 'Return policy', 'link' => '/return-policy'],
+                ]],
+                ['title' => 'Socials', 'links' => [
+                    ['label' => 'Facebook', 'link' => 'https://www.facebook.com/pragpowersolutions'],
+                    ['label' => 'Instagram', 'link' => 'https://www.instagram.com/prag_ng/'],
+                    ['label' => 'LinkedIn', 'link' => 'https://www.linkedin.com/company/prag/'],
+                    ['label' => 'Twitter / X', 'link' => 'https://x.com/PRAG_Ng'],
+                ]],
+            ],
             'brand_banner_kicker'       => 'HELP ME CHOOSE',
             'brand_banner_title'        => 'Not Sure What to Buy?',
             'brand_banner_description'  => 'Tell us what you want to power and we\'ll help you find the right PRAG setup.',
@@ -925,12 +960,14 @@ class Prag_Core_Bridge {
             'categories' => [
                 ['name' => 'Voltage Stabilizers', 'slug' => 'voltage-stabilizers', 'image' => 'https://central.prag.global/wp-content/uploads/2026/04/7ee70985fdddba92a39a6e67f80ec4773cbf34fd.png'],
                 ['name' => 'Inverters',           'slug' => 'inverters',            'image' => 'https://central.prag.global/wp-content/uploads/2026/04/eebd514c0d3e75e4f32cb8fd691c7b3613fd99d5-1.png'],
-                ['name' => 'Solar Panels',        'slug' => 'solar',                'image' => 'https://central.prag.global/wp-content/uploads/2026/04/b5564cf299de3eea9dbe804a547cf74e99bc41a7.png'],
                 ['name' => 'Batteries',           'slug' => 'batteries',            'image' => 'https://central.prag.global/wp-content/uploads/2026/04/dd4b835690b546ee636b7659added08cd02d9891.png'],
+                ['name' => 'Solar Panels',        'slug' => 'solar',                'image' => 'https://central.prag.global/wp-content/uploads/2026/04/b5564cf299de3eea9dbe804a547cf74e99bc41a7.png'],
             ],
             'hidden_categories' => [],
-            'category_order' => [],
+            'category_order' => ['voltage-stabilizers', 'inverters', 'batteries', 'solar'],
             'subcategory_order' => [],
+            'shipping_local_pickup_description' => 'Pick up your order from any of our PRAG showrooms in Lagos or Abuja. Choose the branch most convenient for you at checkout.',
+            'shipping_custom_delivery_description' => 'Need a tailored shipping arrangement? Chat with our support team to arrange delivery that fits your location and schedule. Shipping costs are calculated based on your destination — no flat-rate or free shipping applies.',
         ];
 
         $saved = get_option('prag_site_settings', []);

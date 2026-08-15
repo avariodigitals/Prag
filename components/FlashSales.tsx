@@ -169,7 +169,7 @@ export default function FlashSales({ products, whatsappNumber }: FlashSalesProps
               <div className="w-3 h-3 bg-sky-700" />
               <span className="text-black text-xs font-medium font-['Montserrat'] uppercase tracking-widest">Deals</span>
             </div>
-            <h2 className="text-black text-base md:text-2xl font-bold font-['Montserrat']">Today&apos;s PRAG Deals</h2>
+            <h2 className="text-black text-xl md:text-2xl font-bold font-['Montserrat']">Today&apos;s PRAG Deals</h2>
           </div>
 
           <div className="flex items-center gap-3">

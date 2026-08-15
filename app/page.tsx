@@ -18,12 +18,12 @@ export default async function HomePage() {
   ]);
 
   let featuredProducts = filterHiddenProducts(featuredResult, settings.hidden_categories);
-  if (featuredProducts.length < 4) {
+  if (featuredProducts.length < 8) {
     try {
-      const recent = await getProducts({ per_page: 8 });
+      const recent = await getProducts({ per_page: 12 });
       const seen = new Set(featuredProducts.map((product) => product.id));
       const topUp = filterHiddenProducts(recent.products, settings.hidden_categories).filter((product) => !seen.has(product.id));
-      featuredProducts = [...featuredProducts, ...topUp].slice(0, 4);
+      featuredProducts = [...featuredProducts, ...topUp].slice(0, 8);
     } catch {
       // Keep featured products as-is if fetch fails
     }

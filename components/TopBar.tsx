@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { useCart } from '@/lib/CartContext';
 import { formatPhone } from '@/lib/formatPhone';
+import type { SiteSettings } from '@/lib/woocommerce';
 
 function SearchBox() {
   const router = useRouter();
@@ -77,7 +78,7 @@ function SearchBox() {
   );
 }
 
-export default function TopBar({ initialUser = null, phone = '+2348032170129', whatsapp = '+2348032170129' }: { initialUser?: { user_display_name: string } | null; phone?: string; whatsapp?: string }) {
+export default function TopBar({ initialUser = null, phone = '+2348032170129', whatsapp = '+2348032170129', settings }: { initialUser?: { user_display_name: string } | null; phone?: string; whatsapp?: string; settings?: SiteSettings }) {
   const router = useRouter();
   const { count } = useCart();
   const [user, setUser] = useState<{ user_display_name: string } | null>(() => initialUser);
@@ -258,7 +259,7 @@ export default function TopBar({ initialUser = null, phone = '+2348032170129', w
         )}
       </div>
 
-      <MobileMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
+      <MobileMenu open={menuOpen} onClose={() => setMenuOpen(false)} settings={settings} />
     </>
   );
 }

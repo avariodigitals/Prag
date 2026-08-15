@@ -275,6 +275,7 @@ export const getProducts = unstable_cache(
     tag,
     orderby,
     order,
+    on_sale,
     page = 1,
     per_page = 9,
   }: {
@@ -285,6 +286,7 @@ export const getProducts = unstable_cache(
     tag?: string;
     orderby?: string;
     order?: string;
+    on_sale?: boolean;
     page?: number;
     per_page?: number;
   }): Promise<ProductsResult> => {
@@ -304,6 +306,7 @@ export const getProducts = unstable_cache(
       ...(tag && { tag }),
       ...(orderby && { orderby }),
       ...(order && { order }),
+      ...(on_sale && { on_sale: 'true' }),
     });
 
     const hasExplicitSort = Boolean(orderby || order);
@@ -617,6 +620,8 @@ export interface SiteSettings {
   under_construction_title: string;
   under_construction_message: string;
   footer_description: string;
+  footer_columns: { title: string; links: { label: string; link: string }[] }[];
+  header_menu: { label: string; link: string }[];
   brand_banner_kicker: string;
   brand_banner_title: string;
   brand_banner_description: string;
@@ -662,6 +667,9 @@ export interface SiteSettings {
   hidden_categories: string[];
   category_order: string[];
   subcategory_order: Record<string, string[]>;
+  // Shipping method descriptions (shown at checkout)
+  shipping_local_pickup_description: string;
+  shipping_custom_delivery_description: string;
 }
 
 const SETTINGS_FALLBACK: SiteSettings = {
@@ -676,6 +684,41 @@ const SETTINGS_FALLBACK: SiteSettings = {
   under_construction_title: 'We are coming back soon',
   under_construction_message: 'We are currently making improvements to serve you better. Please check back shortly.',
   footer_description: 'Nigeria\'s leading power engineering company. We design, supply and install power solutions for homes, businesses and industrial facilities across the country.',
+  footer_columns: [
+    { title: 'Products', links: [
+      { label: 'Batteries', link: '/products/batteries' },
+      { label: 'Stabilizers', link: '/products/voltage-stabilizers' },
+      { label: 'Inverter', link: '/products/inverters' },
+      { label: 'Solar', link: '/products/solar' },
+    ]},
+    { title: 'Company', links: [
+      { label: 'About us', link: '/about' },
+      { label: 'PRAG Stores', link: '/stores' },
+      { label: 'Knowledge Center', link: '/knowledge-center' },
+      { label: 'Become a Distributor', link: '/distributor' },
+    ]},
+    { title: 'Support', links: [
+      { label: 'Contact Us', link: '/contact' },
+      { label: 'FAQ', link: '/faq' },
+      { label: 'Power Calculator', link: '/power-calculator' },
+      { label: 'Compare Products', link: '/compare' },
+      { label: 'Technical Resources', link: '/resources' },
+      { label: 'Shipping Policy', link: '/shipping-policy' },
+      { label: 'Return policy', link: '/return-policy' },
+    ]},
+    { title: 'Socials', links: [
+      { label: 'Facebook', link: 'https://www.facebook.com/pragpowersolutions' },
+      { label: 'Instagram', link: 'https://www.instagram.com/prag_ng/' },
+      { label: 'LinkedIn', link: 'https://www.linkedin.com/company/prag/' },
+      { label: 'Twitter / X', link: 'https://x.com/PRAG_Ng' },
+    ]},
+  ],
+  header_menu: [
+    { label: 'Stabilizer', link: '/products/voltage-stabilizers' },
+    { label: 'Inverter', link: '/products/inverters' },
+    { label: 'Solar', link: '/products/solar' },
+    { label: 'Batteries', link: '/products/batteries' },
+  ],
   brand_banner_kicker: 'HELP ME CHOOSE',
   brand_banner_title: 'Not Sure What to Buy?',
   brand_banner_description: 'Tell us what you want to power and we\'ll help you find the right PRAG setup.',
@@ -756,12 +799,14 @@ const SETTINGS_FALLBACK: SiteSettings = {
   categories: [
     { name: 'Voltage Stabilizers', slug: 'voltage-stabilizers', image: 'https://central.prag.global/wp-content/uploads/2026/04/7ee70985fdddba92a39a6e67f80ec4773cbf34fd.png' },
     { name: 'Inverters', slug: 'inverters', image: 'https://central.prag.global/wp-content/uploads/2026/04/eebd514c0d3e75e4f32cb8fd691c7b3613fd99d5-1.png' },
-    { name: 'Solar Panels', slug: 'solar', image: 'https://central.prag.global/wp-content/uploads/2026/04/b5564cf299de3eea9dbe804a547cf74e99bc41a7.png' },
     { name: 'Batteries', slug: 'batteries', image: 'https://central.prag.global/wp-content/uploads/2026/04/dd4b835690b546ee636b7659added08cd02d9891.png' },
+    { name: 'Solar Panels', slug: 'solar', image: 'https://central.prag.global/wp-content/uploads/2026/04/b5564cf299de3eea9dbe804a547cf74e99bc41a7.png' },
   ],
   hidden_categories: [],
-  category_order: [],
+  category_order: ['voltage-stabilizers', 'inverters', 'batteries', 'solar'],
   subcategory_order: {},
+  shipping_local_pickup_description: 'Pick up your order from any of our PRAG showrooms in Lagos or Abuja. Choose the branch most convenient for you at checkout.',
+  shipping_custom_delivery_description: 'Need a tailored shipping arrangement? Chat with our support team to arrange delivery that fits your location and schedule. Shipping costs are calculated based on your destination — no flat-rate or free shipping applies.',
 };
 
 export const getSiteSettings = unstable_cache(
@@ -790,8 +835,10 @@ export const getSiteSettings = unstable_cache(
         home_need_items: Array.isArray(data.home_need_items) && data.home_need_items.length > 0 ? data.home_need_items : SETTINGS_FALLBACK.home_need_items,
         trust_signal_stats: Array.isArray(data.trust_signal_stats) && data.trust_signal_stats.length > 0 ? data.trust_signal_stats : SETTINGS_FALLBACK.trust_signal_stats,
         trust_signal_badges: Array.isArray(data.trust_signal_badges) && data.trust_signal_badges.length > 0 ? data.trust_signal_badges : SETTINGS_FALLBACK.trust_signal_badges,
+        footer_columns: Array.isArray(data.footer_columns) && data.footer_columns.length > 0 ? data.footer_columns : SETTINGS_FALLBACK.footer_columns,
+        header_menu: Array.isArray(data.header_menu) && data.header_menu.length > 0 ? data.header_menu : SETTINGS_FALLBACK.header_menu,
         hidden_categories: Array.isArray(data.hidden_categories) ? data.hidden_categories : [],
-        category_order: Array.isArray(data.category_order) ? data.category_order : [],
+        category_order: Array.isArray(data.category_order) && data.category_order.length > 0 ? data.category_order : SETTINGS_FALLBACK.category_order,
         subcategory_order: data.subcategory_order && typeof data.subcategory_order === 'object' ? data.subcategory_order : {},
       };
     } catch {

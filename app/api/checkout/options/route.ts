@@ -82,15 +82,32 @@ export async function GET() {
 
   const shippingMethods = Array.from(deduped.values());
 
-  // Fetch Paystack public key from WP settings
+  // Fetch Paystack public key + shipping descriptions from WP settings
   let paystackPublicKey = '';
+  let localPickupDesc = '';
+  let customDeliveryDesc = '';
   try {
     const settingsRes = await fetch(`${WP_API_URL}/prag-core/v1/settings`, { cache: 'no-store' });
     if (settingsRes.ok) {
-      const settings = await settingsRes.json() as { paystack_public_key?: string };
+      const settings = await settingsRes.json() as {
+        paystack_public_key?: string;
+        shipping_local_pickup_description?: string;
+        shipping_custom_delivery_description?: string;
+      };
       paystackPublicKey = settings.paystack_public_key ?? '';
+      localPickupDesc = settings.shipping_local_pickup_description ?? '';
+      customDeliveryDesc = settings.shipping_custom_delivery_description ?? '';
     }
   } catch { /* ignore */ }
+
+  // Apply admin-configured descriptions to shipping methods
+  for (const method of shippingMethods) {
+    if (method.method_id === 'local_pickup') {
+      method.description = localPickupDesc;
+    } else if (method.method_id !== 'free_shipping') {
+      method.description = customDeliveryDesc;
+    }
+  }
 
   return NextResponse.json({
     paymentMethods,

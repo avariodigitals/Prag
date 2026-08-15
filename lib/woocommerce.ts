@@ -285,7 +285,7 @@ export const getCategories = unstable_cache(
     return wcFetch<Category[]>(`/products/categories?per_page=100&hide_empty=true&_fields=${CATEGORY_FIELDS}`, []);
   },
   ['product-categories'],
-  { revalidate: 3600, tags: ['product-categories'] }
+  { revalidate: 60, tags: ['product-categories'] }
 );
 
 export const getProductBySlug = unstable_cache(
@@ -303,7 +303,7 @@ export const getProductBySlug = unstable_cache(
     return products[0] ?? null;
   },
   ['product-by-slug'],
-  { revalidate: 3600, tags: ['product-by-slug'] }
+  { revalidate: 60, tags: ['product-by-slug'] }
 );
 
 export interface ProductsResult {
@@ -651,7 +651,7 @@ export const getTechDocuments = unstable_cache(
     }
   },
   ['tech-documents'],
-  { revalidate: 3600, tags: ['tech-documents'] }
+  { revalidate: 60, tags: ['tech-documents'] }
 );
 
 export interface SiteSettings {
@@ -930,7 +930,7 @@ export const getProductCustomTabs = unstable_cache(
     }
   },
   ['product-custom-tabs'],
-  { revalidate: 3600, tags: ['product-custom-tabs'] }
+  { revalidate: 60, tags: ['product-custom-tabs'] }
 );
 
 export function shopUrl(product: Pick<Product, 'slug' | 'categories'>) {
@@ -1014,5 +1014,5 @@ export const getAllProductSlugs = unstable_cache(
     }
   },
   ['all-product-slugs'],
-  { revalidate: 3600, tags: ['all-product-slugs'] }
+  { revalidate: 60, tags: ['all-product-slugs'] }
 );

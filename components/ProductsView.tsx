@@ -14,8 +14,6 @@ interface Props {
   onSaleProducts?: Product[];
 }
 
-const LISTING_PRICE_COLOR = 'lab(26.8019 1.35387 -4.68303)';
-
 export default function ProductsView({ allProducts, productsByCategory, categories, categoryOrder, onSaleProducts = [] }: Props) {
   const [activeTop, setActiveTop] = useState('all');
 
@@ -46,9 +44,13 @@ export default function ProductsView({ allProducts, productsByCategory, categori
   }
 
   products = sortProductsBySizeThenPrice(products);
+  const total = products.length;
+
+  const activeLabel = TOP_CATEGORIES.find((c) => c.slug === activeTop)?.label ?? 'All products';
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-6">
+      {/* Tabs */}
       <div className="-mx-6 md:mx-0 px-6 md:px-0 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
         <div className="flex items-center gap-3 min-w-max md:min-w-0 md:flex-wrap pb-1">
           {TOP_CATEGORIES.map((category) => (
@@ -67,22 +69,26 @@ export default function ProductsView({ allProducts, productsByCategory, categori
         </div>
       </div>
 
+      {/* Result count */}
+      <div className="flex items-center justify-between">
+        <p className="text-[22px] md:text-2xl font-medium font-['Montserrat'] leading-relaxed">
+          <span className="text-zinc-500">{total}</span>
+          <span className="text-zinc-500"> {total === 1 ? 'product' : 'products'}</span>
+          {activeTop !== 'all' && <span className="text-zinc-500"> in </span>}
+          {activeTop !== 'all' && <span className="text-black">{activeLabel}</span>}
+        </p>
+      </div>
+
+      {/* Grid — same layout as search results */}
       {products.length === 0 ? (
-        <p className="text-zinc-400 text-center py-16 font-['Onest']">No products found.</p>
+        <div className="flex flex-col items-center justify-center py-20 gap-4">
+          <p className="text-gray-400 text-lg font-['Montserrat']">No products found.</p>
+        </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
-          {products.map((product) => {
-            const isNew = product.tags?.some((tag) => tag.slug === 'new' || tag.name.toLowerCase().includes('new')) ?? false;
-            return (
-              <ProductCard
-                key={product.id}
-                product={product}
-                isNew={isNew}
-                bg="bg-white"
-                priceColor={LISTING_PRICE_COLOR}
-              />
-            );
-          })}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-9 md:gap-x-6 md:gap-y-11">
+          {products.map((product) => (
+            <ProductCard key={product.id} product={product} bg="bg-white" />
+          ))}
         </div>
       )}
     </div>

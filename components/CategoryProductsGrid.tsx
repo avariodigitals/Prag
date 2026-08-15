@@ -28,7 +28,6 @@ const SLUG_TO_LABEL: Record<string, string> = {
   'solar': 'All Solar Products',
   'batteries': 'All Batteries',
 };
-const LISTING_PRICE_COLOR = 'lab(26.8019 1.35387 -4.68303)';
 
 export default function CategoryProductsGrid({
   products: initialProducts,
@@ -193,9 +192,9 @@ function CategoryProductsGridContent({
 
       {/* Grid */}
       {isPending ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-6 animate-pulse">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-9 md:gap-x-6 md:gap-y-11 animate-pulse">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="flex flex-col gap-3 w-full max-w-[340px] mx-auto sm:max-w-none sm:mx-0">
+            <div key={i} className="flex flex-col gap-3">
               <div className="h-56 md:h-64 bg-stone-100 rounded-xl" />
               <div className="h-3 w-3/4 bg-stone-200 rounded" />
               <div className="h-3 w-1/2 bg-stone-200 rounded" />
@@ -207,15 +206,13 @@ function CategoryProductsGridContent({
           ))}
         </div>
       ) : products.length === 0 ? (
-        <div className="flex justify-center py-20">
-          <p className="text-gray-400 text-base md:text-lg font-['Montserrat']">No products found.</p>
+        <div className="flex flex-col items-center justify-center py-20 gap-4">
+          <p className="text-gray-400 text-lg font-['Montserrat']">No products found.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-9 md:gap-x-6 md:gap-y-11">
           {products.map((product) => (
-            <div key={product.id} className="w-full max-w-[340px] mx-auto sm:max-w-none sm:mx-0">
-              <ProductCard product={product} bg="bg-stone-50" priceColor={LISTING_PRICE_COLOR} />
-            </div>
+            <ProductCard key={product.id} product={product} bg="bg-white" />
           ))}
         </div>
       )}

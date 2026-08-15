@@ -196,17 +196,62 @@ function normalizeSearchText(value: string): string {
     .trim();
 }
 
+/** Generate stem variants of a word for fuzzy matching (invert → invert, inverter, inverters) */
+function searchStems(word: string): string[] {
+  const w = word.toLowerCase().trim();
+  if (!w) return [];
+  const stems = new Set<string>([w]);
+  // Strip common suffixes to find the root
+  const root = w.replace(/(?:ers?|s)$/, '');
+  if (root && root.length >= 3) {
+    stems.add(root);
+    stems.add(root + 'er');
+    stems.add(root + 'ers');
+    stems.add(root + 's');
+  }
+  // Also handle words ending in 'er' → add 'ers' and vice versa
+  if (w.endsWith('er') && w.length > 3) {
+    stems.add(w + 's');
+  }
+  if (w.endsWith('ers') && w.length > 4) {
+    stems.add(w.slice(0, -1)); // remove trailing s
+  }
+  if (w.endsWith('s') && w.length > 2) {
+    stems.add(w.slice(0, -1)); // remove trailing s
+  }
+  return Array.from(stems);
+}
+
+/** Check if any search stem is a substring of the target text */
+function fuzzyMatchStems(target: string, stems: string[]): boolean {
+  return stems.some((stem) => target.includes(stem));
+}
+
 function isAccurateSearchMatch(product: Product, query: string): boolean {
   const tokens = normalizeSearchText(query).split(' ').filter(Boolean);
   if (tokens.length === 0) return false;
 
+  // Build stem variants for each token
+  const tokenStems = tokens.map((token) => searchStems(token));
+
   const normalizedName = normalizeSearchText(product.name);
   const normalizedCategories = (product.categories ?? []).map((category) => normalizeSearchText(category.name));
+  const normalizedTags = (product.tags ?? []).map((tag) => normalizeSearchText(tag.name));
+  const normalizedSku = normalizeSearchText(product.sku ?? '');
+  const normalizedDesc = normalizeSearchText(product.short_description?.replace(/<[^>]+>/g, '') ?? '');
 
-  const matchesName = tokens.every((token) => normalizedName.includes(token));
-  if (matchesName) return true;
+  // Every token must match somewhere (name, category, tag, sku, or description)
+  const matchesAll = tokenStems.every((stems) => {
+    return (
+      fuzzyMatchStems(normalizedName, stems) ||
+      normalizedCategories.some((cat) => fuzzyMatchStems(cat, stems)) ||
+      normalizedTags.some((tag) => fuzzyMatchStems(tag, stems)) ||
+      fuzzyMatchStems(normalizedSku, stems) ||
+      fuzzyMatchStems(normalizedDesc, stems)
+    );
+  });
 
-  return normalizedCategories.some((category) => tokens.every((token) => category.includes(token)));
+  return matchesAll;
 }
 
 export const getFeaturedProducts = unstable_cache(
@@ -370,8 +415,9 @@ export const getCategoryBySlug = unstable_cache(
 );
 
 export async function searchProducts(query: string, _sort?: string, page = 1, per_page = 9): Promise<ProductsResult> {
+  // Fetch all products (without WooCommerce search param) and filter locally
+  // for smarter matching (stem variants, tags, sku, description)
   const baseQs = new URLSearchParams({
-    search: query,
     status: 'publish',
     _fields: PRODUCT_LIST_FIELDS,
   });
@@ -824,21 +870,23 @@ export const getSiteSettings = unstable_cache(
       if (!res.ok) return SETTINGS_FALLBACK;
       const data = await res.json();
       // Deep merge: fallback fills any missing keys
+      // Only use fallbacks for fields that are truly missing (undefined/null)
+      // Respect saved values even if they're empty arrays/strings
       return {
         ...SETTINGS_FALLBACK,
         ...data,
         socials: { ...SETTINGS_FALLBACK.socials, ...(data.socials ?? {}) },
-        slides: Array.isArray(data.slides) && data.slides.length > 0 ? data.slides : SETTINGS_FALLBACK.slides,
-        categories: Array.isArray(data.categories) && data.categories.length > 0 ? data.categories : SETTINGS_FALLBACK.categories,
-        checkout_faq_items: Array.isArray(data.checkout_faq_items) && data.checkout_faq_items.length > 0 ? data.checkout_faq_items : SETTINGS_FALLBACK.checkout_faq_items,
-        testimonial_items: Array.isArray(data.testimonial_items) && data.testimonial_items.length > 0 ? data.testimonial_items : SETTINGS_FALLBACK.testimonial_items,
-        home_need_items: Array.isArray(data.home_need_items) && data.home_need_items.length > 0 ? data.home_need_items : SETTINGS_FALLBACK.home_need_items,
-        trust_signal_stats: Array.isArray(data.trust_signal_stats) && data.trust_signal_stats.length > 0 ? data.trust_signal_stats : SETTINGS_FALLBACK.trust_signal_stats,
-        trust_signal_badges: Array.isArray(data.trust_signal_badges) && data.trust_signal_badges.length > 0 ? data.trust_signal_badges : SETTINGS_FALLBACK.trust_signal_badges,
-        footer_columns: Array.isArray(data.footer_columns) && data.footer_columns.length > 0 ? data.footer_columns : SETTINGS_FALLBACK.footer_columns,
-        header_menu: Array.isArray(data.header_menu) && data.header_menu.length > 0 ? data.header_menu : SETTINGS_FALLBACK.header_menu,
+        slides: Array.isArray(data.slides) ? data.slides : SETTINGS_FALLBACK.slides,
+        categories: Array.isArray(data.categories) ? data.categories : SETTINGS_FALLBACK.categories,
+        checkout_faq_items: Array.isArray(data.checkout_faq_items) ? data.checkout_faq_items : SETTINGS_FALLBACK.checkout_faq_items,
+        testimonial_items: Array.isArray(data.testimonial_items) ? data.testimonial_items : SETTINGS_FALLBACK.testimonial_items,
+        home_need_items: Array.isArray(data.home_need_items) ? data.home_need_items : SETTINGS_FALLBACK.home_need_items,
+        trust_signal_stats: Array.isArray(data.trust_signal_stats) ? data.trust_signal_stats : SETTINGS_FALLBACK.trust_signal_stats,
+        trust_signal_badges: Array.isArray(data.trust_signal_badges) ? data.trust_signal_badges : SETTINGS_FALLBACK.trust_signal_badges,
+        footer_columns: Array.isArray(data.footer_columns) ? data.footer_columns : SETTINGS_FALLBACK.footer_columns,
+        header_menu: Array.isArray(data.header_menu) ? data.header_menu : SETTINGS_FALLBACK.header_menu,
         hidden_categories: Array.isArray(data.hidden_categories) ? data.hidden_categories : [],
-        category_order: Array.isArray(data.category_order) && data.category_order.length > 0 ? data.category_order : SETTINGS_FALLBACK.category_order,
+        category_order: Array.isArray(data.category_order) ? data.category_order : SETTINGS_FALLBACK.category_order,
         subcategory_order: data.subcategory_order && typeof data.subcategory_order === 'object' ? data.subcategory_order : {},
       };
     } catch {
@@ -846,7 +894,7 @@ export const getSiteSettings = unstable_cache(
     }
   },
   ['site-settings'],
-  { revalidate: 3600, tags: ['site-settings'] }
+  { revalidate: 60, tags: ['site-settings'] }
 );
 
 export interface CustomTab {

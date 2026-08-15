@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 
 import ProductsView from '@/components/ProductsView';
 import ProductAssurance from '@/components/ProductAssurance';
+import SlideOutChat from '@/components/SlideOutChat';
 import { getCategories, getProducts, getSiteSettings, filterHiddenProducts } from '@/lib/woocommerce';
 import type { Product } from '@/lib/types';
 
@@ -173,6 +174,7 @@ export default async function ProductsPage({
       </div>
 
       <ProductAssurance />
+      <SlideOutChat settings={settings} whatsappNumber={settings.socials?.whatsapp || settings.whatsapp} />
     </main>
   );
 }

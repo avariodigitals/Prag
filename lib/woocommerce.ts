@@ -676,7 +676,12 @@ export interface SiteSettings {
   brand_banner_whatsapp_text: string;
   brand_banner_image: string;
   brand_banner_enabled: boolean;
+  brand_banner_mode: 'text' | 'image';
   brand_banners: { image: string; link: string; enabled: boolean }[];
+  slideout_chat_enabled: boolean;
+  slideout_chat_title: string;
+  slideout_chat_subtitle: string;
+  slideout_chat_message: string;
   final_cta_title: string;
   final_cta_subtitle: string;
   final_cta_shop_text: string;
@@ -773,7 +778,12 @@ const SETTINGS_FALLBACK: SiteSettings = {
   brand_banner_whatsapp_text: 'Ask PRAG on WhatsApp',
   brand_banner_image: '',
   brand_banner_enabled: true,
+  brand_banner_mode: 'text',
   brand_banners: [],
+  slideout_chat_enabled: true,
+  slideout_chat_title: 'Not sure what to pick?',
+  slideout_chat_subtitle: 'Chat with us',
+  slideout_chat_message: 'Hi PRAG team, I was browsing your product pages and need help choosing the right product. Can you assist?',
   final_cta_title: 'Ready for More Reliable Power?',
   final_cta_subtitle: 'Shop PRAG power solutions for your home today.',
   final_cta_shop_text: 'Shop Now',

@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import CategoryProductsGrid from '@/components/CategoryProductsGrid';
+import SlideOutChat from '@/components/SlideOutChat';
 import { getProductBySlug, getProducts, getCategoryBySlug, productUrl, getSiteSettings, getCategories, filterHiddenProducts } from '@/lib/woocommerce';
 import type { Product } from '@/lib/types';
 import { notFound, redirect } from 'next/navigation';
@@ -168,6 +169,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
           subcategories={subcategories}
         />
       </div>
+      <SlideOutChat settings={settings} whatsappNumber={settings.socials?.whatsapp || settings.whatsapp} />
     </main>
   );
 }

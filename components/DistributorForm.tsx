@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Turnstile from './Turnstile';
 
-const TIERS = ['Authorized Dealer', 'Certified Installer', 'Product Reseller'];
+const TIERS = ['Dealer', 'Reseller', 'Installer'];
 const ALLOWED_TIERS = new Set(TIERS);
 const EMPTY_FORM = { name: '', business: '', phone: '', email: '', city: '', type: '', tier: '', message: '' };
 

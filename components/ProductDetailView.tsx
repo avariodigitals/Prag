@@ -49,6 +49,7 @@ interface Props {
   techDocs: TechDocument[];
   customTabs?: CustomTab[];
   offices?: Store[];
+  stats?: { value: string; label: string }[];
 }
 
 const ASSURANCE_FEATURES = [
@@ -128,7 +129,7 @@ function ShowroomsCard({ offices }: { offices: Store[] }) {
   );
 }
 
-export default function ProductDetailView({ product, relatedProducts, reviews, techDocs, customTabs = [], offices = [] }: Props) {
+export default function ProductDetailView({ product, relatedProducts, reviews, techDocs, customTabs = [], offices = [], stats = [] }: Props) {
   const numericPrice = Number(String(product.price ?? '').replace(/,/g, ''));
   const hasValidPrice = Number.isFinite(numericPrice) && numericPrice > 0;
   const isOutOfStock = product.stock_status === 'outofstock' || !hasValidPrice;
@@ -416,6 +417,27 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
               </a>
             </div>
           </div>
+
+          {/* Stats card — after share buttons */}
+          {stats.length > 0 && (
+            <div className="flex items-stretch gap-0 rounded-2xl border border-gray-200 overflow-hidden">
+              {stats.map((stat, i) => (
+                <div
+                  key={i}
+                  className={`flex-1 flex flex-col items-center justify-center py-4 px-2 text-center ${
+                    i < stats.length - 1 ? 'border-r border-gray-200' : ''
+                  }`}
+                >
+                  <span className="text-sky-700 text-xl md:text-2xl font-bold font-['Onest'] leading-tight">
+                    {stat.value}
+                  </span>
+                  <span className="text-zinc-500 text-[11px] md:text-xs font-medium font-['Onest'] leading-tight mt-1">
+                    {stat.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

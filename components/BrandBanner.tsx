@@ -43,6 +43,9 @@ export default function BrandBanner({ settings }: { settings?: SiteSettings }) {
   const enabled = settings?.brand_banner_enabled ?? true;
   if (!enabled) return null;
 
+  const mode = settings?.brand_banner_mode ?? 'text';
+  const showTextBanner = mode === 'text';
+
   const title = settings?.brand_banner_title || FB.title;
   const description = settings?.brand_banner_description || FB.description;
   const cta = settings?.brand_banner_cta || FB.cta;
@@ -56,10 +59,11 @@ export default function BrandBanner({ settings }: { settings?: SiteSettings }) {
   const extraBanners: BannerItem[] = (settings?.brand_banners || []).filter((b) => b.enabled !== false && b.image);
 
   return (
-    <section className="w-full px-4 md:px-20 py-10 md:py-14 flex flex-col justify-center items-center gap-10 md:gap-14 overflow-hidden">
-      {/* Main brand banner with text + CTAs */}
+    <section className="w-full py-10 md:py-14 flex flex-col justify-center items-center gap-10 md:gap-14">
+      {/* Main text banner — only when mode is 'text' */}
+      {showTextBanner && (
       <div
-        className="relative w-full max-w-[1229px] overflow-hidden rounded-3xl min-h-[420px] md:min-h-[460px] flex items-center"
+        className="relative w-full overflow-hidden rounded-none md:rounded-3xl min-h-[380px] sm:min-h-[420px] md:min-h-[460px] flex items-center"
         style={image ? { backgroundImage: `url('${image}')`, backgroundSize: 'cover', backgroundPosition: 'center center', backgroundRepeat: 'no-repeat', backgroundColor: '#0b1220' } : { background: 'linear-gradient(135deg, #0c1a33 0%, #0f2747 45%, #103a5e 100%)' }}
       >
         {/* Readability overlay — left-weighted so text stays clean over any background */}
@@ -74,8 +78,8 @@ export default function BrandBanner({ settings }: { settings?: SiteSettings }) {
         />
         <div className="absolute inset-0 md:hidden" style={{ background: 'linear-gradient(180deg, rgba(7,14,28,0.30) 0%, rgba(7,14,28,0.62) 60%, rgba(7,14,28,0.82) 100%)' }} aria-hidden="true" />
 
-        <div className="relative z-10 w-full px-6 py-10 md:px-14 md:py-16 flex flex-col items-start gap-5 md:gap-6 text-left">
-          <h2 className="max-w-[640px] text-white text-2xl sm:text-3xl md:text-[52px] font-bold font-['Onest'] leading-[1.05]">
+        <div className="relative z-10 w-full px-5 py-8 sm:px-8 sm:py-10 md:px-14 md:py-16 flex flex-col items-start gap-4 sm:gap-5 md:gap-6 text-left">
+          <h2 className="max-w-[640px] text-white text-2xl sm:text-3xl md:text-[52px] font-bold font-['Onest'] leading-[1.05] sm:leading-[1.08]">
             {title}
           </h2>
 
@@ -86,10 +90,10 @@ export default function BrandBanner({ settings }: { settings?: SiteSettings }) {
           <div className="flex flex-col sm:flex-row w-full sm:w-auto items-stretch sm:items-center gap-3 md:gap-4 mt-1">
             <Link
               href={link}
-              className="w-full sm:w-auto inline-flex justify-center items-center gap-2.5 px-7 py-3.5 bg-white rounded-full hover:bg-sky-50 transition-all hover:scale-[1.03]"
+              className="w-full sm:w-auto inline-flex justify-center items-center gap-2.5 px-6 py-3 sm:px-7 sm:py-3.5 bg-white rounded-full hover:bg-sky-50 transition-all hover:scale-[1.03]"
             >
               {CALCULATOR_ICON}
-              <span className="text-sky-700 text-base md:text-lg font-semibold font-['Montserrat'] whitespace-nowrap">
+              <span className="text-sky-700 text-sm sm:text-base md:text-lg font-semibold font-['Montserrat'] whitespace-nowrap">
                 {cta}
               </span>
             </Link>
@@ -97,26 +101,31 @@ export default function BrandBanner({ settings }: { settings?: SiteSettings }) {
               href={whatsappLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto inline-flex justify-center items-center gap-2.5 px-7 py-3.5 bg-[#25D366] rounded-full hover:bg-[#1ebe5d] transition-all hover:scale-[1.03]"
+              className="w-full sm:w-auto inline-flex justify-center items-center gap-2.5 px-6 py-3 sm:px-7 sm:py-3.5 bg-[#25D366] rounded-full hover:bg-[#1ebe5d] transition-all hover:scale-[1.03]"
             >
               {WHATSAPP_ICON}
-              <span className="text-white text-base md:text-lg font-semibold font-['Montserrat'] whitespace-nowrap">
+              <span className="text-white text-sm sm:text-base md:text-lg font-semibold font-['Montserrat'] whitespace-nowrap">
                 {whatsappText}
               </span>
             </a>
           </div>
         </div>
       </div>
+      )}
 
-      {/* Additional image-only banners */}
+      {/* Additional image-only banners — full width, responsive */}
       {extraBanners.length > 0 && (
-        <div className="w-full max-w-[1229px] flex flex-col gap-10 md:gap-14">
+        <div className="w-full flex flex-col gap-10 md:gap-14">
           {extraBanners.map((banner, i) => {
             const inner = (
-              <div
-                className="relative w-full overflow-hidden rounded-3xl min-h-[200px] md:min-h-[280px] bg-slate-200"
-                style={{ backgroundImage: `url('${banner.image}')`, backgroundSize: 'cover', backgroundPosition: 'center center', backgroundRepeat: 'no-repeat' }}
-              />
+              <div className="relative w-full overflow-hidden rounded-none md:rounded-3xl bg-slate-200">
+                <img
+                  src={banner.image}
+                  alt=""
+                  className="w-full h-auto block object-cover"
+                  style={{ maxHeight: '600px' }}
+                />
+              </div>
             );
             return (
               <div key={`banner-${i}`} className="w-full">

@@ -103,7 +103,7 @@ export default async function ProductDetailPage({ params }: Props) {
 
   return (
     <main className="w-full bg-white flex flex-col">
-      <ProductDetailView product={product} relatedProducts={relatedFiltered} reviews={reviews} techDocs={techDocs} customTabs={customTabs} offices={offices} />
+      <ProductDetailView product={product} relatedProducts={relatedFiltered} reviews={reviews} techDocs={techDocs} customTabs={customTabs} offices={offices} stats={settings.trust_signal_stats} />
     </main>
   );
 }

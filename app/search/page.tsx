@@ -24,7 +24,7 @@ export default async function SearchPage({ searchParams }: Props) {
   // Strip out any products belonging to hidden categories
   const settings = await getSiteSettings();
   const products = filterHiddenProducts(rawResult.products, settings.hidden_categories);
-  const total = products.length;
+  const total = rawResult.total;
 
   return (
     <main className="w-full bg-white flex flex-col">

@@ -62,10 +62,9 @@ export default function ProductCard({ product, isNew = false, priority = false, 
   const isRecentlyCreated = (() => {
     if (!product.date_created) return false;
     const created = new Date(product.date_created);
-    const threshold = new Date('2026-07-28T00:00:00.000Z');
     const now = new Date();
     const diffDays = (now.getTime() - created.getTime()) / (1000 * 60 * 60 * 24);
-    return created >= threshold && diffDays <= 30;
+    return diffDays <= 10;
   })();
   const shouldShowNew = (isNew || hasNewTag || isRecentlyCreated) && !isOutOfStock;
 

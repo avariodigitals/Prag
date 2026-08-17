@@ -60,7 +60,7 @@ async function wcFetch<T>(path: string, fallback: T): Promise<T> {
   }
 }
 
-const PRODUCT_LIST_FIELDS = 'id,name,slug,price,regular_price,sale_price,images,categories,on_sale,stock_status,date_created,attributes';
+const PRODUCT_LIST_FIELDS = 'id,name,slug,sku,price,regular_price,sale_price,on_sale,featured,stock_status,date_created,short_description,images,categories,tags,attributes';
 const CATEGORY_FIELDS = 'id,name,slug,description,count,parent';
 
 function toPriceNumber(product: Product): number {
@@ -763,6 +763,12 @@ export interface SiteSettings {
   flash_sales_enabled: boolean;
   best_sellers_enabled: boolean;
   featured_section_enabled: boolean;
+  // Best Sellers section content (homepage "Most Popular Right Now")
+  best_sellers_kicker: string;
+  best_sellers_title: string;
+  best_sellers_subtitle: string;
+  best_sellers_view_all_text: string;
+  best_sellers_view_all_link: string;
   // Single product page section visibility toggles
   product_assurance_enabled: boolean;
   product_stats_enabled: boolean;
@@ -883,6 +889,11 @@ const SETTINGS_FALLBACK: SiteSettings = {
   flash_sales_enabled: true,
   best_sellers_enabled: true,
   featured_section_enabled: true,
+  best_sellers_kicker: 'Best Sellers',
+  best_sellers_title: 'Most Popular Right Now',
+  best_sellers_subtitle: 'Now we\u2019re ready to sell.',
+  best_sellers_view_all_text: 'View all products',
+  best_sellers_view_all_link: '/products',
   product_assurance_enabled: true,
   product_stats_enabled: true,
   product_showrooms_enabled: true,

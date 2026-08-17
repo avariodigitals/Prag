@@ -199,6 +199,12 @@ export default function FeaturedProducts({ products, whatsappNumber, settings }:
 
   const visible = products.slice(0, 8);
 
+  const kicker = settings?.best_sellers_kicker || 'Best Sellers';
+  const title = settings?.best_sellers_title || 'Most Popular Right Now';
+  const subtitle = settings?.best_sellers_subtitle || 'Now we\u2019re ready to sell.';
+  const viewAllText = settings?.best_sellers_view_all_text || 'View all products';
+  const viewAllLink = settings?.best_sellers_view_all_link || '/products';
+
   return (
     <section className="w-full px-4 md:px-20 py-12 md:py-20 bg-white flex flex-col justify-center items-center gap-10 md:gap-14">
       <div className="w-full max-w-[1280px] flex flex-col justify-center items-center gap-10 md:gap-14">
@@ -207,14 +213,14 @@ export default function FeaturedProducts({ products, whatsappNumber, settings }:
           <div className="flex items-center gap-1.5">
             <div className="w-3 h-3 bg-sky-700" />
             <span className="text-sky-700 text-xs font-semibold font-['Montserrat'] uppercase tracking-widest">
-              Best Sellers
+              {kicker}
             </span>
           </div>
           <h2 className="text-black text-2xl md:text-4xl font-bold font-['Montserrat'] leading-tight">
-            Most Popular Right Now
+            {title}
           </h2>
           <p className="text-zinc-500 text-sm md:text-base font-normal font-['Montserrat']">
-            Now we&apos;re ready to sell.
+            {subtitle}
           </p>
         </div>
 
@@ -229,10 +235,10 @@ export default function FeaturedProducts({ products, whatsappNumber, settings }:
 
         {/* View all */}
         <Link
-          href="/products"
+          href={viewAllLink}
           className="w-64 p-4 rounded-3xl outline outline-1 outline-offset-[-1px] outline-sky-700 inline-flex justify-center items-center gap-2.5 hover:bg-sky-50 transition-colors"
         >
-          <span className="text-sky-700 text-sm font-medium font-['Montserrat']">View all products</span>
+          <span className="text-sky-700 text-sm font-medium font-['Montserrat']">{viewAllText}</span>
         </Link>
       </div>
     </section>

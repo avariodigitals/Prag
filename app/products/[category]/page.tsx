@@ -128,7 +128,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       per_page: 16,
     });
     products = filterHiddenProducts(result.products, hiddenSet);
-    total = products.length;
+    total = result.total;
   } catch {
     products = [];
     total = 0;

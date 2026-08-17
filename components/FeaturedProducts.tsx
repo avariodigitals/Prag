@@ -201,7 +201,7 @@ export default function FeaturedProducts({ products, whatsappNumber, settings }:
 
   const kicker = settings?.best_sellers_kicker || 'Best Sellers';
   const title = settings?.best_sellers_title || 'Most Popular Right Now';
-  const subtitle = settings?.best_sellers_subtitle || 'Now we\u2019re ready to sell.';
+  const subtitle = settings?.best_sellers_subtitle ?? '';
   const viewAllText = settings?.best_sellers_view_all_text || 'View all products';
   const viewAllLink = settings?.best_sellers_view_all_link || '/products';
 
@@ -219,9 +219,11 @@ export default function FeaturedProducts({ products, whatsappNumber, settings }:
           <h2 className="text-black text-2xl md:text-4xl font-bold font-['Montserrat'] leading-tight">
             {title}
           </h2>
-          <p className="text-zinc-500 text-sm md:text-base font-normal font-['Montserrat']">
-            {subtitle}
-          </p>
+          {subtitle && (
+            <p className="text-zinc-500 text-sm md:text-base font-normal font-['Montserrat']">
+              {subtitle}
+            </p>
+          )}
         </div>
 
         {/* Grid — 4 on mobile, 8 on desktop */}

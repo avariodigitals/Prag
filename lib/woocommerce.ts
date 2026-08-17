@@ -891,7 +891,7 @@ const SETTINGS_FALLBACK: SiteSettings = {
   featured_section_enabled: true,
   best_sellers_kicker: 'Best Sellers',
   best_sellers_title: 'Most Popular Right Now',
-  best_sellers_subtitle: 'Now we\u2019re ready to sell.',
+  best_sellers_subtitle: '',
   best_sellers_view_all_text: 'View all products',
   best_sellers_view_all_link: '/products',
   product_assurance_enabled: true,

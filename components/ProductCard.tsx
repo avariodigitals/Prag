@@ -10,12 +10,9 @@ import { useWishlist } from '@/lib/WishlistContext';
 import type { Product } from '@/lib/types';
 
 function splitProductName(name: string): { base: string; rating?: string } {
-  const match = name.match(/^(.*?)\s*(\([^)]*\d+[^)]*\))\s*$/);
+  const match = name.match(/^(.*?)\s*(\([^)]*\))\s*$/);
   if (!match) return { base: name };
-  const rating = match[2];
-  const isRating = /\d+/.test(rating) && /\b(W|VA|KVA|KW|AH|V|MPPT|AMP)\b/i.test(rating);
-  if (!isRating) return { base: name };
-  return { base: match[1].trim(), rating };
+  return { base: match[1].trim(), rating: match[2] };
 }
 
 interface ProductCardProps {
@@ -126,12 +123,7 @@ export default function ProductCard({ product, isNew = false, priority = false, 
           <Link href={productUrl(product)} aria-label={`View details for ${product.name}`} className="text-center">
             <p className="text-zinc-900 text-lg font-bold font-['Montserrat'] leading-[30px] line-clamp-2 group-hover:text-sky-700 transition-colors text-center" style={{ hyphens: 'auto', wordBreak: 'break-word' }}>
               {nameBase}
-              {nameRating && (
-                <span className="hidden md:inline whitespace-nowrap"> {nameRating}</span>
-              )}
-              {nameRating && (
-                <span className="md:hidden"> {nameRating}</span>
-              )}
+              {nameRating && <><br />{nameRating}</>}
             </p>
           </Link>
           <div className="flex items-center justify-center gap-2 mt-0">

@@ -17,12 +17,9 @@ interface FeaturedProductsProps {
 }
 
 function splitProductName(name: string): { base: string; rating?: string } {
-  const match = name.match(/^(.*?)\s*(\([^)]*\d+[^)]*\))\s*$/);
+  const match = name.match(/^(.*?)\s*(\([^)]*\))\s*$/);
   if (!match) return { base: name };
-  const rating = match[2];
-  const isRating = /\d+/.test(rating) && /\b(W|VA|KVA|KW|AH|V|MPPT|AMP)\b/i.test(rating);
-  if (!isRating) return { base: name };
-  return { base: match[1].trim(), rating };
+  return { base: match[1].trim(), rating: match[2] };
 }
 
 /** Pull a very short, useful spec line from the product data. */
@@ -147,16 +144,9 @@ function BestSellerCard({ product }: { product: Product }) {
         <Link href={productUrl(product)} aria-label={`View details for ${product.name}`} className="text-center">
           <h3 className="text-zinc-900 text-base font-bold font-['Montserrat'] leading-snug line-clamp-2 group-hover:text-sky-700 transition-colors" style={{ hyphens: 'auto', wordBreak: 'break-word' }}>
             {nameBase}
-            {nameRating && <span> {nameRating}</span>}
+            {nameRating && <><br />{nameRating}</>}
           </h3>
         </Link>
-
-        {/* Short spec */}
-        {spec && !specIsDuplicate && (
-          <p className="text-center text-zinc-500 text-xs font-normal font-['Montserrat'] line-clamp-1 min-h-[16px]">
-            {spec}
-          </p>
-        )}
 
         {/* Price */}
         <div className="flex items-center justify-center gap-2 min-h-[28px]">

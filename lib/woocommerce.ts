@@ -801,6 +801,10 @@ export interface SiteSettings {
   trust_signal_title: string;
   trust_signal_stats: { value: string; label: string }[];
   trust_signal_badges: { label: string }[];
+  // Installation showcase — real photos of PRAG systems installed across
+  // Nigeria, shown as a gallery with location labels. Admin uploads real
+  // installation photos via Prag-Admin; fallbacks are placeholder images.
+  trust_signal_installations: { image: string; location: string; caption: string }[];
   // Power Calculator Q&A (homepage, above Final CTA) — conversion-focused
   // accordion that answers sizing questions and drives users to the calculator.
   power_calculator_enabled: boolean;
@@ -950,6 +954,11 @@ const SETTINGS_FALLBACK: SiteSettings = {
     { label: 'Expert Support' },
     { label: 'Secure Checkout' },
   ],
+  trust_signal_installations: [
+    { image: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&q=80', location: 'Lagos', caption: '5KVA solar hybrid — Lekki home' },
+    { image: 'https://images.unsplash.com/photo-1546074177-9dda8f5d6e3f?w=800&q=80', location: 'Abuja', caption: '10KVA inverter system — Maitama office' },
+    { image: 'https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=800&q=80', location: 'Port Harcourt', caption: '30KVA stabilizer — industrial site' },
+  ],
   power_calculator_enabled: true,
   power_calculator_kicker: 'POWER CALCULATOR',
   power_calculator_title: 'Not sure what size you need? Let\u2019s work it out.',
@@ -1021,6 +1030,7 @@ export const getSiteSettings = unstable_cache(
         home_need_items: Array.isArray(data.home_need_items) ? data.home_need_items : SETTINGS_FALLBACK.home_need_items,
         trust_signal_stats: Array.isArray(data.trust_signal_stats) ? data.trust_signal_stats : SETTINGS_FALLBACK.trust_signal_stats,
         trust_signal_badges: Array.isArray(data.trust_signal_badges) ? data.trust_signal_badges : SETTINGS_FALLBACK.trust_signal_badges,
+        trust_signal_installations: Array.isArray(data.trust_signal_installations) ? data.trust_signal_installations : SETTINGS_FALLBACK.trust_signal_installations,
         footer_columns: Array.isArray(data.footer_columns) ? data.footer_columns : SETTINGS_FALLBACK.footer_columns,
         header_menu: Array.isArray(data.header_menu) ? data.header_menu : SETTINGS_FALLBACK.header_menu,
         hidden_categories: Array.isArray(data.hidden_categories) ? data.hidden_categories : [],

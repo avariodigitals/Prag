@@ -170,6 +170,7 @@ export default function HeroBanner({ slides: slidesProp, heroBg, slideTransition
                     <span className="text-white text-base sm:text-lg md:text-xl font-medium font-['Montserrat'] whitespace-nowrap">{slide.cta}</span>
                   </Link>
                 </div>
+                <div className="h-6 md:h-0" aria-hidden="true" />
               </div>
             </div>
 

@@ -72,7 +72,6 @@ export default function ProductsView({ allProducts, productsByCategory, categori
   }
 
   products = sortProductsBySizeThenPrice(products);
-  const total = products.length;
 
   const activeLabel = activeSub
     ? activeSubCats.find((c) => c.slug === activeSub)?.name
@@ -130,15 +129,14 @@ export default function ProductsView({ allProducts, productsByCategory, categori
         </div>
       )}
 
-      {/* Result count */}
-      <div className="flex items-center justify-between">
-        <p className="text-[22px] md:text-2xl font-medium font-['Montserrat'] leading-relaxed">
-          <span className="text-zinc-500">{total}</span>
-          <span className="text-zinc-500"> {total === 1 ? 'product' : 'products'}</span>
-          {activeTop !== 'all' && <span className="text-zinc-500"> in </span>}
-          {activeTop !== 'all' && <span className="text-black">{activeLabel}</span>}
-        </p>
-      </div>
+      {/* Active category label */}
+      {activeTop !== 'all' && (
+        <div className="flex items-center justify-between">
+          <p className="text-[22px] md:text-2xl font-medium font-['Montserrat'] leading-relaxed">
+            <span className="text-black">{activeLabel}</span>
+          </p>
+        </div>
+      )}
 
       {/* Grid — same layout as search results */}
       {products.length === 0 ? (
@@ -148,7 +146,7 @@ export default function ProductsView({ allProducts, productsByCategory, categori
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-9 md:gap-x-6 md:gap-y-11">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} bg="bg-white" />
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
       )}

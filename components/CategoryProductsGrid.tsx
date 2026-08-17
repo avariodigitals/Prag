@@ -213,7 +213,7 @@ function CategoryProductsGridContent({
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-9 md:gap-x-6 md:gap-y-11">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} bg="bg-stone-50" priceColor={LISTING_PRICE_COLOR} />
+            <ProductCard key={product.id} product={product} priceColor={LISTING_PRICE_COLOR} />
           ))}
         </div>
       )}

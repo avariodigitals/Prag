@@ -201,7 +201,7 @@ function ProductsGridContent({ products, total, categories = [], tags = [] }: Pr
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-9 md:gap-x-6 md:gap-y-11">
           {items.map((product) => (
-            <ProductCard key={product.id} product={product} bg="bg-white" />
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
       )}

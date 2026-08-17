@@ -5,6 +5,7 @@ import HeroBanner from '@/components/HeroBanner';
 import ShopByNeed from '@/components/ShopByNeed';
 import CategoryGrid from '@/components/CategoryGrid';
 import FeaturedProducts from '@/components/FeaturedProducts';
+import FeaturedSection from '@/components/FeaturedSection';
 import BrandBanner from '@/components/BrandBanner';
 import FlashSales from '@/components/FlashSales';
 import TrustSignal from '@/components/TrustSignal';
@@ -40,11 +41,12 @@ export default async function HomePage() {
     <main className="w-full bg-white flex flex-col">
       <HeroBanner slides={settings.slides} heroBg={settings.hero_background} whatsappLink={settings.socials?.whatsapp || (settings.whatsapp ? `https://wa.me/${settings.whatsapp.replace(/[^\d]/g, '')}` : undefined)} slideTransition={settings.slide_transition} />
       <CategoryGrid settings={settings} />
-      <FeaturedProducts products={featuredProducts} whatsappNumber={settings.socials?.whatsapp || settings.whatsapp} />
-      <ShopByNeed />
+      <FeaturedProducts products={featuredProducts} whatsappNumber={settings.socials?.whatsapp || settings.whatsapp} settings={settings} />
+      <FeaturedSection products={featuredProducts} whatsappNumber={settings.socials?.whatsapp || settings.whatsapp} settings={settings} />
+      <ShopByNeed settings={settings} />
       <BrandBanner settings={settings} />
       <TrustSignal settings={settings} />
-      <FlashSales products={visibleFlashSaleProducts} whatsappNumber={settings.socials?.whatsapp || settings.whatsapp} />
+      <FlashSales products={visibleFlashSaleProducts} whatsappNumber={settings.socials?.whatsapp || settings.whatsapp} settings={settings} />
     </main>
   );
 }

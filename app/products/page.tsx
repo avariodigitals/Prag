@@ -4,7 +4,7 @@ export const dynamic = 'force-dynamic';
 import ProductsView from '@/components/ProductsView';
 import ProductAssurance from '@/components/ProductAssurance';
 import SlideOutChat from '@/components/SlideOutChat';
-import { getCategories, getProducts, getSiteSettings, filterHiddenProducts } from '@/lib/woocommerce';
+import { getCategories, getProducts, getAllProducts, getAllProductsForCategory, getSiteSettings, filterHiddenProducts } from '@/lib/woocommerce';
 import type { Product } from '@/lib/types';
 
 const CATEGORY_SLUGS = ['voltage-stabilizers', 'inverters', 'batteries', 'solar'];
@@ -63,7 +63,7 @@ export default async function ProductsPage({
     .filter((name): name is string => Boolean(name));
 
   const baseAllProductsPromise = query
-    ? getProducts({ per_page: 100 }).then(({ products }) => {
+    ? getAllProducts().then(({ products }) => {
         const normalized = query.toLowerCase();
         return {
           products: filterHiddenProducts(products, hiddenSet).filter((product) => {
@@ -80,7 +80,7 @@ export default async function ProductsPage({
             const cat = categories.find((c) => c.slug === slug);
             if (!cat) return [] as Product[];
             try {
-              const { products } = await getProducts({ category_id: cat.id, per_page: 100 });
+              const { products } = await getAllProductsForCategory(cat.id);
               return products;
             } catch {
               return [] as Product[];
@@ -93,17 +93,19 @@ export default async function ProductsPage({
           });
           return { products: Array.from(deduped.values()), total: deduped.size };
         })
-      : getProducts({ per_page: 100 }).then(({ products, total }) => ({ products: filterHiddenProducts(products, hiddenSet), total })).catch(() => ({ products: [] as Product[], total: 0 }));
+      : getAllProducts().then(({ products }) => ({ products: filterHiddenProducts(products, hiddenSet), total: 0 })).catch(() => ({ products: [] as Product[], total: 0 }));
 
-  const [{ products: allProducts }, ...categoryResults] = await Promise.all([
+  const [baseResult, ...categoryResults] = await Promise.all([
     baseAllProductsPromise,
     ...visibleCategorySlugs.map((slug) => {
       const cat = visibleCategories.find((category) => category.slug === slug);
       return cat
-        ? getProducts({ category_id: cat.id, per_page: 50 }).then(({ products, total }) => ({ products: filterHiddenProducts(products, hiddenSet), total })).catch(() => ({ products: [] as Product[], total: 0 }))
+        ? getAllProductsForCategory(cat.id).then(({ products }) => ({ products: filterHiddenProducts(products, hiddenSet), total: 0 })).catch(() => ({ products: [] as Product[], total: 0 }))
         : Promise.resolve({ products: [] as Product[], total: 0 });
     }),
   ]);
+
+  let allProducts = baseResult.products;
 
   // Fetch on-sale products for the Sales tab
   const onSaleProducts = filterHiddenProducts(
@@ -140,11 +142,30 @@ export default async function ProductsPage({
   });
 
   const subResults = await Promise.all(
-    subcategories.map((subcategory) => getProducts({ category_id: subcategory.id, per_page: 50 }).then(({ products, total }) => ({ products: filterHiddenProducts(products, hiddenSet), total })).catch(() => ({ products: [] as Product[], total: 0 })))
+    subcategories.map((subcategory) => getAllProductsForCategory(subcategory.id).then(({ products }) => ({ products: filterHiddenProducts(products, hiddenSet), total: 0 })).catch(() => ({ products: [] as Product[], total: 0 })))
   );
   subcategories.forEach((subcategory, index) => {
     productsByCategory[subcategory.slug] = subResults[index].products;
   });
+
+  // "All" tab: show every product flagged in any active (visible) sub/category,
+  // except drafts / unpublished (already filtered by status=publish upstream).
+  // Merge the union of all category products with the base fetch so products
+  // that straddle a visible + hidden category (or have no category) are kept,
+  // and newly added products in any subcategory always appear.
+  if (!query && validRequestedCats.length === 0) {
+    const union = new Map<number, Product>();
+    for (const products of Object.values(productsByCategory)) {
+      for (const product of products) {
+        if (!union.has(product.id)) union.set(product.id, product);
+      }
+    }
+    // Include products from the base fetch (handles uncategorized / straddling)
+    for (const product of allProducts) {
+      if (!union.has(product.id)) union.set(product.id, product);
+    }
+    allProducts = Array.from(union.values());
+  }
 
   return (
     <main className="w-full bg-white flex flex-col">

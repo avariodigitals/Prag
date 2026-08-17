@@ -6,10 +6,12 @@ import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { formatPrice, productUrl } from '@/lib/woocommerce';
 import type { Product } from '@/lib/types';
+import type { SiteSettings } from '@/lib/woocommerce';
 
 interface FlashSalesProps {
   products: Product[];
   whatsappNumber?: string;
+  settings?: SiteSettings;
 }
 
 const LISTING_PRICE_COLOR = 'lab(26.8019 1.35387 -4.68303)';
@@ -47,7 +49,7 @@ function FlashSaleCard({ product, whatsappDigits }: { product: Product; whatsapp
 
   return (
     <div className={`w-full relative flex flex-col gap-2 md:gap-3 group ${isOutOfStock ? 'opacity-60' : ''}`}>
-      <div className="w-full h-[220px] sm:h-[280px] md:h-[330px] relative flex justify-center items-center rounded-lg overflow-hidden bg-stone-50">
+      <div className="w-full h-[220px] sm:h-[280px] md:h-[330px] relative flex justify-center items-center rounded-lg overflow-hidden">
         {image ? (
           <Link href={productUrl(product)} aria-label={`View details for ${product.name}`} className="block w-full h-full">
             <Image
@@ -129,10 +131,13 @@ function FlashSaleCard({ product, whatsappDigits }: { product: Product; whatsapp
   );
 }
 
-export default function FlashSales({ products, whatsappNumber }: FlashSalesProps) {
+export default function FlashSales({ products, whatsappNumber, settings }: FlashSalesProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [current, setCurrent] = useState(0);
   const whatsappDigits = normalizeWhatsapp(whatsappNumber);
+
+  const enabled = settings?.flash_sales_enabled ?? true;
+  if (!enabled) return null;
 
   function scrollToIndex(index: number) {
     const track = trackRef.current;

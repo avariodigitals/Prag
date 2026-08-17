@@ -214,7 +214,7 @@ export default function CheckoutView() {
               <div key={item.id} className="flex items-start gap-3">
                 {/* Product image — desktop only */}
                 {item.image && (
-                  <div className="hidden md:block relative w-16 h-16 shrink-0 rounded-[10px] overflow-hidden bg-stone-50 outline outline-1 outline-gray-200">
+                  <div className="hidden md:block relative w-16 h-16 shrink-0 rounded-[10px] overflow-hidden outline outline-1 outline-gray-200">
                     <Image
                       src={item.image}
                       alt={item.name}

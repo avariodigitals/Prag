@@ -43,7 +43,7 @@ export default function SlideOutChat({ settings, whatsappNumber }: Props) {
 
   return (
     <div
-      className={`fixed right-0 top-1/2 -translate-y-1/2 z-40 transition-transform duration-500 ease-out ${
+      className={`fixed right-0 bottom-24 z-40 transition-transform duration-500 ease-out ${
         visible ? 'translate-x-0' : 'translate-x-full'
       }`}
     >

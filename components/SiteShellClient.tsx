@@ -8,6 +8,7 @@ import NavBar from './NavBar';
 import Footer from './Footer';
 import FinalCta from './FinalCta';
 import CheckoutFaq from './CheckoutFaq';
+import PowerCalculatorFaq from './PowerCalculatorFaq';
 import Testimonials from './Testimonials';
 import HomeNeeds from './HomeNeeds';
 import NavigationScrollReset from './NavigationScrollReset';
@@ -68,6 +69,7 @@ export default function SiteShellClient({ children, user, settings }: Props) {
       {isHomePage && <HomeNeeds settings={settings} />}
       {isHomePage && <Testimonials settings={settings} />}
       {isHomePage && <CheckoutFaq settings={settings} />}
+      {isHomePage && <PowerCalculatorFaq settings={settings} />}
       <FinalCta settings={settings} />
       <Footer settings={settings} />
     </>

@@ -61,33 +61,33 @@ export default function TrustSignal({ settings }: { settings?: SiteSettings }) {
   if (stats.length === 0 && badges.length === 0) return null;
 
   return (
-    <section className="w-full px-4 md:px-20 py-12 md:py-16 bg-white">
-      <div className="w-full max-w-[900px] mx-auto rounded-3xl border border-slate-200 px-5 py-8 md:px-8 md:py-10 flex flex-col gap-6 md:gap-8">
+    <section className="w-full px-4 md:px-20 py-14 md:py-20 bg-gradient-to-b from-white via-stone-50 to-white">
+      <div className="w-full max-w-[1280px] mx-auto rounded-3xl border border-slate-200 bg-white shadow-xl shadow-slate-200/50 px-6 py-10 md:px-12 md:py-14 flex flex-col gap-8 md:gap-12">
         {/* Header */}
-        <div className="flex flex-col items-center gap-2 text-center">
+        <div className="flex flex-col items-center gap-3 text-center">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-sky-700 rounded-sm shrink-0" aria-hidden="true" />
-            <span className="text-slate-500 text-sm font-medium font-['Space_Grotesk'] uppercase tracking-wider">
+            <div className="w-5 h-5 bg-sky-700 rounded-sm shrink-0" aria-hidden="true" />
+            <span className="text-slate-500 text-sm md:text-base font-semibold font-['Space_Grotesk'] uppercase tracking-wider">
               {kicker}
             </span>
           </div>
-          <h2 className="text-slate-900 text-3xl md:text-4xl font-bold font-['Onest'] leading-tight tracking-tight">
+          <h2 className="text-slate-900 text-4xl md:text-5xl font-bold font-['Onest'] leading-tight tracking-tight">
             {title}
           </h2>
         </div>
 
         {/* Stats */}
         {stats.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 md:gap-8">
             {stats.map((stat, i) => (
               <div
                 key={`${stat.value}-${stat.label}-${i}`}
-                className="flex flex-col items-center text-center gap-1 rounded-2xl border border-slate-200 bg-slate-50/60 px-4 py-6 md:py-8"
+                className="flex flex-col items-center text-center gap-2 rounded-2xl border border-slate-200 bg-gradient-to-b from-slate-50 to-white px-6 py-8 md:py-10 shadow-sm"
               >
-                <span className="text-sky-700 text-3xl md:text-4xl font-bold font-['Onest'] leading-none tracking-tight">
+                <span className="text-sky-700 text-4xl md:text-5xl font-bold font-['Onest'] leading-none tracking-tight">
                   {stat.value}
                 </span>
-                <span className="text-slate-600 text-sm md:text-base font-normal font-['Space_Grotesk']">
+                <span className="text-slate-600 text-sm md:text-lg font-medium font-['Space_Grotesk']">
                   {stat.label}
                 </span>
               </div>

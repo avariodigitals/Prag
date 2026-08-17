@@ -20,13 +20,12 @@ function splitProductName(name: string): { base: string; rating?: string } {
 
 interface ProductCardProps {
   product: Product;
-  bg?: string;
   isNew?: boolean;
   priority?: boolean;
   priceColor?: string;
 }
 
-export default function ProductCard({ product, bg = 'bg-stone-50', isNew = false, priority = false, priceColor }: ProductCardProps) {
+export default function ProductCard({ product, isNew = false, priority = false, priceColor }: ProductCardProps) {
   const { isWishlisted, toggle, authed } = useWishlist();
   const router = useRouter();
   const [saving, setSaving] = useState(false);

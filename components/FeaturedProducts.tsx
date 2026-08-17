@@ -1,20 +1,19 @@
+'use client';
+
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { Heart } from 'lucide-react';
 import { formatPrice, productUrl } from '@/lib/woocommerce';
+import { useWishlist } from '@/lib/WishlistContext';
 import type { Product } from '@/lib/types';
+import type { SiteSettings } from '@/lib/woocommerce';
 
 interface FeaturedProductsProps {
   products: Product[];
   whatsappNumber?: string;
-}
-
-const LISTING_PRICE_COLOR = 'lab(26.8019 1.35387 -4.68303)';
-
-function normalizeWhatsapp(raw?: string): string {
-  const digits = (raw ?? '').replace(/\D/g, '');
-  if (!digits) return '2348032170129';
-  if (digits.startsWith('0')) return `234${digits.slice(1)}`;
-  return digits;
+  settings?: SiteSettings;
 }
 
 function splitProductName(name: string): { base: string; rating?: string } {
@@ -47,9 +46,12 @@ function shortSpec(product: Product): string {
   return rating ?? '';
 }
 
-function BestSellerCard({ product, whatsappDigits }: { product: Product; whatsappDigits: string }) {
+function BestSellerCard({ product }: { product: Product }) {
   const image = product.images?.[0];
   const { base: nameBase, rating: nameRating } = splitProductName(product.name);
+  const { isWishlisted, toggle, authed } = useWishlist();
+  const router = useRouter();
+  const [saving, setSaving] = useState(false);
 
   const numericPrice = Number(String(product.price ?? '').replace(/,/g, ''));
   const hasValidPrice = Number.isFinite(numericPrice) && numericPrice > 0;
@@ -61,50 +63,82 @@ function BestSellerCard({ product, whatsappDigits }: { product: Product; whatsap
   // Hide spec line if it just repeats the rating already shown in the name
   const specIsDuplicate = nameRating && spec && spec.replace(/[^a-zA-Z0-9]/g, '').includes(nameRating.replace(/[^a-zA-Z0-9]/g, ''));
 
-  const orderText = `Hi, I'm interested in the ${product.name}.`;
-  const orderHref = `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(orderText)}`;
+  async function handleWishlist() {
+    if (authed === null) return;
+    if (!authed) {
+      router.push('/login?redirect=/wishlist');
+      return;
+    }
+    setSaving(true);
+    await toggle({
+      id: product.id,
+      name: product.name,
+      slug: product.slug,
+      price: product.price,
+      regular_price: product.regular_price,
+      sale_price: product.sale_price,
+      on_sale: product.on_sale,
+      image: image?.src ?? '',
+      categories: product.categories,
+    });
+    setSaving(false);
+  }
+
+  const wishlisted = isWishlisted(product.id);
 
   return (
-    <div className="w-full relative flex flex-col bg-white rounded-2xl border border-stone-200/80 overflow-hidden group transition-shadow hover:shadow-lg hover:shadow-stone-200/60">
+    <div className="w-full relative flex flex-col bg-white rounded-2xl overflow-hidden group transition-shadow hover:shadow-lg hover:shadow-stone-200/60">
       {/* Image */}
-      <div className="w-full aspect-square relative flex justify-center items-center bg-stone-50 overflow-hidden">
+      <div className="w-full aspect-square relative flex justify-center items-center overflow-hidden">
         {image ? (
-          <Link href={productUrl(product)} aria-label={`View details for ${product.name}`} className="block w-full h-full">
-            <Image
-              src={image.src}
-              alt={image.alt || product.name}
-              width={500}
-              height={500}
-              sizes="(min-width: 768px) 25vw, 50vw"
-              quality={80}
-              loading="lazy"
-              className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-300"
-            />
-          </Link>
+          <>
+            <Link href={productUrl(product)} aria-label={`View details for ${product.name}`} className="block w-full h-full">
+              <Image
+                src={image.src}
+                alt={image.alt || product.name}
+                width={500}
+                height={500}
+                sizes="(min-width: 768px) 25vw, 50vw"
+                quality={80}
+                loading="lazy"
+                className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-300"
+              />
+            </Link>
+
+            {/* Badges */}
+            <div className="absolute left-3 top-3 z-10 flex flex-col gap-1.5">
+              {product.on_sale && isAvailable && (
+                <span className="px-2.5 py-1 rounded-full bg-red-600 text-white text-[10px] font-semibold font-['Montserrat'] uppercase tracking-wide">
+                  Sale
+                </span>
+              )}
+              {isOutOfStock && (
+                <span className="px-2.5 py-1 rounded-full bg-rose-100 text-rose-700 text-[10px] font-semibold font-['Montserrat'] uppercase tracking-wide">
+                  Out of stock
+                </span>
+              )}
+              {isOnBackorder && (
+                <span className="px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 text-[10px] font-semibold font-['Montserrat'] uppercase tracking-wide">
+                  Back order
+                </span>
+              )}
+            </div>
+
+            {/* Wishlist button */}
+            <button
+              onClick={handleWishlist}
+              disabled={saving}
+              aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+              className="absolute right-3 top-3 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-colors z-10"
+            >
+              <Heart className={`w-5 h-5 transition-colors ${wishlisted ? 'text-sky-700 fill-sky-700' : 'text-zinc-500'}`} />
+            </button>
+          </>
         ) : (
           <div className="w-40 h-40 flex items-center justify-center">
             <span className="text-zinc-400 text-xs">No Image</span>
           </div>
         )}
-
-        {/* Badges */}
-        <div className="absolute left-3 top-3 z-10 flex flex-col gap-1.5">
-          {product.on_sale && isAvailable && (
-            <span className="px-2.5 py-1 rounded-full bg-red-600 text-white text-[10px] font-semibold font-['Montserrat'] uppercase tracking-wide">
-              Sale
-            </span>
-          )}
-          {isOutOfStock && (
-            <span className="px-2.5 py-1 rounded-full bg-rose-100 text-rose-700 text-[10px] font-semibold font-['Montserrat'] uppercase tracking-wide">
-              Out of stock
-            </span>
-          )}
-          {isOnBackorder && (
-            <span className="px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 text-[10px] font-semibold font-['Montserrat'] uppercase tracking-wide">
-              Back order
-            </span>
-          )}
-        </div>
       </div>
 
       {/* Body */}
@@ -132,49 +166,37 @@ function BestSellerCard({ product, whatsappDigits }: { product: Product; whatsap
             </span>
           )}
           {hasValidPrice ? (
-            <span className="text-lg font-semibold font-['Montserrat']" style={{ color: LISTING_PRICE_COLOR }}>
+            <span className="text-lg md:text-xl font-medium font-['Montserrat'] text-sky-700">
               {formatPrice(product.price)}
             </span>
           ) : (
-            <span className="text-sm font-semibold font-['Montserrat'] uppercase tracking-wide" style={{ color: LISTING_PRICE_COLOR }}>
+            <span className="text-sm font-medium font-['Montserrat'] text-sky-700 uppercase tracking-wide">
               Call for Price
             </span>
           )}
         </div>
 
-        {/* Dominant: Order on WhatsApp */}
-        <a
-          href={isAvailable ? orderHref : undefined}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-disabled={!isAvailable}
-          className={`w-full mt-1 px-4 py-2.5 rounded-full text-white text-sm font-semibold font-['Montserrat'] text-center inline-flex justify-center items-center gap-2 transition-colors ${
-            isAvailable ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-zinc-300 cursor-not-allowed pointer-events-none'
-          }`}
-        >
-          <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-          </svg>
-          Order on WhatsApp
-        </a>
-
-        {/* Secondary: View Details */}
-        <Link
-          href={productUrl(product)}
-          aria-label={`View details for ${product.name}`}
-          className="w-full text-center text-sky-700 text-xs font-medium font-['Montserrat'] hover:text-sky-900 hover:underline transition-colors"
-        >
-          View Details
-        </Link>
+        {/* View details */}
+        <div className="flex items-center justify-center gap-3 mt-1.5 md:mt-2">
+          <Link
+            href={productUrl(product)}
+            aria-label={`View details for ${product.name}`}
+            className="min-w-[108px] px-4 py-2 bg-sky-700 rounded-full text-white text-sm font-medium font-['Montserrat'] text-center hover:bg-sky-800 transition-colors"
+          >
+            View details
+          </Link>
+        </div>
       </div>
     </div>
   );
 }
 
-export default function FeaturedProducts({ products, whatsappNumber }: FeaturedProductsProps) {
+export default function FeaturedProducts({ products, whatsappNumber, settings }: FeaturedProductsProps) {
   if (products.length === 0) return null;
 
-  const whatsappDigits = normalizeWhatsapp(whatsappNumber);
+  const enabled = settings?.best_sellers_enabled ?? true;
+  if (!enabled) return null;
+
   const visible = products.slice(0, 8);
 
   return (
@@ -200,7 +222,7 @@ export default function FeaturedProducts({ products, whatsappNumber }: FeaturedP
         <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-x-5 gap-y-8 md:gap-x-6 md:gap-y-10">
           {visible.map((product, i) => (
             <div key={product.id} className={i >= 4 ? 'hidden md:block' : ''}>
-              <BestSellerCard product={product} whatsappDigits={whatsappDigits} />
+              <BestSellerCard product={product} />
             </div>
           ))}
         </div>

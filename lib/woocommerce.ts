@@ -370,6 +370,81 @@ export const getProducts = unstable_cache(
   { revalidate: 600, tags: ['products-list'] }
 );
 
+/**
+ * Fetch ALL products by paginating through every page.
+ * Use this instead of getProducts({ per_page: N }) when you need the
+ * complete set (e.g. the "All" tab on /products).
+ */
+export const getAllProducts = unstable_cache(
+  async (): Promise<ProductsResult> => {
+    const baseQs = new URLSearchParams({
+      status: 'publish',
+      _fields: PRODUCT_LIST_FIELDS,
+      per_page: String(PRODUCTS_FETCH_PAGE_SIZE),
+      page: '1',
+      orderby: 'menu_order',
+      order: 'asc',
+    });
+
+    const firstPage = await fetchProductsRaw(baseQs, PUBLIC_PRODUCTS_REVALIDATE_SECONDS);
+    if (firstPage.total <= firstPage.products.length) {
+      return { products: firstPage.products, total: firstPage.total };
+    }
+
+    const totalPages = Math.ceil(firstPage.total / PRODUCTS_FETCH_PAGE_SIZE);
+    const rest = await Promise.all(
+      Array.from({ length: Math.max(totalPages - 1, 0) }, (_, i) => i + 2).map(async (pageNumber) => {
+        const qs = new URLSearchParams(baseQs.toString());
+        qs.set('page', String(pageNumber));
+        return fetchProductsRaw(qs, PUBLIC_PRODUCTS_REVALIDATE_SECONDS);
+      })
+    );
+
+    const allProducts = [...firstPage.products, ...rest.flatMap((r) => r.products)];
+    return { products: allProducts, total: firstPage.total };
+  },
+  ['all-products'],
+  { revalidate: 600, tags: ['products-list'] }
+);
+
+/**
+ * Fetch ALL products for a given category by paginating through every page.
+ * Use this instead of getProducts({ category_id, per_page: N }) when you need
+ * the complete set for a category (e.g. building the "All" tab union).
+ */
+export const getAllProductsForCategory = unstable_cache(
+  async (categoryId: number | string): Promise<ProductsResult> => {
+    const baseQs = new URLSearchParams({
+      status: 'publish',
+      _fields: PRODUCT_LIST_FIELDS,
+      category: String(categoryId),
+      per_page: String(PRODUCTS_FETCH_PAGE_SIZE),
+      page: '1',
+      orderby: 'menu_order',
+      order: 'asc',
+    });
+
+    const firstPage = await fetchProductsRaw(baseQs, PUBLIC_PRODUCTS_REVALIDATE_SECONDS);
+    if (firstPage.total <= firstPage.products.length) {
+      return { products: firstPage.products, total: firstPage.total };
+    }
+
+    const totalPages = Math.ceil(firstPage.total / PRODUCTS_FETCH_PAGE_SIZE);
+    const rest = await Promise.all(
+      Array.from({ length: Math.max(totalPages - 1, 0) }, (_, i) => i + 2).map(async (pageNumber) => {
+        const qs = new URLSearchParams(baseQs.toString());
+        qs.set('page', String(pageNumber));
+        return fetchProductsRaw(qs, PUBLIC_PRODUCTS_REVALIDATE_SECONDS);
+      })
+    );
+
+    const allProducts = [...firstPage.products, ...rest.flatMap((r) => r.products)];
+    return { products: allProducts, total: firstPage.total };
+  },
+  ['all-products-for-category'],
+  { revalidate: 600, tags: ['products-list'] }
+);
+
 export interface ProductReview {
   id: number;
   reviewer: string;
@@ -682,6 +757,16 @@ export interface SiteSettings {
   slideout_chat_title: string;
   slideout_chat_subtitle: string;
   slideout_chat_message: string;
+  // Homepage section visibility toggles
+  checkout_faq_enabled: boolean;
+  shop_by_need_enabled: boolean;
+  flash_sales_enabled: boolean;
+  best_sellers_enabled: boolean;
+  featured_section_enabled: boolean;
+  // Single product page section visibility toggles
+  product_assurance_enabled: boolean;
+  product_stats_enabled: boolean;
+  product_showrooms_enabled: boolean;
   final_cta_title: string;
   final_cta_subtitle: string;
   final_cta_shop_text: string;
@@ -710,6 +795,15 @@ export interface SiteSettings {
   trust_signal_title: string;
   trust_signal_stats: { value: string; label: string }[];
   trust_signal_badges: { label: string }[];
+  // Power Calculator Q&A (homepage, above Final CTA) — conversion-focused
+  // accordion that answers sizing questions and drives users to the calculator.
+  power_calculator_enabled: boolean;
+  power_calculator_kicker: string;
+  power_calculator_title: string;
+  power_calculator_subtitle: string;
+  power_calculator_link_text: string;
+  power_calculator_link_url: string;
+  power_calculator_items: { question: string; answer: string }[];
   hero_background: string;
   slide_transition: string;
   socials: { facebook: string; instagram: string; linkedin: string; twitter: string; whatsapp: string };
@@ -784,6 +878,14 @@ const SETTINGS_FALLBACK: SiteSettings = {
   slideout_chat_title: 'Not sure what to pick?',
   slideout_chat_subtitle: 'Chat with us',
   slideout_chat_message: 'Hi PRAG team, I was browsing your product pages and need help choosing the right product. Can you assist?',
+  checkout_faq_enabled: true,
+  shop_by_need_enabled: true,
+  flash_sales_enabled: true,
+  best_sellers_enabled: true,
+  featured_section_enabled: true,
+  product_assurance_enabled: true,
+  product_stats_enabled: true,
+  product_showrooms_enabled: true,
   final_cta_title: 'Ready for More Reliable Power?',
   final_cta_subtitle: 'Shop PRAG power solutions for your home today.',
   final_cta_shop_text: 'Shop Now',
@@ -837,6 +939,20 @@ const SETTINGS_FALLBACK: SiteSettings = {
     { label: 'Expert Support' },
     { label: 'Secure Checkout' },
   ],
+  power_calculator_enabled: true,
+  power_calculator_kicker: 'POWER CALCULATOR',
+  power_calculator_title: 'Not sure what size you need? Let\u2019s work it out.',
+  power_calculator_subtitle: 'Answer a few quick questions about what you want to power and we\u2019ll recommend the right inverter, battery, and solar setup in seconds \u2014 no guesswork.',
+  power_calculator_link_text: 'Open the Power Calculator',
+  power_calculator_link_url: '/power-calculator',
+  power_calculator_items: [
+    { question: 'How does the Power Calculator work?', answer: 'Tell us which appliances you want to run and for how long. The calculator adds up your total wattage, factors in surge power and backup runtime, then recommends a PRAG inverter and battery combination sized to your actual load \u2014 no guesswork.' },
+    { question: 'What do I need to know before I start?', answer: 'Have a rough list of the appliances you want to power (fridge, lights, TV, fans) and an idea of how many hours of backup you need. You don\u2019t need exact wattage \u2014 our calculator uses typical values and lets you adjust.' },
+    { question: 'Will it recommend the right battery too?', answer: 'Yes. Based on your inverter size and desired runtime, the calculator suggests a battery capacity (Ah) and chemistry \u2014 lithium or lead-acid \u2014 so your backup lasts as long as you need it to.' },
+    { question: 'Can it size a solar setup?', answer: 'Yes. If you want to reduce your grid or generator use, the calculator can recommend solar panels and a hybrid inverter sized to your daily energy usage and location.' },
+    { question: 'What if I\u2019m not sure about my load?', answer: 'No problem. Start with your essentials \u2014 lights, fans, TV, and a fridge \u2014 and add from there. You can also chat with our team on WhatsApp and a PRAG engineer will help you build your load list.' },
+    { question: 'Is the recommendation a quote?', answer: 'It\u2019s a sizing guide. Once you have your recommendation, you can shop the suggested products directly, request a formal quote, or schedule a free consultation with our team.' },
+  ],
   hero_background: 'https://central.prag.global/wp-content/uploads/2026/04/421db5e8efbc14b105a33a6db7182652503c3fdd.png',
   slide_transition: 'fade',
   socials: {
@@ -889,6 +1005,7 @@ export const getSiteSettings = unstable_cache(
         slides: Array.isArray(data.slides) ? data.slides : SETTINGS_FALLBACK.slides,
         categories: Array.isArray(data.categories) ? data.categories : SETTINGS_FALLBACK.categories,
         checkout_faq_items: Array.isArray(data.checkout_faq_items) ? data.checkout_faq_items : SETTINGS_FALLBACK.checkout_faq_items,
+        power_calculator_items: Array.isArray(data.power_calculator_items) ? data.power_calculator_items : SETTINGS_FALLBACK.power_calculator_items,
         testimonial_items: Array.isArray(data.testimonial_items) ? data.testimonial_items : SETTINGS_FALLBACK.testimonial_items,
         home_need_items: Array.isArray(data.home_need_items) ? data.home_need_items : SETTINGS_FALLBACK.home_need_items,
         trust_signal_stats: Array.isArray(data.trust_signal_stats) ? data.trust_signal_stats : SETTINGS_FALLBACK.trust_signal_stats,

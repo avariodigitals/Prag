@@ -21,6 +21,11 @@ const FALLBACK_ITEMS: FaqItem[] = [
 ];
 
 export default function CheckoutFaq({ settings }: { settings?: SiteSettings }) {
+  const [openIndex, setOpenIndex] = useState<number>(0);
+
+  const enabled = settings?.checkout_faq_enabled ?? true;
+  if (!enabled) return null;
+
   const kicker = settings?.checkout_faq_kicker || 'FAQ';
   const title = settings?.checkout_faq_title || 'Still deciding? Here\'s what you need to know before you buy.';
   const subtitle = settings?.checkout_faq_subtitle || 'Straight answers on sizing, warranty, delivery and installation — so you can shop with confidence and never second-guess your power setup.';
@@ -30,8 +35,6 @@ export default function CheckoutFaq({ settings }: { settings?: SiteSettings }) {
   const bannerEnabled = settings?.checkout_faq_banner_enabled ?? true;
   const bannerImage = settings?.checkout_faq_banner_image || '';
   const bannerLink = settings?.checkout_faq_banner_link || '/products';
-
-  const [openIndex, setOpenIndex] = useState<number>(0);
 
   function toggle(index: number) {
     setOpenIndex((prev) => (prev === index ? -1 : index));

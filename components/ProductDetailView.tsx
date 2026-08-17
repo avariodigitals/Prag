@@ -50,6 +50,9 @@ interface Props {
   customTabs?: CustomTab[];
   offices?: Store[];
   stats?: { value: string; label: string }[];
+  assuranceEnabled?: boolean;
+  statsEnabled?: boolean;
+  showroomsEnabled?: boolean;
 }
 
 const ASSURANCE_FEATURES = [
@@ -129,7 +132,7 @@ function ShowroomsCard({ offices }: { offices: Store[] }) {
   );
 }
 
-export default function ProductDetailView({ product, relatedProducts, reviews, techDocs, customTabs = [], offices = [], stats = [] }: Props) {
+export default function ProductDetailView({ product, relatedProducts, reviews, techDocs, customTabs = [], offices = [], stats = [], assuranceEnabled = true, statsEnabled = true, showroomsEnabled = true }: Props) {
   const numericPrice = Number(String(product.price ?? '').replace(/,/g, ''));
   const hasValidPrice = Number.isFinite(numericPrice) && numericPrice > 0;
   const isOutOfStock = product.stock_status === 'outofstock' || !hasValidPrice;
@@ -281,14 +284,18 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
           {/* Assurance + Showrooms under image */}
           <div className="mt-2 flex flex-col gap-3">
             {/* Assurance card - desktop only here, mobile shows it after buttons */}
-            <div className="hidden md:block">
-              <AssuranceCard />
-            </div>
+            {assuranceEnabled && (
+              <div className="hidden md:block">
+                <AssuranceCard />
+              </div>
+            )}
 
             {/* Showrooms card - desktop only here, mobile shows it after assurance */}
-            <div className="hidden md:block">
-              <ShowroomsCard offices={offices} />
-            </div>
+            {showroomsEnabled && (
+              <div className="hidden md:block">
+                <ShowroomsCard offices={offices} />
+              </div>
+            )}
           </div>
         </div>
 
@@ -361,8 +368,8 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
 
           {/* Assurance card - mobile only (after buttons), desktop shows it under image */}
           <div className="md:hidden flex flex-col gap-3">
-            <AssuranceCard />
-            <ShowroomsCard offices={offices} />
+            {assuranceEnabled && <AssuranceCard />}
+            {showroomsEnabled && <ShowroomsCard offices={offices} />}
           </div>
 
           <div className="flex items-center gap-2.5">
@@ -419,7 +426,7 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
           </div>
 
           {/* Stats card — after share buttons */}
-          {stats.length > 0 && (
+          {statsEnabled && stats.length > 0 && (
             <div className="flex items-stretch gap-0 rounded-2xl border border-gray-200 overflow-hidden">
               {stats.map((stat, i) => (
                 <div
@@ -619,7 +626,7 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
           <h2 className="text-neutral-700 text-xl md:text-2xl font-semibold font-['Montserrat']">Related Products</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-9 md:gap-x-6 md:gap-y-11">
             {relatedProducts.map((p) => (
-              <ProductCard key={p.id} product={p} bg="bg-white" />
+              <ProductCard key={p.id} product={p} />
             ))}
           </div>
         </div>

@@ -918,6 +918,7 @@ class Prag_Core_Bridge {
             'product_stats_enabled'      => true,
             'product_showrooms_enabled'  => true,
             'final_cta_title'           => 'Ready for More Reliable Power?',
+            'trust_signal_banner_heading' => 'Trusted by thousands of homes & businesses across Nigeria',
             'final_cta_subtitle'        => 'Shop PRAG power solutions for your home today.',
             'final_cta_shop_text'       => 'Shop Now',
             'final_cta_shop_link'       => '/products',

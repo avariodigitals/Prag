@@ -159,14 +159,14 @@ export default function HeroBanner({ slides: slidesProp, heroBg, slideTransition
 
             <div className="flex-1 flex flex-col gap-5 md:gap-6 items-center md:items-start text-center md:text-left">
               <div className="flex flex-col gap-3 md:gap-5">
-                <h1 key={`title-${current}`} className={`max-w-[620px] text-white text-3xl sm:text-4xl md:text-[64px] font-bold font-['Onest'] leading-[1.06] transition-all duration-500 ${transition.active}`}>
+                <h1 key={`title-${current}`} className={`max-w-[620px] text-white text-4xl md:text-[64px] font-bold font-['Onest'] leading-[1.06] transition-all duration-500 ${transition.active}`}>
                   {slide.title}
                 </h1>
-                <p key={`desc-${current}`} className={`max-w-[540px] text-white/85 text-xl md:text-xl font-normal font-['Montserrat'] leading-[1.45] transition-all duration-500 whitespace-pre-wrap ${transition.active}`}>
+                <p key={`desc-${current}`} className={`max-w-[540px] text-white/85 text-lg md:text-xl font-normal font-['Montserrat'] leading-[1.45] transition-all duration-500 whitespace-pre-wrap ${transition.active}`}>
                   {slide.description}
                 </p>
-                <div className="flex flex-col sm:flex-row items-stretch md:items-start justify-center md:justify-start gap-2.5 md:gap-4 w-full md:w-auto">
-                  <Link href={slide.link} className="flex-1 md:flex-none md:w-auto px-4 sm:px-8 py-3 md:py-4 bg-sky-700 rounded-3xl md:rounded-full flex justify-center items-center gap-2 hover:bg-sky-800 transition-all hover:scale-105">
+                <div className="flex flex-col sm:flex-row items-center md:items-start justify-center md:justify-start gap-2.5 md:gap-4 w-full md:w-auto">
+                  <Link href={slide.link} className="md:flex-none md:w-auto min-w-[240px] sm:min-w-[280px] px-5 sm:px-8 py-3 md:py-4 bg-sky-700 rounded-3xl md:rounded-full flex justify-center items-center gap-2 hover:bg-sky-800 transition-all hover:scale-105">
                     <span className="text-white text-base sm:text-lg md:text-xl font-medium font-['Montserrat'] whitespace-nowrap">{slide.cta}</span>
                   </Link>
                 </div>

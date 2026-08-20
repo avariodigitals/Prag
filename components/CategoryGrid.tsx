@@ -47,7 +47,7 @@ export default function CategoryGrid({ settings }: { settings?: SiteSettings }) 
             <Link
               key={cat.slug}
               href={`/products/${cat.slug}`}
-              className="h-96 md:h-[450px] relative bg-gradient-to-b from-stone-50 to-stone-100 rounded-3xl overflow-hidden group"
+              className="h-96 md:h-[450px] relative bg-gradient-to-b from-stone-500/10 to-sky-700 rounded-3xl overflow-hidden group"
             >
               <Image
                 src={cat.image}
@@ -59,7 +59,7 @@ export default function CategoryGrid({ settings }: { settings?: SiteSettings }) 
                 className={`object-contain transition-transform duration-300 p-8 pb-24 md:p-10 md:pb-28 ${cat.slug === 'batteries' ? 'scale-110 md:scale-115' : 'group-hover:scale-105'}`}
               />
               <div className="absolute left-0 right-0 bottom-[24px] px-5 text-center">
-                <span className="text-stone-800 text-xl md:text-[28px] font-semibold font-['Onest'] leading-tight drop-shadow-sm">{cat.name}</span>
+                <span className="text-white text-xl md:text-[28px] font-semibold font-['Onest'] leading-tight">{cat.name}</span>
               </div>
               <div className="absolute right-[18px] top-[18px] p-3 bg-sky-700 rounded-full group-hover:bg-sky-800 group-hover:scale-110 transition-all shadow-lg cursor-pointer">
                 <ArrowUpRight className="w-5 h-5 text-white" />

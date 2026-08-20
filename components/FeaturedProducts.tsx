@@ -191,7 +191,6 @@ export default function FeaturedProducts({ products, whatsappNumber, settings }:
 
   const kicker = settings?.best_sellers_kicker || 'Best Sellers';
   const title = settings?.best_sellers_title || 'Most Popular Right Now';
-  const subtitle = settings?.best_sellers_subtitle ?? '';
   const viewAllText = settings?.best_sellers_view_all_text || 'View all products';
   const viewAllLink = settings?.best_sellers_view_all_link || '/products';
 
@@ -200,26 +199,15 @@ export default function FeaturedProducts({ products, whatsappNumber, settings }:
       <div className="w-full max-w-[1280px] flex flex-col justify-center items-center gap-10 md:gap-14">
         {/* Header */}
         <div className="w-full flex flex-col items-center gap-3 md:gap-4 text-center">
-          <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 bg-sky-700" />
-            <span className="text-sky-700 text-xs font-semibold font-['Montserrat'] uppercase tracking-widest">
-              {kicker}
-            </span>
-          </div>
           <h2 className="text-black text-2xl md:text-4xl font-bold font-['Montserrat'] leading-tight">
             {title}
           </h2>
-          {subtitle && (
-            <p className="text-zinc-500 text-sm md:text-base font-normal font-['Montserrat']">
-              {subtitle}
-            </p>
-          )}
         </div>
 
-        {/* Grid — 4 on mobile, 8 on desktop */}
-        <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-x-5 gap-y-8 md:gap-x-6 md:gap-y-10">
+        {/* Grid — 1 per line on mobile (first 4 only), 4 per row on desktop (all 8) */}
+        <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-x-5 gap-y-8 md:gap-x-6 md:gap-y-10">
           {visible.map((product, i) => (
-            <div key={product.id} className={i >= 4 ? 'hidden md:block' : ''}>
+            <div key={product.id} className={i >= 4 ? 'hidden md:block' : undefined}>
               <BestSellerCard product={product} />
             </div>
           ))}

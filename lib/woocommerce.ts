@@ -766,7 +766,6 @@ export interface SiteSettings {
   // Best Sellers section content (homepage "Most Popular Right Now")
   best_sellers_kicker: string;
   best_sellers_title: string;
-  best_sellers_subtitle: string;
   best_sellers_view_all_text: string;
   best_sellers_view_all_link: string;
   // Single product page section visibility toggles
@@ -799,6 +798,7 @@ export interface SiteSettings {
   trust_signal_enabled: boolean;
   trust_signal_kicker: string;
   trust_signal_title: string;
+  trust_signal_banner_heading: string;
   trust_signal_stats: { value: string; label: string }[];
   trust_signal_badges: { label: string }[];
   // Installation showcase — real photos of PRAG systems installed across
@@ -895,7 +895,6 @@ const SETTINGS_FALLBACK: SiteSettings = {
   featured_section_enabled: true,
   best_sellers_kicker: 'Best Sellers',
   best_sellers_title: 'Most Popular Right Now',
-  best_sellers_subtitle: '',
   best_sellers_view_all_text: 'View all products',
   best_sellers_view_all_link: '/products',
   product_assurance_enabled: true,
@@ -943,10 +942,11 @@ const SETTINGS_FALLBACK: SiteSettings = {
   trust_signal_enabled: true,
   trust_signal_kicker: 'Why People Buy PRAG',
   trust_signal_title: 'Buy With Confidence',
+  trust_signal_banner_heading: 'Trusted by thousands of homes & businesses across Nigeria',
   trust_signal_stats: [
     { value: '36', label: 'States Covered' },
-    { value: '15+', label: 'Years Power Expertise' },
-    { value: '50K+', label: 'Installations' },
+    { value: '15+', label: 'Years of Power Industry Experience' },
+    { value: '50K+', label: 'Systems Installed' },
   ],
   trust_signal_badges: [
     { label: 'Product Warranty' },

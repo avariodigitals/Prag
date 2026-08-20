@@ -9,6 +9,7 @@ import FeaturedSection from '@/components/FeaturedSection';
 import BrandBanner from '@/components/BrandBanner';
 import FlashSales from '@/components/FlashSales';
 import TrustSignal from '@/components/TrustSignal';
+import BuyConfidence from '@/components/BuyConfidence';
 import { getFeaturedProducts, getFlashSaleProducts, getProducts, getSiteSettings, filterHiddenProducts } from '@/lib/woocommerce';
 import type { Product } from '@/lib/types';
 
@@ -41,6 +42,7 @@ export default async function HomePage() {
     <main className="w-full bg-white flex flex-col">
       <HeroBanner slides={settings.slides} heroBg={settings.hero_background} whatsappLink={settings.socials?.whatsapp || (settings.whatsapp ? `https://wa.me/${settings.whatsapp.replace(/[^\d]/g, '')}` : undefined)} slideTransition={settings.slide_transition} />
       <CategoryGrid settings={settings} />
+      <BuyConfidence settings={settings} />
       <FeaturedProducts products={featuredProducts} whatsappNumber={settings.socials?.whatsapp || settings.whatsapp} settings={settings} />
       <FeaturedSection products={featuredProducts} whatsappNumber={settings.socials?.whatsapp || settings.whatsapp} settings={settings} />
       <ShopByNeed settings={settings} />

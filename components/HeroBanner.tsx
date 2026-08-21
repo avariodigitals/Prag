@@ -152,20 +152,20 @@ export default function HeroBanner({ slides: slidesProp, heroBg, slideTransition
         <div className="relative z-10 w-full h-full px-5 sm:px-8 md:px-16 lg:px-24 xl:px-32 py-8 md:py-10 lg:py-12 flex flex-col justify-center min-h-[560px] md:min-h-[560px] lg:min-h-[620px]">
           <div className="w-full flex flex-col md:flex-row justify-center md:justify-between items-center gap-6 md:gap-4 lg:gap-6">
             <div className="flex justify-center w-full md:hidden">
-              <div className="relative w-48 h-60">
-                <Image key={`mobile-${current}`} src={slide.productImage} alt={slide.productAlt} fill sizes="192px" quality={85} className="object-contain" priority />
+              <div className="relative w-60 h-72">
+                <Image key={`mobile-${current}`} src={slide.productImage} alt={slide.productAlt} fill sizes="240px" quality={85} className="object-contain" priority />
               </div>
             </div>
 
             <div className="flex-1 flex flex-col gap-5 md:gap-6 items-center md:items-start text-center md:text-left">
               <div className="flex flex-col gap-3 md:gap-5">
-                <h1 key={`title-${current}`} className={`max-w-[620px] text-white text-4xl md:text-[64px] font-bold font-['Onest'] leading-[1.06] transition-all duration-500 ${transition.active}`}>
+                <h1 key={`title-${current}`} className={`max-w-[620px] text-white text-5xl md:text-[64px] font-bold font-['Onest'] leading-[1.06] transition-all duration-500 ${transition.active}`}>
                   {slide.title}
                 </h1>
                 <p key={`desc-${current}`} className={`max-w-[540px] text-white/85 text-lg md:text-xl font-normal font-['Montserrat'] leading-[1.45] transition-all duration-500 whitespace-pre-wrap ${transition.active}`}>
                   {slide.description}
                 </p>
-                <div className="flex flex-col sm:flex-row items-center md:items-start justify-center md:justify-start gap-2.5 md:gap-4 w-full md:w-auto">
+                <div className="flex flex-col sm:flex-row items-center md:items-start justify-center md:justify-start gap-2.5 md:gap-4 w-full md:w-auto mt-4 md:mt-0">
                   <Link href={slide.link} className="md:flex-none md:w-auto min-w-[240px] sm:min-w-[280px] px-5 sm:px-8 py-3 md:py-4 bg-sky-700 rounded-3xl md:rounded-full flex justify-center items-center gap-2 hover:bg-sky-800 transition-all hover:scale-105">
                     <span className="text-white text-base sm:text-lg md:text-xl font-medium font-['Montserrat'] whitespace-nowrap">{slide.cta}</span>
                   </Link>

@@ -159,7 +159,7 @@ export default function HeroBanner({ slides: slidesProp, heroBg, slideTransition
 
             <div className="flex-1 flex flex-col gap-5 md:gap-6 items-center md:items-start text-center md:text-left">
               <div className="flex flex-col gap-3 md:gap-5">
-                <h1 key={`title-${current}`} className={`max-w-[620px] text-white text-5xl md:text-[64px] font-bold font-['Onest'] leading-[1.06] transition-all duration-500 ${transition.active}`}>
+                <h1 key={`title-${current}`} className={`max-w-[620px] text-white text-4xl md:text-[64px] font-bold font-['Onest'] leading-[1.06] transition-all duration-500 ${transition.active}`}>
                   {slide.title}
                 </h1>
                 <p key={`desc-${current}`} className={`max-w-[540px] text-white/85 text-lg md:text-xl font-normal font-['Montserrat'] leading-[1.45] transition-all duration-500 whitespace-pre-wrap ${transition.active}`}>

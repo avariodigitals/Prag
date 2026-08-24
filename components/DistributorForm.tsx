@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { trackLead } from '@/lib/metaPixel';
 import Turnstile from './Turnstile';
 
 const TIERS = ['Dealer', 'Reseller', 'Installer'];
@@ -106,6 +107,7 @@ export default function DistributorForm() {
       });
       const data = await res.json();
       if (res.ok && data.success) {
+        trackLead({ content_name: 'Distributor Application', content_category: form.tier || 'Distributor' });
         setForm(EMPTY_FORM);
         setTurnstileToken('');
         setTurnstileResetKey((k) => k + 1);

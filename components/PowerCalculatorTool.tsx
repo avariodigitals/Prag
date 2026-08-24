@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { trackLead } from '@/lib/metaPixel';
 
 const APPLIANCES = [
   { name: 'Ceiling Fan', watts: 60 },
@@ -61,6 +62,12 @@ export default function PowerCalculatorTool() {
       `Estimated Daily Usage: ${dailyKwh.toFixed(1)} KWh`;
 
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+
+    // Fire Meta Pixel "Lead" event right before opening WhatsApp so
+    // Facebook ad optimisation learns from actual high-intent actions
+    // (button click) rather than passive page views.
+    trackLead({ content_name: 'Power Calculator', value: 1, currency: 'NGN' });
+
     window.open(url, '_blank', 'noopener,noreferrer');
   }
 

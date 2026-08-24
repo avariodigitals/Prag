@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { submitContactForm } from '@/lib/woocommerce';
+import { trackLead } from '@/lib/metaPixel';
 import Turnstile from './Turnstile';
 
 const ENQUIRY_TYPES = ['General Enquiry', 'Product Enquiry', 'Technical Support', 'Order Issue', 'Partnership'];
@@ -87,6 +88,7 @@ export default function ContactForm() {
     const result = await submitContactForm({ ...form, turnstileToken });
     setSending(false);
     if (result.success) {
+      trackLead({ content_name: 'Contact Form', content_category: form.enquiry_type || 'General' });
       setForm(EMPTY_FORM);
       setTurnstileToken('');
       setTurnstileResetKey((k) => k + 1);

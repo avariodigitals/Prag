@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { trackLead } from '@/lib/metaPixel';
 import Turnstile from './Turnstile';
 
 const SUPPORT_TYPES = ['After Sales Support', 'Product Installation', 'Warranty Claim', 'Technical Issue', 'Maintenance', 'General Support'];
@@ -102,6 +103,7 @@ export default function TechnicalSupportForm() {
     const result = { success: res.ok };
     setSending(false);
     if (result.success) {
+      trackLead({ content_name: 'Technical Support', content_category: form.enquiry_type || 'Support' });
       setForm(EMPTY_FORM);
       setTurnstileToken('');
       setTurnstileResetKey((k) => k + 1);

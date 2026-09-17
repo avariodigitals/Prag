@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Search, ShoppingCart, X, Menu } from 'lucide-react';
 import MobileMenu from './MobileMenu';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { useCart } from '@/lib/CartContext';
 import { formatPhone } from '@/lib/formatPhone';
@@ -78,16 +78,32 @@ function SearchBox() {
   );
 }
 
-export default function TopBar({ initialUser = null, phone = '+2348032170129', whatsapp = '+2348032170129', settings }: { initialUser?: { user_display_name: string } | null; phone?: string; whatsapp?: string; settings?: SiteSettings }) {
+export default function TopBar({ phone = '+2348032170129', whatsapp = '+2348032170129', settings }: { phone?: string; whatsapp?: string; settings?: SiteSettings }) {
   const router = useRouter();
+  const pathname = usePathname();
   const { count } = useCart();
-  const [user, setUser] = useState<{ user_display_name: string } | null>(() => initialUser);
+  const [user, setUser] = useState<{ user_display_name: string } | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [mobileQuery, setMobileQuery] = useState('');
   const profileRef = useRef<HTMLDivElement>(null);
   const mobileSearchRef = useRef<HTMLDivElement>(null);
+
+  // Resolve the session client-side so the root layout never has to read
+  // cookies() — keeping pages eligible for CDN caching. Re-checks on
+  // navigation while logged out so a fresh login is picked up.
+  useEffect(() => {
+    if (user) return;
+    let cancelled = false;
+    fetch('/api/auth/session', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!cancelled && data?.user) setUser(data.user);
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [pathname, user]);
 
   useEffect(() => {
     function handler(e: MouseEvent) {

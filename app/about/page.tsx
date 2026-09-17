@@ -1,5 +1,3 @@
-export const dynamic = 'force-dynamic';
-
 import Image from 'next/image';
 import CountUp from '@/components/CountUp';
 import { getB2CPublicContent, findB2CPage, findVisibleSectionsByType } from '@/lib/b2cContent';

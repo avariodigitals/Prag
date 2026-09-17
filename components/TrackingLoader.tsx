@@ -25,6 +25,10 @@ interface TrackingConfig {
   customFooterScripts?: string;
 }
 
+// Default GA4 measurement ID for the shop domain. Used when the admin config
+// is unavailable or does not specify one.
+const DEFAULT_GA_ID = 'G-K1FJPNG5K9';
+
 interface SiteSettings {
   whatsapp?: string;
 }
@@ -38,6 +42,7 @@ const DEFAULT_WHATSAPP_OPTIONS = [
 
 export default function TrackingLoader() {
   const [cfg, setCfg] = useState<TrackingConfig | null>(null);
+  const [cfgResolved, setCfgResolved] = useState(false);
   const [fallbackWhatsapp, setFallbackWhatsapp] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -53,19 +58,36 @@ export default function TrackingLoader() {
     ]).then(([trackingData, settingsData]) => {
       if (trackingData) setCfg(trackingData);
       if (settingsData) setFallbackWhatsapp((settingsData.whatsapp ?? '').trim());
+      // Search Console verification meta — injected client-side because the
+      // root layout no longer reads per-request headers (keeps pages static).
+      // For GSC HTML-tag verification, prefer the GOOGLE_SITE_VERIFICATION
+      // env var, which renders the tag into the static HTML.
+      const verification = trackingData?.googleSearchConsoleVerification?.trim();
+      if (verification && !document.querySelector('meta[name="google-site-verification"]')) {
+        const meta = document.createElement('meta');
+        meta.name = 'google-site-verification';
+        meta.content = verification;
+        document.head.appendChild(meta);
+      }
+      setCfgResolved(true);
     });
   }, []);
 
-  if (!cfg) return null;
+  // Wait for the config before loading GA/GTM so the correct IDs are used.
+  // On failure, fall back to the default GA ID rather than losing analytics.
+  if (!cfgResolved) return null;
 
-  const configuredWhatsapp = (cfg.whatsappChatNumber ?? '').trim();
+  const gaId = (cfg?.googleAnalyticsId ?? '').trim() || DEFAULT_GA_ID;
+  const gtmId = (cfg?.googleTagManagerId ?? '').trim();
+
+  const configuredWhatsapp = (cfg?.whatsappChatNumber ?? '').trim();
   const globalNumber = (configuredWhatsapp || fallbackWhatsapp).replace(/\D/g, '');
-  const isWhatsappEnabled = Boolean(cfg.whatsappChatEnabled) || (!configuredWhatsapp && Boolean(fallbackWhatsapp));
-  const whatsappText = (cfg.whatsappChatText ?? '').trim() || 'Chat with us on WhatsApp';
+  const isWhatsappEnabled = Boolean(cfg?.whatsappChatEnabled) || (!configuredWhatsapp && Boolean(fallbackWhatsapp));
+  const whatsappText = (cfg?.whatsappChatText ?? '').trim() || 'Chat with us on WhatsApp';
   const hasWhatsappNumber = Boolean(globalNumber);
 
   const chatOptions = (() => {
-    const configured = Array.isArray(cfg.whatsappChatOptions) ? cfg.whatsappChatOptions : [];
+    const configured = Array.isArray(cfg?.whatsappChatOptions) ? cfg.whatsappChatOptions : [];
     if (configured.length > 0) {
       return configured.map((opt, idx) => ({
         label: opt?.label?.trim() || DEFAULT_WHATSAPP_OPTIONS[idx]?.label || `Option ${idx + 1}`,
@@ -86,31 +108,46 @@ export default function TrackingLoader() {
 
   return (
     <>
-      {cfg.customHeadScripts && (
+      <Script
+        async
+        src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
+        strategy="afterInteractive"
+      />
+      <Script id="ga-init" strategy="afterInteractive">
+        {`window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${gaId}');`}
+      </Script>
+      {gtmId && (
+        <Script id="gtm-loader" strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${gtmId}');`,
+          }} />
+      )}
+
+      {cfg?.customHeadScripts && (
         <Script id="custom-head" strategy="afterInteractive"
           dangerouslySetInnerHTML={{ __html: cfg.customHeadScripts }} />
       )}
 
-      {cfg.metaPixelId && (
+      {cfg?.metaPixelId && (
         <Script id="meta-pixel" strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${cfg.metaPixelId}');fbq('track','PageView');`,
           }} />
       )}
 
-      {cfg.tiktokPixelId && (
+      {cfg?.tiktokPixelId && (
         <Script id="tiktok-pixel" strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: `!function(w,d,t){w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};ttq.load('${cfg.tiktokPixelId}');ttq.page();}(window,document,'ttq');`,
           }} />
       )}
 
-      {cfg.customBodyScripts && (
+      {cfg?.customBodyScripts && (
         <Script id="custom-body" strategy="afterInteractive"
           dangerouslySetInnerHTML={{ __html: cfg.customBodyScripts }} />
       )}
 
-      {cfg.customFooterScripts && (
+      {cfg?.customFooterScripts && (
         <Script id="custom-footer" strategy="afterInteractive"
           dangerouslySetInnerHTML={{ __html: cfg.customFooterScripts }} />
       )}

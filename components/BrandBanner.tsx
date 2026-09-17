@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import type { SiteSettings } from '@/lib/woocommerce';
 
 const FB = {
@@ -119,9 +120,12 @@ export default function BrandBanner({ settings }: { settings?: SiteSettings }) {
           {extraBanners.map((banner, i) => {
             const inner = (
               <div className="relative w-full overflow-hidden rounded-none md:rounded-3xl bg-slate-200">
-                <img
+                <Image
                   src={banner.image}
                   alt=""
+                  width={0}
+                  height={0}
+                  sizes="100vw"
                   className="w-full h-auto block object-cover"
                   style={{ maxHeight: '600px' }}
                 />

@@ -1,5 +1,3 @@
-export const dynamic = 'force-dynamic';
-
 import ProductDetailView from '@/components/ProductDetailView';
 import { getProductBySlug, getProducts, getProductReviews, getTechDocuments, getProductCustomTabs, searchProducts, productUrl, getSiteSettings, filterHiddenProducts, isProductHidden, getStores } from '@/lib/woocommerce';
 import type { Product, Store } from '@/lib/types';

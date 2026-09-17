@@ -1,5 +1,3 @@
-export const dynamic = 'force-dynamic';
-
 import DistributorForm from '@/components/DistributorForm';
 import { getB2CPublicContent, findB2CPage, findVisibleSectionsByType } from '@/lib/b2cContent';
 

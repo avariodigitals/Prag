@@ -1,5 +1,4 @@
-// Public legal page renders on-demand with cached WooCommerce reads.
-export const dynamic = 'force-dynamic';
+// Public legal page — statically rendered; data comes from cached fetches.
 
 import { getPage } from '@/lib/woocommerce';
 import PolicyPageLayout from '@/components/PolicyPageLayout';

@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     for (const tag of tags) {
       if (typeof tag === 'string' && tag.trim()) {
-        revalidateTag(tag.trim(), 'max');
+        revalidateTag(tag.trim(), { expire: 0 });
       }
     }
 

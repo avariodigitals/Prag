@@ -1,5 +1,5 @@
-// Public landing page renders on-demand with cached WooCommerce reads.
-export const dynamic = 'force-dynamic';
+// Public landing page — statically rendered and revalidated via the fetch
+// cache / revalidate tags in lib/woocommerce.ts (and /api/revalidate).
 
 import HeroBanner from '@/components/HeroBanner';
 import ShopByNeed from '@/components/ShopByNeed';

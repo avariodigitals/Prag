@@ -1,5 +1,4 @@
-// Public contact page renders on-demand with cached WooCommerce reads.
-export const dynamic = 'force-dynamic';
+// Public contact page — statically rendered; data comes from cached fetches.
 
 import ContactForm from '@/components/ContactForm';
 import StoresGrid from '@/components/StoresGrid';

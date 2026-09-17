@@ -2,8 +2,6 @@ import CompareView from '@/components/CompareView';
 import { getProducts } from '@/lib/woocommerce';
 import type { Product } from '@/lib/types';
 
-export const dynamic = 'force-dynamic';
-
 export const metadata = {
   title: 'Product Comparison',
   robots: { index: false, follow: true },

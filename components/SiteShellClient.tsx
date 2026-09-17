@@ -19,11 +19,10 @@ const AUTH_ROUTES = ['/login', '/register'];
 
 interface Props {
   children: React.ReactNode;
-  user: { user_display_name: string } | null;
   settings: SiteSettings;
 }
 
-export default function SiteShellClient({ children, user, settings }: Props) {
+export default function SiteShellClient({ children, settings }: Props) {
   const pathname = usePathname();
   const isAuth = AUTH_ROUTES.some((r) => pathname.startsWith(r));
   const isHomePage = pathname === '/';
@@ -63,7 +62,7 @@ export default function SiteShellClient({ children, user, settings }: Props) {
   return (
     <>
       <NavigationScrollReset />
-      <TopBar initialUser={user} phone={settings.contact_phone} whatsapp={settings.whatsapp} settings={settings} />
+      <TopBar phone={settings.contact_phone} whatsapp={settings.whatsapp} settings={settings} />
       <NavBar settings={settings} />
       {children}
       {isHomePage && <HomeNeeds settings={settings} />}

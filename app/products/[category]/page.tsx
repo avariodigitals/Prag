@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic';
 
 import CategoryProductsGrid from '@/components/CategoryProductsGrid';
 import SlideOutChat from '@/components/SlideOutChat';
-import { getProductBySlug, getProducts, getCategoryBySlug, productUrl, getSiteSettings, getCategories, filterHiddenProducts } from '@/lib/woocommerce';
+import { getProductBySlug, getProducts, getAllProductsForCategory, getCategoryBySlug, productUrl, getSiteSettings, getCategories, filterHiddenProducts } from '@/lib/woocommerce';
 import type { Product } from '@/lib/types';
 import { notFound, redirect } from 'next/navigation';
 
@@ -118,15 +118,16 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const resolvedCatId = knownSubId ?? activeCategory?.id ?? (knownId || cat?.id);
   const productCategorySlug = sp.sub ?? category;
 
+  // Fetch the full category set so every product renders on first load.
+  // With per_page pagination + client-side capacity sorting, large items
+  // (e.g. 100KVA/200KVA stabilizers) sat on page 2 and only appeared if
+  // infinite scroll fired — making them look missing from the shop.
   let products: Product[] = [];
   let total = 0;
   try {
-    const result = await getProducts({
-      category: resolvedCatId ? undefined : productCategorySlug,
-      category_id: resolvedCatId,
-      page: 1,
-      per_page: 16,
-    });
+    const result = resolvedCatId
+      ? await getAllProductsForCategory(resolvedCatId)
+      : await getProducts({ category: productCategorySlug, page: 1, per_page: 16 });
     products = filterHiddenProducts(result.products, hiddenSet);
     total = result.total;
   } catch {

@@ -17,13 +17,13 @@ interface Slide {
 }
 
 const FALLBACK_SLIDES: Slide[] = [
-  { title: 'No Hype. Just Inverters That Deliver.', description: 'Choose inverters engineered for real-world loads. Shop reliable power systems today.', cta: 'Buy Inverters Built to Last', link: '/products', productImage: 'https://central.prag.global/wp-content/uploads/2026/04/eebd514c0d3e75e4f32cb8fd691c7b3613fd99d5.png', productAlt: 'Heavy Duty Inverter', backgroundImage: 'https://central.prag.global/wp-content/uploads/2026/04/421db5e8efbc14b105a33a6db7182652503c3fdd.png' },
-  { title: 'Power Your Home. Power Your Business.', description: 'From residential to industrial applications. Trusted inverters for every power need.', cta: 'Explore Our Range', link: '/products', productImage: 'https://central.prag.global/wp-content/uploads/2026/04/7ee70985fdddba92a39a6e67f80ec4773cbf34fd.png', productAlt: 'Residential Inverter', backgroundImage: 'https://central.prag.global/wp-content/uploads/2026/04/421db5e8efbc14b105a33a6db7182652503c3fdd.png' },
-  { title: 'Built Tough. Tested Tougher.', description: 'Heavy-duty inverters designed to handle the toughest loads without compromise.', cta: 'Shop Heavy Duty Inverters', link: '/inverter', productImage: 'https://central.prag.global/wp-content/uploads/2026/04/b5564cf299de3eea9dbe804a547cf74e99bc41a7.png', productAlt: 'Industrial Inverter', backgroundImage: 'https://central.prag.global/wp-content/uploads/2026/04/421db5e8efbc14b105a33a6db7182652503c3fdd.png' },
-  { title: 'Reliable Power. Unbeatable Performance.', description: 'Experience consistent power delivery with inverters engineered for excellence.', cta: 'Get Started Today', link: '/products', productImage: 'https://central.prag.global/wp-content/uploads/2026/04/dd4b835690b546ee636b7659added08cd02d9891.png', productAlt: 'Premium Inverter', backgroundImage: 'https://central.prag.global/wp-content/uploads/2026/04/421db5e8efbc14b105a33a6db7182652503c3fdd.png' },
+  { title: 'Low, High, or Unstable Voltage?', description: 'Stable Power & Protection for your Appliances and Equipment.', cta: 'Explore PRAG Stabilizers', link: '/products/voltage-stabilizers', productImage: 'https://central.prag.global/wp-content/uploads/2026/08/image-removebg-preview-1.png', productAlt: 'Residential Inverter', backgroundImage: 'https://central.prag.global/wp-content/uploads/2026/08/stabforprag-2.webp', showProductImage: false },
+  { title: 'Frequent Power Outages?', description: 'Keep Your Home or Business Powered Without Interruption.', cta: 'Explore PRAG Inverters', link: '/products/inverters', productImage: 'https://central.prag.global/wp-content/uploads/2026/04/eebd514c0d3e75e4f32cb8fd691c7b3613fd99d5.png', productAlt: 'Heavy Duty Inverter', backgroundImage: 'https://central.prag.global/wp-content/uploads/2026/08/inverter-banner.webp', showProductImage: false },
+  { title: 'Reliable Energy Storage', description: 'Ensure Dependable Backup Power With High-Performance Battery Systems.', cta: 'Explore PRAG Batteries', link: '/products/batteries', productImage: 'https://central.prag.global/wp-content/uploads/2026/07/image-removebg-preview-1-1.png', productAlt: 'Premium Batteries', backgroundImage: 'https://central.prag.global/wp-content/uploads/2026/08/battriesprag.webp', showProductImage: false },
+  { title: 'Grid or Generator Dependence?', description: 'Generate Your Own Power and Achieve Energy Independence.', cta: 'Explore PRAG Solar', link: '/products/solar', productImage: 'https://central.prag.global/wp-content/uploads/2026/04/b5564cf299de3eea9dbe804a547cf74e99bc41a7.png', productAlt: 'Premium Solar', backgroundImage: 'https://central.prag.global/wp-content/uploads/2026/08/thesolarbannerr.webp', showProductImage: false },
 ];
 
-const FALLBACK_BG = 'https://central.prag.global/wp-content/uploads/2026/04/421db5e8efbc14b105a33a6db7182652503c3fdd.png';
+const FALLBACK_BG = 'https://central.prag.global/wp-content/uploads/2026/08/themage.jpeg';
 
 type TransitionType = 'fade' | 'slide' | 'zoom' | 'flip' | 'slide-up' | 'blur' | 'skew' | 'rotate-zoom';
 
@@ -51,17 +51,26 @@ export default function HeroBanner({ slides: slidesProp, heroBg, slideTransition
     slides.findIndex((item) => item.title.toLowerCase().includes('power your home'))
   );
   const [current, setCurrent] = useState(defaultSlideIndex);
+  // Only mount <Image> for slides that have been shown — avoids downloading
+  // every full-bleed background upfront while keeping cross-fades smooth for
+  // slides already seen (they stay mounted/cached).
+  const [loadedSlides, setLoadedSlides] = useState<Set<number>>(() => new Set([defaultSlideIndex]));
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [touchEndX, setTouchEndX] = useState<number | null>(null);
 
   const slide = slides[current];
 
+  function goTo(index: number) {
+    setLoadedSlides((prev) => (prev.has(index) ? prev : new Set(prev).add(index)));
+    setCurrent(index);
+  }
+
   function prevSlide() {
-    setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
+    goTo((current - 1 + slides.length) % slides.length);
   }
 
   function nextSlide() {
-    setCurrent((prev) => (prev + 1) % slides.length);
+    goTo((current + 1) % slides.length);
   }
 
   function handleTouchStart(e: TouchEvent<HTMLElement>) {
@@ -83,10 +92,10 @@ export default function HeroBanner({ slides: slidesProp, heroBg, slideTransition
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % slides.length);
+      goTo((current + 1) % slides.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, [slides.length]);
+  }, [current, slides.length]);
 
   return (
     <section
@@ -96,17 +105,17 @@ export default function HeroBanner({ slides: slidesProp, heroBg, slideTransition
       onTouchEnd={handleTouchEnd}
     >
       <div className="relative w-full mx-auto overflow-hidden min-h-[560px] md:min-h-[560px] lg:min-h-[620px] shadow-sm md:bg-transparent">
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat md:hidden"
-          style={{
-            backgroundImage: `url('${bgSrc}')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center top',
-            backgroundRepeat: 'no-repeat',
-            filter: 'brightness(0.55) contrast(1.05)',
-          }}
-          aria-hidden="true"
-        />
+        <div className="absolute inset-0 md:hidden" aria-hidden="true">
+          <Image
+            src={bgSrc}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+            style={{ objectPosition: 'center top', filter: 'brightness(0.55) contrast(1.05)' }}
+          />
+        </div>
         <div
           className="absolute inset-0 md:hidden"
           style={{
@@ -130,14 +139,18 @@ export default function HeroBanner({ slides: slidesProp, heroBg, slideTransition
                 key={`bg-${i}`}
                 className={`absolute inset-0 transition-opacity duration-700 ${i === current ? 'opacity-100' : 'opacity-0'}`}
               >
-                <div
-                  className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                  style={{
-                    backgroundImage: `url('${slideBg}')`,
-                    backgroundColor: 'lightgray',
-                    filter: 'brightness(0.95) contrast(1.05)',
-                  }}
-                />
+                {loadedSlides.has(i) && (
+                  <Image
+                    src={slideBg}
+                    alt=""
+                    fill
+                    sizes="100vw"
+                    quality={80}
+                    priority={i === defaultSlideIndex}
+                    className="object-cover object-center"
+                    style={{ filter: 'brightness(0.95) contrast(1.05)', backgroundColor: 'lightgray' }}
+                  />
+                )}
                 <div
                   className={`absolute inset-0 transition-all duration-700 ${i === current ? transition.active : transition.inactive}`}
                   style={{

@@ -33,6 +33,39 @@ Each route: (1) rate-limit check -> 429, (2) Turnstile verify -> 400, then
 existing logic. The captcha token is stripped before forwarding to
 WordPress / Prag-Admin.
 
+## Performance / Rendering (do not regress)
+- Pages are static/ISR by default. Only query- or session-dependent routes
+  stay dynamic (`/products`, `/search`, `/checkout/*`, `/account/*`,
+  `/wishlist`, `/knowledge-center`, `/resources`, `order-*`). Do NOT add
+  `export const dynamic = 'force-dynamic'` to content pages.
+- The root layout (`app/layout.tsx`) must stay free of `headers()`,
+  `cookies()`, and uncached/`no-store` fetches — any of those force every
+  page to render on-demand and defeat CDN caching.
+- Session is resolved client-side: `TopBar` calls `GET /api/auth/session`
+  after mount and on navigation while logged out.
+- Tracking is loaded client-side by `components/TrackingLoader.tsx` via
+  `GET /api/tracking?host=...` (GA, GTM, Meta/TikTok pixels, custom scripts).
+  Server-side lookup is `unstable_cache`d for 5 min in
+  `lib/ecommerceConfig.ts` with a 3s timeout — do not remove the cache or
+  the timeout.
+- Google Search Console HTML-tag verification needs the meta in static HTML:
+  set `GOOGLE_SITE_VERIFICATION` in env (the admin-configured value is also
+  injected client-side, but GSC does not execute JS).
+- `images.minimumCacheTTL` is 86400 (1 day). Do not set it to 0 — that
+  disables the image-optimizer cache and re-processes every image request.
+
+## On-Demand Revalidation (Prag-Admin -> frontend)
+Prag-Admin calls `POST /api/revalidate?secret=...` with `{paths, tags}` after
+every save (`lib/revalidateFrontend.ts`, a `'use server'` module — keep it
+server-only; calling it from the browser is CORS-blocked and fails silently).
+- `app/api/revalidate/route.ts` uses `revalidateTag(tag, { expire: 0 })` so
+  tags expire immediately (the `'max'` profile serves stale for ~5 min).
+- Contract: any `fetch()` inside an `unstable_cache` in `lib/woocommerce.ts`
+  must set `next.tags` matching the wrapper's tag — otherwise `revalidateTag`
+  busts the memoized result but the underlying fetch cache keeps serving
+  stale data. Tag names must match what Prag-Admin sends
+  (`revalidateFrontend.ts`).
+
 ## Trust Signal — Installation Showcase
 The "Buy With Confidence" section (`components/TrustSignal.tsx`) shows a
 gallery of real PRAG installation photos with location labels beside the

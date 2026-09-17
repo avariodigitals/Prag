@@ -15,7 +15,9 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'images.unsplash.com' },
     ],
     qualities: [75, 80, 85],
-    minimumCacheTTL: 0,
+    // Cache optimized image variants for a day. 0 would force the optimizer to
+    // re-process every /_next/image request, adding latency and CPU per image.
+    minimumCacheTTL: 86400,
     formats: ['image/avif', 'image/webp'],
   },
   env: {

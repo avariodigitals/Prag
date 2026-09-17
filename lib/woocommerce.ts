@@ -48,7 +48,7 @@ async function fetchWithRetry(url: string, init: RequestInit, timeoutMs = FETCH_
 async function wcFetch<T>(path: string, fallback: T): Promise<T> {
   try {
     const res = await fetchWithRetry(`${baseUrl()}${path}${path.includes('?') ? '&' : '?'}${authParams()}`, {
-      next: { revalidate: 600 },
+      next: { revalidate: 600, tags: ['wc-products'] },
     }, FETCH_TIMEOUT_MS, 1);
     if (!res) return fallback;
     if (!res.ok) return fallback;
@@ -139,7 +139,7 @@ async function fetchProductsRaw(qs: URLSearchParams, revalidate = 300): Promise<
   const res = await fetchWithRetry(
     `${baseUrl()}/products?${qs}&${authParams()}`,
     {
-      next: { revalidate },
+      next: { revalidate, tags: ['products-list', 'wc-products'] },
     },
     FETCH_TIMEOUT_MS,
     2
@@ -292,7 +292,7 @@ export const getProductBySlug = unstable_cache(
   async (slug: string): Promise<Product | null> => {
     const res = await fetchWithRetry(
       `${baseUrl()}/products?slug=${slug}&status=publish&_fields=id,name,slug,sku,price,regular_price,sale_price,on_sale,status,stock_status,short_description,description,images,categories,tags,featured,date_created,attributes,dimensions,weight&${authParams()}`,
-      { next: { revalidate: 600 } },
+      { next: { revalidate: 600, tags: ['product-by-slug', 'wc-products'] } },
       FETCH_TIMEOUT_MS,
       2
     );
@@ -459,7 +459,7 @@ export const getProductReviews = unstable_cache(
     try {
       const res = await fetchWithRetry(
         `${baseUrl()}/products/reviews?product=${productId}&per_page=10&status=approved&${authParams()}`,
-        { next: { revalidate: 3600 } },
+        { next: { revalidate: 3600, tags: ['product-reviews'] } },
         FETCH_TIMEOUT_MS,
         1
       );
@@ -486,7 +486,7 @@ export const getCategoryBySlug = unstable_cache(
     return cats[0] ?? null;
   },
   ['category-by-slug'],
-  { revalidate: 3600 }
+  { revalidate: 3600, tags: ['product-categories'] }
 );
 
 export async function searchProducts(query: string, _sort?: string, page = 1, per_page = 9): Promise<ProductsResult> {
@@ -519,7 +519,7 @@ export const getSubcategoriesByParentId = unstable_cache(
     return wcFetch<Category[]>(`/products/categories?parent=${parentId}&per_page=20&_fields=${CATEGORY_FIELDS}`, []);
   },
   ['subcategories-by-parent'],
-  { revalidate: 3600 }
+  { revalidate: 3600, tags: ['product-categories'] }
 );
 
 // WordPress REST API base (without /wc/v3)
@@ -530,7 +530,7 @@ function wpBase() {
 async function wpFetch<T>(path: string, fallback: T): Promise<T> {
   try {
     const res = await fetchWithRetry(`${wpBase()}${path}`, {
-      next: { revalidate: 300 },
+      next: { revalidate: 300, tags: ['wordpress-content'] },
     }, 8000, 1);
     if (!res) return fallback;
     if (!res.ok) return fallback;
@@ -601,7 +601,7 @@ export const getPage = unstable_cache(
     return pages[0] ?? null;
   },
   ['wp-page'],
-  { revalidate: 3600 }
+  { revalidate: 3600, tags: ['wordpress-content'] }
 );
 
 export interface ContactFormData {
@@ -661,7 +661,7 @@ export const getPosts = unstable_cache(
       ...(category && { categories: category }),
     });
     try {
-      const res = await fetch(`${wpBase()}/posts?${qs}`, { next: { revalidate: 300 } });
+      const res = await fetch(`${wpBase()}/posts?${qs}`, { next: { revalidate: 300, tags: ['wordpress-content'] } });
       if (!res.ok) return { posts: [], total: 0 };
       const text = await res.text();
       if (!text.startsWith('[')) return { posts: [], total: 0 };
@@ -671,7 +671,7 @@ export const getPosts = unstable_cache(
     }
   },
   ['wp-posts'],
-  { revalidate: 300 }
+  { revalidate: 300, tags: ['wordpress-content'] }
 );
 
 export const getPostBySlug = unstable_cache(
@@ -680,7 +680,7 @@ export const getPostBySlug = unstable_cache(
     return posts[0] ?? null;
   },
   ['wp-post-by-slug'],
-  { revalidate: 3600 }
+  { revalidate: 3600, tags: ['wordpress-content'] }
 );
 
 export const getPostCategories = unstable_cache(
@@ -688,7 +688,7 @@ export const getPostCategories = unstable_cache(
     return wpFetch<WPCategory[]>('/categories?per_page=20&hide_empty=true', []);
   },
   ['wp-post-categories'],
-  { revalidate: 3600 }
+  { revalidate: 3600, tags: ['wordpress-content'] }
 );
 
 export interface TechDocument {
@@ -973,8 +973,8 @@ const SETTINGS_FALLBACK: SiteSettings = {
     { question: 'What if I\u2019m not sure about my load?', answer: 'No problem. Start with your essentials \u2014 lights, fans, TV, and a fridge \u2014 and add from there. You can also chat with our team on WhatsApp and a PRAG engineer will help you build your load list.' },
     { question: 'Is the recommendation a quote?', answer: 'It\u2019s a sizing guide. Once you have your recommendation, you can shop the suggested products directly, request a formal quote, or schedule a free consultation with our team.' },
   ],
-  hero_background: 'https://central.prag.global/wp-content/uploads/2026/04/421db5e8efbc14b105a33a6db7182652503c3fdd.png',
-  slide_transition: 'fade',
+  hero_background: 'https://central.prag.global/wp-content/uploads/2026/08/themage.jpeg',
+  slide_transition: 'blur',
   socials: {
     facebook: 'https://www.facebook.com/pragpowersolutions',
     instagram: 'https://www.instagram.com/prag_ng/',
@@ -983,10 +983,10 @@ const SETTINGS_FALLBACK: SiteSettings = {
     whatsapp: 'https://wa.me/2348032170129',
   },
   slides: [
-    { title: 'No Hype. Just Inverters That Deliver.', description: 'Choose inverters engineered for real-world loads. Shop reliable power systems today.', cta: 'Buy Inverters Built to Last', link: '/products', productImage: 'https://central.prag.global/wp-content/uploads/2026/04/eebd514c0d3e75e4f32cb8fd691c7b3613fd99d5.png', productAlt: 'Heavy Duty Inverter' },
-    { title: 'Power Your Home. Power Your Business.', description: 'From residential to industrial applications. Trusted inverters for every power need.', cta: 'Explore Our Range', link: '/products', productImage: 'https://central.prag.global/wp-content/uploads/2026/04/7ee70985fdddba92a39a6e67f80ec4773cbf34fd.png', productAlt: 'Residential Inverter' },
-    { title: 'Built Tough. Tested Tougher.', description: 'Heavy-duty inverters designed to handle the toughest loads without compromise.', cta: 'Shop Heavy Duty Inverters', link: '/inverter', productImage: 'https://central.prag.global/wp-content/uploads/2026/04/b5564cf299de3eea9dbe804a547cf74e99bc41a7.png', productAlt: 'Industrial Inverter' },
-    { title: 'Reliable Power. Unbeatable Performance.', description: 'Experience consistent power delivery with inverters engineered for excellence.', cta: 'Get Started Today', link: '/products', productImage: 'https://central.prag.global/wp-content/uploads/2026/04/dd4b835690b546ee636b7659added08cd02d9891.png', productAlt: 'Premium Inverter' },
+    { title: 'Low, High, or Unstable Voltage?', description: 'Stable Power & Protection for your Appliances and Equipment.', cta: 'Explore PRAG Stabilizers', link: '/products/voltage-stabilizers', productImage: 'https://central.prag.global/wp-content/uploads/2026/08/image-removebg-preview-1.png', productAlt: 'Residential Inverter', backgroundImage: 'https://central.prag.global/wp-content/uploads/2026/08/stabforprag-2.webp', showProductImage: false },
+    { title: 'Frequent Power Outages?', description: 'Keep Your Home or Business Powered Without Interruption.', cta: 'Explore PRAG Inverters', link: '/products/inverters', productImage: 'https://central.prag.global/wp-content/uploads/2026/04/eebd514c0d3e75e4f32cb8fd691c7b3613fd99d5.png', productAlt: 'Heavy Duty Inverter', backgroundImage: 'https://central.prag.global/wp-content/uploads/2026/08/inverter-banner.webp', showProductImage: false },
+    { title: 'Reliable Energy Storage', description: 'Ensure Dependable Backup Power With High-Performance Battery Systems.', cta: 'Explore PRAG Batteries', link: '/products/batteries', productImage: 'https://central.prag.global/wp-content/uploads/2026/07/image-removebg-preview-1-1.png', productAlt: 'Premium Batteries', backgroundImage: 'https://central.prag.global/wp-content/uploads/2026/08/battriesprag.webp', showProductImage: false },
+    { title: 'Grid or Generator Dependence?', description: 'Generate Your Own Power and Achieve Energy Independence.', cta: 'Explore PRAG Solar', link: '/products/solar', productImage: 'https://central.prag.global/wp-content/uploads/2026/04/b5564cf299de3eea9dbe804a547cf74e99bc41a7.png', productAlt: 'Premium Solar', backgroundImage: 'https://central.prag.global/wp-content/uploads/2026/08/thesolarbannerr.webp', showProductImage: false },
   ],
   categories: [
     { name: 'Voltage Stabilizers', slug: 'voltage-stabilizers', image: 'https://central.prag.global/wp-content/uploads/2026/04/7ee70985fdddba92a39a6e67f80ec4773cbf34fd.png' },
@@ -1004,16 +1004,18 @@ const SETTINGS_FALLBACK: SiteSettings = {
 export const getSiteSettings = unstable_cache(
   async (): Promise<SiteSettings> => {
     try {
-      const res = await fetch(
+      const res = await fetchWithRetry(
         `${process.env.NEXT_PUBLIC_WP_API_URL ?? 'https://central.prag.global/wp-json'}/prag-core/v1/settings`,
         {
           next: {
             revalidate: PUBLIC_CONTENT_REVALIDATE_SECONDS,
             tags: ['wc-settings', 'wordpress-content'],
           },
-        }
+        },
+        FETCH_TIMEOUT_MS,
+        1
       );
-      if (!res.ok) return SETTINGS_FALLBACK;
+      if (!res || !res.ok) return SETTINGS_FALLBACK;
       const data = await res.json();
       // Deep merge: fallback fills any missing keys
       // Only use fallbacks for fields that are truly missing (undefined/null)
@@ -1056,7 +1058,7 @@ export const getProductCustomTabs = unstable_cache(
     try {
       const wpApi = process.env.NEXT_PUBLIC_WP_API_URL ?? 'https://central.prag.global/wp-json';
       const res = await fetchWithRetry(`${wpApi}/prag-core/v1/products/${productId}/custom-tabs`, {
-        next: { revalidate: 3600 },
+        next: { revalidate: 3600, tags: ['product-custom-tabs'] },
       }, FETCH_TIMEOUT_MS, 1);
       if (!res) return [];
       if (!res.ok) return [];
@@ -1131,7 +1133,7 @@ export const getAllProductSlugs = unstable_cache(
       while (hasMore) {
         const res = await fetchWithRetry(
           `${baseUrl()}/products?status=publish&per_page=${perPage}&page=${page}&_fields=slug,categories&${authParams()}`,
-          { next: { revalidate: 3600 } },
+          { next: { revalidate: 3600, tags: ['all-product-slugs'] } },
           FETCH_TIMEOUT_MS,
           1
         );

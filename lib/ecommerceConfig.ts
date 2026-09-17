@@ -1,3 +1,5 @@
+import { unstable_cache } from 'next/cache';
+
 export interface WhatsAppChatOption {
   label: string;
   subtitle: string;
@@ -78,28 +80,50 @@ function getAdminApiCandidates(host: string) {
   return Array.from(new Set([...envCandidates, ...inferred]));
 }
 
-export async function getEcommerceScriptsForHost(host: string): Promise<EcommerceTrackingScripts | null> {
-  const normalizedHost = normalizeHost(host);
-  if (!normalizedHost) return null;
+// How long a resolved per-host config is reused before refetching the admin
+// API. This fetch sits on the critical path of every page render (root layout)
+// and the /api/tracking endpoint, so it must be cached — an uncached call here
+// adds ~1s+ to TTFB for every request.
+const ECOMMERCE_CONFIG_REVALIDATE_SECONDS = 300;
+// Hard ceiling so a hung/slow admin host can never stall a page render.
+const ECOMMERCE_CONFIG_TIMEOUT_MS = 3000;
 
+async function fetchEcommerceScriptsForHost(normalizedHost: string): Promise<EcommerceTrackingScripts | null> {
   const candidates = getAdminApiCandidates(normalizedHost);
   if (candidates.length === 0) return null;
 
   for (const base of candidates) {
     try {
-    const res = await fetch(
-      `${base.replace(/\/$/, '')}/api/ecommerce-config?host=${encodeURIComponent(normalizedHost)}`,
-      { cache: 'no-store' },
-    );
+      const res = await fetch(
+        `${base.replace(/\/$/, '')}/api/ecommerce-config?host=${encodeURIComponent(normalizedHost)}`,
+        { cache: 'no-store', signal: AbortSignal.timeout(ECOMMERCE_CONFIG_TIMEOUT_MS) },
+      );
 
       if (!res.ok) continue;
-    const data = (await res.json()) as EcommerceConfigResponse;
+      const data = (await res.json()) as EcommerceConfigResponse;
       if (!data.allowed || !data.scripts) continue;
-    return data.scripts;
+      return data.scripts;
     } catch {
       continue;
     }
   }
 
   return null;
+}
+
+const getEcommerceScriptsCached = unstable_cache(
+  fetchEcommerceScriptsForHost,
+  ['ecommerce-config'],
+  { revalidate: ECOMMERCE_CONFIG_REVALIDATE_SECONDS, tags: ['ecommerce-config'] },
+);
+
+export async function getEcommerceScriptsForHost(host: string): Promise<EcommerceTrackingScripts | null> {
+  const normalizedHost = normalizeHost(host);
+  if (!normalizedHost) return null;
+
+  try {
+    return await getEcommerceScriptsCached(normalizedHost);
+  } catch {
+    return null;
+  }
 }

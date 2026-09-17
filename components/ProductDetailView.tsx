@@ -1,14 +1,14 @@
 'use client';
 
 import Image from 'next/image';
-import { useState, type FormEvent } from 'react';
+import { useState, useSyncExternalStore, type FormEvent } from 'react';
 import { Minus, Plus, ShieldCheck, Truck, LifeBuoy, MapPin, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import type { Product, Store } from '@/lib/types';
 import type { ProductReview, TechDocument, CustomTab } from '@/lib/woocommerce';
 import { formatPrice } from '@/lib/woocommerce';
 import { useCart } from '@/lib/CartContext';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import ProductCard from './ProductCard';
 
 function cleanWpContent(html: string): string {
@@ -146,12 +146,14 @@ export default function ProductDetailView({ product, relatedProducts, reviews, t
   const [reviewNotice, setReviewNotice] = useState('');
   const { add } = useCart();
   const router = useRouter();
-  const pathname = usePathname();
   const images = product.images ?? [];
   const [activeImage, setActiveImage] = useState(0);
   const image = images[activeImage] ?? images[0];
-  const shopBase = (process.env.NEXT_PUBLIC_SHOP_URL ?? 'https://shop.prag.global').replace(/\/$/, '');
-  const pageUrl = pathname ? `${shopBase}${pathname}` : '';
+  const pageUrl = useSyncExternalStore(
+    () => () => {},
+    () => (typeof window !== 'undefined' ? window.location.href : ''),
+    () => ''
+  );
   const isRecentlyCreated = (() => {
     if (!product.date_created) return false;
     const created = new Date(product.date_created);

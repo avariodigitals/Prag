@@ -14,8 +14,8 @@ export default function NavBar({ settings }: { settings?: SiteSettings }) {
 
   return (
     <>
-      {/* Desktop nav + trust bar */}
-      <div className="hidden lg:flex w-full px-4 xl:px-10 2xl:px-20 py-2 bg-sky-700 justify-between items-center gap-3 flex-wrap">
+      {/* Desktop nav + trust bar — fixed directly beneath the fixed white header */}
+      <div className="hidden lg:flex fixed top-[72px] left-0 right-0 z-40 w-full h-14 px-4 xl:px-10 2xl:px-20 py-2 bg-sky-700 justify-between items-center gap-3">
         <nav className="flex items-start gap-2 xl:gap-4 2xl:gap-6 shrink-0 flex-wrap">
           {menu.map((item) => {
             const isExternal = /^https?:\/\//i.test(item.link);

@@ -135,7 +135,7 @@ export default function TopBar({ phone = '+2348032170129', whatsapp = '+23480321
   return (
     <>
       {/* ── Desktop top bar ── */}
-      <div className="hidden lg:flex w-full px-4 xl:px-10 2xl:px-20 py-3 bg-white items-center gap-3 xl:gap-4 flex-wrap">
+      <div className="hidden lg:flex fixed top-0 left-0 right-0 z-50 w-full h-[72px] px-4 xl:px-10 2xl:px-20 py-3 bg-white items-center gap-3 xl:gap-4">
         <Link href="/" aria-label="PRAG home" className="shrink-0">
           <Image src="/Prag Logo.png" alt="PRAG" width={124} height={36} priority className="h-9 w-auto" style={{ width: 'auto', height: '36px' }} />
         </Link>
@@ -221,7 +221,7 @@ export default function TopBar({ phone = '+2348032170129', whatsapp = '+23480321
       </div>
 
       {/* ── Mobile top bar ── */}
-      <div className="lg:hidden sticky top-0 z-50 w-full bg-white/95 backdrop-blur-sm shadow-[0_1px_0_rgba(15,23,42,0.08)]">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 w-full bg-white/95 backdrop-blur-sm shadow-[0_1px_0_rgba(15,23,42,0.08)]">
         <div className="w-full px-4 h-[72px] bg-white flex items-center justify-between gap-3">
           <Link href="/" aria-label="PRAG home" className="shrink-0">
             <Image src="/Prag Logo.png" alt="PRAG" width={138} height={44} priority className="lg:hidden h-11 w-auto" style={{ width: 'auto', height: '44px' }} />
@@ -276,6 +276,11 @@ export default function TopBar({ phone = '+2348032170129', whatsapp = '+23480321
       </div>
 
       <MobileMenu open={menuOpen} onClose={() => setMenuOpen(false)} settings={settings} />
+
+      {/* Spacer so the fixed header (+ the fixed blue nav bar on desktop) does
+          not overlap page content: 72px top bar; 72 + 56 = 128px on desktop. */}
+      <div aria-hidden="true" className="hidden lg:block h-[128px]" />
+      <div aria-hidden="true" className="lg:hidden h-[72px]" />
     </>
   );
 }

@@ -48,13 +48,13 @@ const nextConfig: NextConfig = {
               "default-src 'self'",
               // Allow unsafe-eval only in dev (React DevTools / HMR need it)
               isDev
-                ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://js.paystack.co https://www.termsfeed.com https://challenges.cloudflare.com"
-                : "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://js.paystack.co https://www.termsfeed.com https://challenges.cloudflare.com",
-              "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: blob: https://central.prag.global https://images.unsplash.com https://www.google-analytics.com https://www.googletagmanager.com https://www.termsfeed.com",
-              "font-src 'self' data:",
-              "connect-src 'self' https://central.prag.global https://www.google-analytics.com https://region1.google-analytics.com https://www.googletagmanager.com https://api.paystack.co https://www.termsfeed.com https://challenges.cloudflare.com",
-              "frame-src 'self' https://js.paystack.co https://checkout.paystack.com https://www.termsfeed.com https://challenges.cloudflare.com",
+                ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://js.paystack.co https://www.termsfeed.com https://challenges.cloudflare.com https://salesiq.zohopublic.com https://static.zohocdn.com"
+                : "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://js.paystack.co https://www.termsfeed.com https://challenges.cloudflare.com https://salesiq.zohopublic.com https://static.zohocdn.com",
+              "style-src 'self' 'unsafe-inline' https://static.zohocdn.com https://salesiq.zohopublic.com",
+              "img-src 'self' data: blob: https://central.prag.global https://images.unsplash.com https://www.google-analytics.com https://www.googletagmanager.com https://www.google.com https://www.google.com.ng https://stats.g.doubleclick.net https://www.termsfeed.com https://salesiq.zohopublic.com https://static.zohocdn.com",
+              "font-src 'self' data: https://static.zohocdn.com",
+              "connect-src 'self' https://central.prag.global https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://www.googletagmanager.com https://www.google.com https://stats.g.doubleclick.net https://api.paystack.co https://www.termsfeed.com https://challenges.cloudflare.com https://salesiq.zohopublic.com https://static.zohocdn.com https://*.zoho.com wss://*.zoho.com",
+              "frame-src 'self' https://js.paystack.co https://checkout.paystack.com https://www.termsfeed.com https://challenges.cloudflare.com https://salesiq.zohopublic.com https://*.zoho.com",
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",

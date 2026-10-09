@@ -21,6 +21,8 @@ export interface EcommerceTrackingScripts {
   customHeadScripts: string;
   customBodyScripts: string;
   customFooterScripts: string;
+  /** Zoho SalesIQ widget code hash; rendered as the two-tag embed on the storefront. */
+  zohoSalesIqCode: string;
 }
 
 interface EcommerceConfigResponse {

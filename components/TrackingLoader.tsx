@@ -23,6 +23,7 @@ interface TrackingConfig {
   customHeadScripts?: string;
   customBodyScripts?: string;
   customFooterScripts?: string;
+  zohoSalesIqCode?: string;
 }
 
 // Default GA4 measurement ID for the shop domain. Used when the admin config
@@ -79,6 +80,16 @@ export default function TrackingLoader() {
 
   const gaId = (cfg?.googleAnalyticsId ?? '').trim() || DEFAULT_GA_ID;
   const gtmId = (cfg?.googleTagManagerId ?? '').trim();
+
+  // Zoho SalesIQ widget code. Admins may paste either the bare code hash
+  // ("siq...") or a full widget URL — normalise to the bare code so we can
+  // build the two-tag embed ourselves.
+  const salesIqCode = (() => {
+    const raw = (cfg?.zohoSalesIqCode ?? '').trim();
+    if (!raw) return '';
+    const match = raw.match(/[?&]wc=([^&\s"'<>]+)/i);
+    return (match?.[1] ?? raw).trim();
+  })();
 
   const configuredWhatsapp = (cfg?.whatsappChatNumber ?? '').trim();
   const globalNumber = (configuredWhatsapp || fallbackWhatsapp).replace(/\D/g, '');
@@ -150,6 +161,24 @@ export default function TrackingLoader() {
       {cfg?.customFooterScripts && (
         <Script id="custom-footer" strategy="afterInteractive"
           dangerouslySetInnerHTML={{ __html: cfg.customFooterScripts }} />
+      )}
+
+      {salesIqCode && (
+        <>
+          <Script
+            id="zsiq-init"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `window.$zoho=window.$zoho||{};window.$zoho.salesiq=window.$zoho.salesiq||{};window.$zoho.salesiq.widgetcode="${salesIqCode}";`,
+            }}
+          />
+          <Script
+            id="zsiqscript"
+            strategy="afterInteractive"
+            defer
+            src={`https://salesiq.zohopublic.com/widget?wc=${salesIqCode}`}
+          />
+        </>
       )}
 
       {isWhatsappEnabled && hasWhatsappNumber && (

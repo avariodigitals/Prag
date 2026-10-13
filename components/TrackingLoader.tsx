@@ -81,15 +81,35 @@ export default function TrackingLoader() {
   const gaId = (cfg?.googleAnalyticsId ?? '').trim() || DEFAULT_GA_ID;
   const gtmId = (cfg?.googleTagManagerId ?? '').trim();
 
-  // Zoho SalesIQ widget code. Admins may paste either the bare code hash
-  // ("siq...") or a full widget URL — normalise to the bare code so we can
-  // build the two-tag embed ourselves.
+  // Zoho SalesIQ widget code. Admins may paste the bare code hash ("siq..."),
+  // a full widget URL, or the ENTIRE embed snippet from the Zoho dashboard —
+  // extract the bare code in all three cases so we can build the two-tag
+  // embed ourselves.
   const salesIqCode = (() => {
     const raw = (cfg?.zohoSalesIqCode ?? '').trim();
     if (!raw) return '';
-    const match = raw.match(/[?&]wc=([^&\s"'<>]+)/i);
-    return (match?.[1] ?? raw).trim();
+    const wc = raw.match(/[?&]wc=([a-z0-9_-]{8,})/i);
+    if (wc?.[1]) return wc[1];
+    const token = raw.match(/siq_[a-z0-9]+/i);
+    if (token) return token[0];
+    const cleaned = raw.replace(/^['"`]+|['"`]+$/g, '');
+    return /^[a-z0-9_-]{8,}$/i.test(cleaned) ? cleaned : '';
   })();
+  // If the SalesIQ snippet was also pasted into the free-text custom script
+  // fields, strip it when the dedicated widget code is set — otherwise the
+  // widget loader runs twice (duplicate #zsiqscript) and renders nothing.
+  const stripSalesIQ = (html?: string): string => {
+    const raw = (html ?? '').trim();
+    if (!raw) return '';
+    if (!salesIqCode || !/salesiq/i.test(raw)) return raw;
+    return raw
+      .replace(/<script[^>]*salesiq\.zohopublic\.com[^>]*>[\s\S]*?<\/script>/gi, '')
+      .replace(/<script\b[^>]*>(?:(?!<\/script>)[\s\S])*?(widgetcode|salesiq\.zohopublic|zsiqscript|\$zoho\.salesiq)(?:(?!<\/script>)[\s\S])*?<\/script>/gi, '')
+      .trim();
+  };
+  const customHeadScripts = stripSalesIQ(cfg?.customHeadScripts);
+  const customBodyScripts = stripSalesIQ(cfg?.customBodyScripts);
+  const customFooterScripts = stripSalesIQ(cfg?.customFooterScripts);
 
   const configuredWhatsapp = (cfg?.whatsappChatNumber ?? '').trim();
   const globalNumber = (configuredWhatsapp || fallbackWhatsapp).replace(/\D/g, '');
@@ -134,9 +154,9 @@ export default function TrackingLoader() {
           }} />
       )}
 
-      {cfg?.customHeadScripts && (
+      {customHeadScripts && (
         <Script id="custom-head" strategy="afterInteractive"
-          dangerouslySetInnerHTML={{ __html: cfg.customHeadScripts }} />
+          dangerouslySetInnerHTML={{ __html: customHeadScripts }} />
       )}
 
       {cfg?.metaPixelId && (
@@ -153,14 +173,14 @@ export default function TrackingLoader() {
           }} />
       )}
 
-      {cfg?.customBodyScripts && (
+      {customBodyScripts && (
         <Script id="custom-body" strategy="afterInteractive"
-          dangerouslySetInnerHTML={{ __html: cfg.customBodyScripts }} />
+          dangerouslySetInnerHTML={{ __html: customBodyScripts }} />
       )}
 
-      {cfg?.customFooterScripts && (
+      {customFooterScripts && (
         <Script id="custom-footer" strategy="afterInteractive"
-          dangerouslySetInnerHTML={{ __html: cfg.customFooterScripts }} />
+          dangerouslySetInnerHTML={{ __html: customFooterScripts }} />
       )}
 
       {salesIqCode && (
@@ -176,7 +196,7 @@ export default function TrackingLoader() {
             id="zsiqscript"
             strategy="afterInteractive"
             defer
-            src={`https://salesiq.zohopublic.com/widget?wc=${salesIqCode}`}
+            src={`https://salesiq.zohopublic.com/leads?wc=${salesIqCode}`}
           />
         </>
       )}

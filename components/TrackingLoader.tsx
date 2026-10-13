@@ -196,7 +196,7 @@ export default function TrackingLoader() {
             id="zsiqscript"
             strategy="afterInteractive"
             defer
-            src={`https://salesiq.zohopublic.com/leads?wc=${salesIqCode}`}
+            src={`https://salesiq.zohopublic.com/widget?wc=${salesIqCode}`}
           />
         </>
       )}

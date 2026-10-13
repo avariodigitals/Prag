@@ -270,3 +270,44 @@ nav [class*="font-['Montserrat']"] {
 .termsfeed-com---pc-overlay .cc-custom-checkbox input:checked + label {
   accent-color: #0369a1 !important;
 }
+
+/* Match SalesIQ to this site's existing WhatsApp launcher. */
+:root {
+  --chat-launcher-size: 4rem;
+  --chat-launcher-icon-size: 1.75rem;
+  --chat-launcher-edge: 1rem;
+  --chat-launcher-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
+}
+
+.chat-launcher-whatsapp {
+  left: var(--chat-launcher-edge);
+  bottom: var(--chat-launcher-bottom);
+}
+
+/* Zoho's floating launcher lives in the host page, outside its chat iframe. */
+body [data-id="zsalesiq"] {
+  --zsiqf-float-close-height: var(--chat-launcher-size);
+}
+
+body [data-id="zsalesiq"] .zsiq-float {
+  width: var(--chat-launcher-size) !important;
+  height: var(--chat-launcher-size) !important;
+  right: var(--chat-launcher-edge) !important;
+  bottom: var(--chat-launcher-bottom) !important;
+  left: auto !important;
+  top: auto !important;
+}
+
+body [data-id="zsalesiq"] .zsiq-chat-icn {
+  font-size: var(--chat-launcher-icon-size) !important;
+}
+
+/* Keep the desktop conversation above the raised launcher. */
+body [data-id="zsalesiq"] .chat-iframe-wrap:not(.mobile):not(.zsiq-fullscreen-size):not(.attach-preview) {
+  bottom: calc(var(--chat-launcher-bottom) + var(--chat-launcher-size) + 10px) !important;
+}
+
+/* The scroll button shares the right edge; keep it above SalesIQ. */
+.chat-scroll-to-top {
+  bottom: calc(var(--chat-launcher-bottom) + var(--chat-launcher-size) + 1rem);
+}

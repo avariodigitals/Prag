@@ -175,7 +175,7 @@ export default function TrackingLoader({ salesIqEnvironmentCode = '' }: { salesI
       />
 
       {isWhatsappEnabled && hasWhatsappNumber && (
-        <div className="fixed left-4 bottom-4 z-[80] flex flex-col items-start gap-3">
+        <div className="chat-launcher-whatsapp fixed z-[80] flex flex-col items-start gap-3">
           {isMenuOpen && (
             <div className="w-[280px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-emerald-100 bg-white/95 shadow-2xl backdrop-blur">
               <div className="bg-gradient-to-br from-[#25D366] to-[#12B76A] px-4 py-3 text-white flex items-start justify-between gap-3">

@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from 'next';
+import Script from 'next/script';
+import { resolveSalesIqWidgetCode } from '@/lib/salesiq';
 import { Onest, Space_Grotesk } from 'next/font/google';
 import { CartProvider } from '@/lib/CartContext';
 import { WishlistProvider } from '@/lib/WishlistContext';
@@ -76,6 +78,10 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children, modal }: { children: React.ReactNode; modal: React.ReactNode }) {
+  const salesIqEnvironmentCode = process.env.ZOHO_SALESIQ_WIDGET_CODE?.trim() || '';
+  // Validate deployment overrides during rendering/build, before client execution.
+  if (salesIqEnvironmentCode) resolveSalesIqWidgetCode(salesIqEnvironmentCode);
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -100,7 +106,14 @@ export default function RootLayout({ children, modal }: { children: React.ReactN
             {modal}
           </WishlistProvider>
         </CartProvider>
-        <TrackingLoader />
+        <Script
+          id="zsiq-init"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: 'window.$zoho=window.$zoho||{};window.$zoho.salesiq=window.$zoho.salesiq||{ready:function(){}};',
+          }}
+        />
+        <TrackingLoader salesIqEnvironmentCode={salesIqEnvironmentCode} />
       </body>
     </html>
   );

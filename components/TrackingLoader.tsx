@@ -1,6 +1,7 @@
 'use client';
 
 import Script from 'next/script';
+import { resolveSalesIqWidgetCode, stripSalesIqEmbed } from '@/lib/salesiq';
 import { useEffect, useState } from 'react';
 
 interface WhatsAppChatOption {
@@ -41,7 +42,7 @@ const DEFAULT_WHATSAPP_OPTIONS = [
   { label: 'Delivery', subtitle: 'Orders & logistics', prefill: 'Hi, I need to inquire about delivery options.', number: '2347036463977' },
 ];
 
-export default function TrackingLoader() {
+export default function TrackingLoader({ salesIqEnvironmentCode = '' }: { salesIqEnvironmentCode?: string }) {
   const [cfg, setCfg] = useState<TrackingConfig | null>(null);
   const [cfgResolved, setCfgResolved] = useState(false);
   const [fallbackWhatsapp, setFallbackWhatsapp] = useState('');
@@ -49,29 +50,35 @@ export default function TrackingLoader() {
 
   useEffect(() => {
     const host = window.location.hostname;
-    Promise.all([
-      fetch(`/api/tracking?host=${encodeURIComponent(host)}`, { cache: 'no-store' })
-        .then((r) => (r.ok ? (r.json() as Promise<TrackingConfig>) : null))
-        .catch(() => null),
-      fetch('/api/settings', { cache: 'no-store' })
-        .then((r) => (r.ok ? (r.json() as Promise<SiteSettings>) : null))
-        .catch(() => null),
-    ]).then(([trackingData, settingsData]) => {
-      if (trackingData) setCfg(trackingData);
-      if (settingsData) setFallbackWhatsapp((settingsData.whatsapp ?? '').trim());
-      // Search Console verification meta — injected client-side because the
-      // root layout no longer reads per-request headers (keeps pages static).
-      // For GSC HTML-tag verification, prefer the GOOGLE_SITE_VERIFICATION
-      // env var, which renders the tag into the static HTML.
-      const verification = trackingData?.googleSearchConsoleVerification?.trim();
-      if (verification && !document.querySelector('meta[name="google-site-verification"]')) {
-        const meta = document.createElement('meta');
-        meta.name = 'google-site-verification';
-        meta.content = verification;
-        document.head.appendChild(meta);
-      }
-      setCfgResolved(true);
-    });
+    fetch('/api/settings', { cache: 'no-store' })
+      .then((r) => (r.ok ? (r.json() as Promise<SiteSettings>) : null))
+      .then((settings) => {
+        if (settings) setFallbackWhatsapp((settings.whatsapp ?? '').trim());
+      })
+      .catch(() => {});
+    // Resolve tracking independently of site settings. A hung request must not
+    // prevent the default chat widget from loading.
+    fetch(`/api/tracking?host=${encodeURIComponent(host)}`, {
+      cache: 'no-store',
+      signal: AbortSignal.timeout(15000),
+    })
+      .then((r) => (r.ok ? (r.json() as Promise<TrackingConfig>) : null))
+      .catch(() => null)
+      .then((trackingData) => {
+        if (trackingData) setCfg(trackingData);
+        // Search Console verification meta — injected client-side because the
+        // root layout no longer reads per-request headers (keeps pages static).
+        // For GSC HTML-tag verification, prefer the GOOGLE_SITE_VERIFICATION
+        // env var, which renders the tag into the static HTML.
+        const verification = trackingData?.googleSearchConsoleVerification?.trim();
+        if (verification && !document.querySelector('meta[name="google-site-verification"]')) {
+          const meta = document.createElement('meta');
+          meta.name = 'google-site-verification';
+          meta.content = verification;
+          document.head.appendChild(meta);
+        }
+        setCfgResolved(true);
+      });
   }, []);
 
   // Wait for the config before loading GA/GTM so the correct IDs are used.
@@ -81,35 +88,12 @@ export default function TrackingLoader() {
   const gaId = (cfg?.googleAnalyticsId ?? '').trim() || DEFAULT_GA_ID;
   const gtmId = (cfg?.googleTagManagerId ?? '').trim();
 
-  // Zoho SalesIQ widget code. Admins may paste the bare code hash ("siq..."),
-  // a full widget URL, or the ENTIRE embed snippet from the Zoho dashboard —
-  // extract the bare code in all three cases so we can build the two-tag
-  // embed ourselves.
-  const salesIqCode = (() => {
-    const raw = (cfg?.zohoSalesIqCode ?? '').trim();
-    if (!raw) return '';
-    const wc = raw.match(/[?&]wc=([a-z0-9_-]{8,})/i);
-    if (wc?.[1]) return wc[1];
-    const token = raw.match(/siq_[a-z0-9]+/i);
-    if (token) return token[0];
-    const cleaned = raw.replace(/^['"`]+|['"`]+$/g, '');
-    return /^[a-z0-9_-]{8,}$/i.test(cleaned) ? cleaned : '';
-  })();
-  // If the SalesIQ snippet was also pasted into the free-text custom script
-  // fields, strip it when the dedicated widget code is set — otherwise the
-  // widget loader runs twice (duplicate #zsiqscript) and renders nothing.
-  const stripSalesIQ = (html?: string): string => {
-    const raw = (html ?? '').trim();
-    if (!raw) return '';
-    if (!salesIqCode || !/salesiq/i.test(raw)) return raw;
-    return raw
-      .replace(/<script[^>]*salesiq\.zohopublic\.com[^>]*>[\s\S]*?<\/script>/gi, '')
-      .replace(/<script\b[^>]*>(?:(?!<\/script>)[\s\S])*?(widgetcode|salesiq\.zohopublic|zsiqscript|\$zoho\.salesiq)(?:(?!<\/script>)[\s\S])*?<\/script>/gi, '')
-      .trim();
-  };
-  const customHeadScripts = stripSalesIQ(cfg?.customHeadScripts);
-  const customBodyScripts = stripSalesIQ(cfg?.customBodyScripts);
-  const customFooterScripts = stripSalesIQ(cfg?.customFooterScripts);
+  const salesIqCode = resolveSalesIqWidgetCode(salesIqEnvironmentCode, cfg?.zohoSalesIqCode);
+
+  // The root bootstrap runs first; remove pasted copies from custom scripts.
+  const customHeadScripts = stripSalesIqEmbed(cfg?.customHeadScripts);
+  const customBodyScripts = stripSalesIqEmbed(cfg?.customBodyScripts);
+  const customFooterScripts = stripSalesIqEmbed(cfg?.customFooterScripts);
 
   const configuredWhatsapp = (cfg?.whatsappChatNumber ?? '').trim();
   const globalNumber = (configuredWhatsapp || fallbackWhatsapp).replace(/\D/g, '');
@@ -183,28 +167,17 @@ export default function TrackingLoader() {
           dangerouslySetInnerHTML={{ __html: customFooterScripts }} />
       )}
 
-      {salesIqCode && (
-        <>
-          <Script
-            id="zsiq-init"
-            strategy="afterInteractive"
-            dangerouslySetInnerHTML={{
-              __html: `window.$zoho=window.$zoho||{};window.$zoho.salesiq=window.$zoho.salesiq||{};window.$zoho.salesiq.widgetcode="${salesIqCode}";`,
-            }}
-          />
-          <Script
-            id="zsiqscript"
-            strategy="afterInteractive"
-            defer
-            src={`https://salesiq.zohopublic.com/widget?wc=${salesIqCode}`}
-          />
-        </>
-      )}
+      <Script
+        id="zsiqscript"
+        strategy="afterInteractive"
+        defer
+        src={`https://salesiq.zohopublic.com/widget?wc=${encodeURIComponent(salesIqCode)}`}
+      />
 
       {isWhatsappEnabled && hasWhatsappNumber && (
-        <div className="fixed right-4 bottom-4 z-[80] flex flex-col items-end gap-3">
+        <div className="fixed left-4 bottom-4 z-[80] flex flex-col items-start gap-3">
           {isMenuOpen && (
-            <div className="w-[280px] overflow-hidden rounded-2xl border border-emerald-100 bg-white/95 shadow-2xl backdrop-blur">
+            <div className="w-[280px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-emerald-100 bg-white/95 shadow-2xl backdrop-blur">
               <div className="bg-gradient-to-br from-[#25D366] to-[#12B76A] px-4 py-3 text-white flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-sm font-semibold font-['Montserrat'] truncate">Chat with PRAG</p>

@@ -64,17 +64,29 @@ export default function UnifiedChatLauncher({ whatsappEnabled, whatsappNumber, w
     let attempts = 0;
     const tryOpen = () => {
       const salesiq = (window as unknown as {
-        $zoho?: { salesiq?: { floatbutton?: { click?: () => void }; chatwindow?: { open?: () => void } } };
+        $zoho?: {
+          salesiq?: {
+            defaultview?: string;
+            floatbutton?: { click?: (callback: () => void) => void };
+            floatwindow?: { visible?: (state: string) => void };
+            chatwindow?: { open?: () => void; visible?: (state: string) => void };
+          };
+        };
       }).$zoho?.salesiq;
-      if (typeof salesiq?.floatbutton?.click === 'function') {
-        salesiq.floatbutton.click();
+      if (typeof salesiq?.floatwindow?.visible === 'function') {
+        salesiq.defaultview = 'chat';
+        salesiq.floatwindow.visible('show');
+        return true;
+      }
+      if (typeof salesiq?.chatwindow?.visible === 'function') {
+        salesiq.chatwindow.visible('show');
         return true;
       }
       if (typeof salesiq?.chatwindow?.open === 'function') {
         salesiq.chatwindow.open();
         return true;
       }
-      const launcher = document.querySelector<HTMLElement>('[data-id="zsalesiq"] .zsiq-float');
+      const launcher = document.querySelector<HTMLElement>('#zsiq_float, [data-id="zsalesiq"] .zsiq-float');
       if (launcher) {
         launcher.click();
         return true;

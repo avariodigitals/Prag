@@ -112,20 +112,27 @@ export default function TrackingLoader({ salesIqEnvironmentCode = '' }: { salesI
       const salesiq = (window as unknown as {
         $zoho?: {
           salesiq?: {
-            floatbutton?: { click?: () => void };
-            chatwindow?: { open?: () => void };
+            defaultview?: string;
+            floatbutton?: { click?: (callback: () => void) => void };
+            floatwindow?: { visible?: (state: string) => void };
+            chatwindow?: { open?: () => void; visible?: (state: string) => void };
           };
         };
       }).$zoho?.salesiq;
-      if (typeof salesiq?.floatbutton?.click === 'function') {
-        salesiq.floatbutton.click();
+      if (typeof salesiq?.floatwindow?.visible === 'function') {
+        salesiq.defaultview = 'chat';
+        salesiq.floatwindow.visible('show');
+        return true;
+      }
+      if (typeof salesiq?.chatwindow?.visible === 'function') {
+        salesiq.chatwindow.visible('show');
         return true;
       }
       if (typeof salesiq?.chatwindow?.open === 'function') {
         salesiq.chatwindow.open();
         return true;
       }
-      const el = document.querySelector<HTMLElement>('[data-id="zsalesiq"] .zsiq-float');
+      const el = document.querySelector<HTMLElement>('#zsiq_float, [data-id="zsalesiq"] .zsiq-float');
       if (el) {
         el.click();
         return true;

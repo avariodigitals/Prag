@@ -271,7 +271,6 @@ nav [class*="font-['Montserrat']"] {
   accent-color: #0369a1 !important;
 }
 
-/* Match SalesIQ to this site's existing WhatsApp launcher. */
 :root {
   --chat-launcher-size: 4rem;
   --chat-launcher-icon-size: 1.75rem;
@@ -279,12 +278,15 @@ nav [class*="font-['Montserrat']"] {
   --chat-launcher-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
 }
 
+/* One combined launcher (WhatsApp + Live chat) sits on the right. */
 .chat-launcher-whatsapp {
-  left: var(--chat-launcher-edge);
+  right: var(--chat-launcher-edge);
   bottom: var(--chat-launcher-bottom);
 }
 
-/* Zoho's floating launcher lives in the host page, outside its chat iframe. */
+/* Zoho's floating launcher lives in the host page, outside its chat iframe.
+   It is hidden — TrackingLoader's combined launcher opens SalesIQ via
+   $zoho.salesiq.floatbutton.click(), so the button must stay in the DOM. */
 body [data-id="zsalesiq"] {
   --zsiqf-float-close-height: var(--chat-launcher-size);
 }
@@ -296,6 +298,10 @@ body [data-id="zsalesiq"] .zsiq-float {
   bottom: var(--chat-launcher-bottom) !important;
   left: auto !important;
   top: auto !important;
+  /* Keep the element rendered and 'shown' so Zoho's own APIs still work —
+     only make it invisible and untouchable. */
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
 body [data-id="zsalesiq"] .zsiq-chat-icn {

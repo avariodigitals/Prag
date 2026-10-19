@@ -27,6 +27,7 @@ function WhatsAppIcon({ className = 'h-5 w-5' }: { className?: string }) {
 export default function UnifiedChatLauncher({ whatsappEnabled, whatsappNumber, whatsappText }: Props) {
   const [open, setOpen] = useState(false);
   const [panel, setPanel] = useState<Panel>('options');
+  const [zohoOpen, setZohoOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const number = whatsappNumber.replace(/\D/g, '') || '2348032170129';
   const canUseWhatsApp = whatsappEnabled && Boolean(whatsappNumber);
@@ -95,12 +96,41 @@ export default function UnifiedChatLauncher({ whatsappEnabled, whatsappNumber, w
     };
     const timer = window.setInterval(() => {
       attempts += 1;
-      if (tryOpen() || attempts >= 12) window.clearInterval(timer);
+      if (tryOpen()) {
+        setZohoOpen(true);
+        window.clearInterval(timer);
+      } else if (attempts >= 12) {
+        window.clearInterval(timer);
+      }
     }, 250);
+  }
+
+  function closeLiveChat() {
+    const salesiq = (window as unknown as {
+      $zoho?: {
+        salesiq?: {
+          floatwindow?: { visible?: (state: string) => void };
+          chatwindow?: { visible?: (state: string) => void };
+        };
+      };
+    }).$zoho?.salesiq;
+    if (typeof salesiq?.floatwindow?.visible === 'function') salesiq.floatwindow.visible('hide');
+    if (typeof salesiq?.chatwindow?.visible === 'function') salesiq.chatwindow.visible('hide');
+    const closeButton = document.querySelector<HTMLElement>(
+      '#zsiq_float .zsiq-close, [data-id="zsalesiq"] .zsiq-close, [data-id="zsalesiq"] [aria-label*="close" i]',
+    );
+    closeButton?.click();
+    setZohoOpen(false);
   }
 
   return (
     <div ref={menuRef} className="chat-launcher-whatsapp fixed z-[81] flex flex-col items-end gap-3">
+      {zohoOpen && (
+        <button type="button" onClick={closeLiveChat} className="chat-zoho-close fixed inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 text-xs font-semibold text-zinc-800 shadow-lg ring-1 ring-zinc-200 transition-colors hover:bg-zinc-50" aria-label="Close live chat">
+          <X className="h-4 w-4" aria-hidden="true" />
+          Close live chat
+        </button>
+      )}
       {open && (
         <div className="w-[min(21rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-2xl shadow-black/20">
           {panel === 'options' ? (

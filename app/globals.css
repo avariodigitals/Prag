@@ -284,6 +284,12 @@ nav [class*="font-['Montserrat']"] {
   bottom: var(--chat-launcher-bottom);
 }
 
+.chat-zoho-close {
+  right: var(--chat-launcher-edge);
+  bottom: calc(var(--chat-launcher-bottom) + var(--chat-launcher-size) + 1rem);
+  z-index: 90;
+}
+
 /* Zoho's floating launcher lives in the host page, outside its chat iframe.
    It is hidden — TrackingLoader's combined launcher opens SalesIQ via
    $zoho.salesiq.floatbutton.click(), so the button must stay in the DOM. */

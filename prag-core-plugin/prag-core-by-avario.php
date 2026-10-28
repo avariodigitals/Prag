@@ -3,7 +3,7 @@
  * Plugin Name: Prag Core by Avario
  * Plugin URI: https://www.avariodigitals.com
  * Description: Headless bridge for PRAG. Handles custom authentication, registration, site-wide settings via REST API, and SEO exclusion for central.prag.global.
- * Version: 1.1.0
+ * Version: 1.2.0
  * Author: Avario Digitals
  * Author URI: https://www.avariodigitals.com
  * Text Domain: prag-core
@@ -1806,6 +1806,8 @@ class Prag_Core_Bridge {
         return rest_ensure_response($current);
     }
 }
+
+require_once __DIR__ . '/prag-user-access.php';
 
 new Prag_Core_Bridge();
 
